@@ -23,31 +23,31 @@ public class MusicService {
     public int createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music();
-        music.setCoverImages(coverImages);
-        music.setMusicName(musicName);
-        music.setSingerName(singerName);
-        music.setMusicDesc(musicDesc);
-        music.setAlbumTitle(albumTitle);
-        music.setReleaseDate(releaseDate);
-        music.setCreateTime(timeStamp);
-        music.setUpdateTime(timeStamp);
-        music.setIsDeleted(0);
+        music.setCoverImages(coverImages)
+                .setMusicName(musicName)
+                .setSingerName(singerName)
+                .setMusicDesc(musicDesc)
+                .setAlbumTitle(albumTitle)
+                .setReleaseDate(releaseDate)
+                .setCreateTime(timeStamp)
+                .setUpdateTime(timeStamp)
+                .setIsDeleted(0);
         return musicMapper.insert(music);
     }
 
     public int updateMusic(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music();
-        music.setId(id);
-        music.setCoverImages(coverImages);
-        music.setMusicName(musicName);
-        music.setSingerName(singerName);
-        music.setMusicDesc(musicDesc);
-        music.setAlbumTitle(albumTitle);
-        music.setReleaseDate(releaseDate);
-        music.setCreateTime(timeStamp);
-        music.setUpdateTime(timeStamp);
-        music.setIsDeleted(0);
+        music.setId(id)
+                .setCoverImages(coverImages)
+                .setMusicName(musicName)
+                .setSingerName(singerName)
+                .setMusicDesc(musicDesc)
+                .setAlbumTitle(albumTitle)
+                .setReleaseDate(releaseDate)
+                .setCreateTime(timeStamp)
+                .setUpdateTime(timeStamp)
+                .setIsDeleted(0);
         return musicMapper.update(music);
     }
 
@@ -55,5 +55,4 @@ public class MusicService {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         return musicMapper.delete(timeStamp, id);
     }
-
 }

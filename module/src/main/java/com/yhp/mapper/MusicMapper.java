@@ -22,5 +22,4 @@ public interface MusicMapper {
 
     @Update("update music set is_deleted=1,update_time=#{time} where is_deleted=0 and id=#{id}")
     int delete(@Param("time") Integer time, @Param("id") Long id);
-
 }

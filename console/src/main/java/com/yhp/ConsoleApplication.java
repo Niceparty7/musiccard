@@ -7,9 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = "com.yhp")
 @MapperScan("com.yhp.mapper")
 public class ConsoleApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ConsoleApplication.class, args);
     }
-
 }

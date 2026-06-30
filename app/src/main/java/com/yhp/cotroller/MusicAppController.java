@@ -5,6 +5,7 @@ import com.yhp.domain.MusicInfoVO;
 import com.yhp.domain.MusicListFeedVO;
 import com.yhp.entity.Music;
 import com.yhp.service.MusicService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,22 +14,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class MusicAppController {
     @Autowired
     private MusicService musicService;
 
-
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam("id") Long id) {
         Music music = musicService.getMusicById(id);
         MusicInfoVO musicDetail = new MusicInfoVO();
-        musicDetail.setCoverImages(music.getCoverImages());
-        musicDetail.setMusicName(music.getMusicName());
-        musicDetail.setSingerName(music.getSingerName());
-        musicDetail.setAlbumTitle(music.getAlbumTitle());
-        musicDetail.setReleaseDate(music.getReleaseDate());
-        musicDetail.setMusicDesc(music.getMusicDesc());
+        musicDetail.setCoverImages(music.getCoverImages())
+                .setMusicName(music.getMusicName())
+                .setSingerName(music.getSingerName())
+                .setAlbumTitle(music.getAlbumTitle())
+                .setReleaseDate(music.getReleaseDate())
+                .setMusicDesc(music.getMusicDesc());
+        log.info(musicDetail.toString());
         return musicDetail;
     }
 
@@ -40,14 +42,15 @@ public class MusicAppController {
             MusicListVO musicCard = new MusicListVO();
             musicCard.setId(music.getId());
             String[] coverImages = music.getCoverImages().split("\\$");
-            musicCard.setWallImage(coverImages[0]);
-            musicCard.setMusicName(music.getMusicName());
-            musicCard.setSingerName(music.getSingerName());
-            musicCard.setMusicDesc(music.getMusicDesc());
+            musicCard.setWallImage(coverImages[0])
+                    .setMusicName(music.getMusicName())
+                    .setSingerName(music.getSingerName())
+                    .setMusicDesc(music.getMusicDesc());
             musicCardList.add(musicCard);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
         musicListFeedVO.setList(musicCardList);
+        log.info(musicListFeedVO.toString());
         return musicListFeedVO;
     }
 }
