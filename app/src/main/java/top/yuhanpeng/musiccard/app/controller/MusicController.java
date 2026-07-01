@@ -1,10 +1,10 @@
-package com.musiccard.cotroller;
+package top.yuhanpeng.musiccard.app.controller;
 
-import com.musiccard.domain.MusicListVO;
-import com.musiccard.domain.MusicInfoVO;
-import com.musiccard.domain.MusicListFeedVO;
-import com.musiccard.entity.Music;
-import com.musiccard.service.MusicService;
+import top.yuhanpeng.musiccard.app.domain.MusicListFeedVO;
+import top.yuhanpeng.musiccard.app.domain.MusicListVO;
+import top.yuhanpeng.musiccard.app.domain.MusicInfoVO;
+import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.service.MusicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

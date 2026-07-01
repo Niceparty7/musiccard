@@ -1,4 +1,4 @@
-package com.musiccard.domain;
+package top.yuhanpeng.musiccard.app.domain;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

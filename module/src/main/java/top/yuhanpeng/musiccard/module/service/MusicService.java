@@ -1,7 +1,7 @@
-package com.musiccard.service;
+package top.yuhanpeng.musiccard.module.service;
 
-import com.musiccard.entity.Music;
-import com.musiccard.mapper.MusicMapper;
+import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

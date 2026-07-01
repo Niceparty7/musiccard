@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <dependencies>
@@ -18,7 +18,7 @@
         </dependency>
     </dependencies>
 
-    <groupId>com.musiccard</groupId>
+    <groupId>top.yuhanpeng.musiccard</groupId>
     <artifactId>music-card</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>

@@ -1,6 +1,6 @@
-package com.musiccard.mapper;
+package top.yuhanpeng.musiccard.module.mapper;
 
-import com.musiccard.entity.Music;
+import top.yuhanpeng.musiccard.module.entity.Music;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

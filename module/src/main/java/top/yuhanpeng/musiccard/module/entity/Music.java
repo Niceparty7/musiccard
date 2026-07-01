@@ -1,4 +1,4 @@
-package com.musiccard.entity;
+package top.yuhanpeng.musiccard.module.entity;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
