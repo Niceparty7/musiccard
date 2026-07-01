@@ -1,18 +1,19 @@
-package com.yhp.domain;
+package com.musiccard.entity;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-/**
- * 音乐详情
- */
 @Data
 @Accessors(chain = true)
-public class MusicInfoVO {
+public class Music {
+    private Long id;
     private String coverImages;
     private String musicName;
     private String singerName;
+    private String musicDesc;
     private String albumTitle;
     private String releaseDate;
-    private String musicDesc;
+    private Integer createTime;
+    private Integer updateTime;
+    private Integer isDeleted;
 }

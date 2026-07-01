@@ -1,13 +1,13 @@
-package com.yhp;
+package com.musiccard;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = "com.yhp")
-@MapperScan("com.yhp.mapper")
-public class ConsoleApplication {
+@SpringBootApplication(scanBasePackages = "com.musiccard")
+@MapperScan("com.musiccard.mapper")
+public class AppApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ConsoleApplication.class, args);
+        SpringApplication.run(AppApplication.class, args);
     }
 }

@@ -18,12 +18,12 @@
         </dependency>
     </dependencies>
 
-    <groupId>com.yhp</groupId>
-    <artifactId>musicCard</artifactId>
+    <groupId>com.musiccard</groupId>
+    <artifactId>music-card</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>musicCard</name>
-    <description>musicCard</description>
+    <name>music-card</name>
+    <description>music-card</description>
     <url/>
     <licenses>
         <license/>

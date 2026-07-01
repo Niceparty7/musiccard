@@ -1,6 +1,6 @@
-package com.yhp.mapper;
+package com.musiccard.mapper;
 
-import com.yhp.entity.Music;
+import com.musiccard.entity.Music;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

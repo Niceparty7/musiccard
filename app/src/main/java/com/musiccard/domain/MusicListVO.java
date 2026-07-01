@@ -1,4 +1,4 @@
-package com.yhp.domain;
+package com.musiccard.domain;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

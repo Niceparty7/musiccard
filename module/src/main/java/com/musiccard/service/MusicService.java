@@ -1,7 +1,7 @@
-package com.yhp.service;
+package com.musiccard.service;
 
-import com.yhp.entity.Music;
-import com.yhp.mapper.MusicMapper;
+import com.musiccard.entity.Music;
+import com.musiccard.mapper.MusicMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

@@ -2,14 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yhp.mapper.MusicMapper">
+<mapper namespace="com.musiccard.mapper.MusicMapper">
     <insert id="insert"
-            parameterType="com.yhp.entity.Music">
+            parameterType="com.musiccard.entity.Music">
         insert into music (cover_images, music_name, singer_name, music_desc, album_title, release_date, create_time, update_time, is_deleted)
         values (#{music.coverImages}, #{music.musicName}, #{music.singerName}, #{music.musicDesc}, #{music.albumTitle}, #{music.releaseDate}, #{music.createTime}, #{music.updateTime}, #{music.isDeleted})
     </insert>
     <update id="update"
-            parameterType="com.yhp.entity.Music">
+            parameterType="com.musiccard.entity.Music">
         update music
         set cover_images=#{music.coverImages},
             music_name=#{music.musicName},
