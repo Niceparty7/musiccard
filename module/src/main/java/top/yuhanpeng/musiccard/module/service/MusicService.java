@@ -20,7 +20,7 @@ public class MusicService {
         return musicMapper.getAllMusic();
     }
 
-    public int createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
+    public Long createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music();
         music.setCoverImages(coverImages)
@@ -32,7 +32,8 @@ public class MusicService {
                 .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
                 .setIsDeleted(0);
-        return musicMapper.insert(music);
+        musicMapper.insert(music);
+        return music.getId();
     }
 
     public int updateMusic(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
