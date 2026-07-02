@@ -14,9 +14,12 @@ public class MusicController {
     private MusicService musicService;
 
     @RequestMapping("/music/create")
-    public String musicCreate(@RequestParam(value = "coverImages") String coverImages, @RequestParam(value = "musicName") String musicName,
-                              @RequestParam(value = "singerName") String singerName, @RequestParam(value = "musicDesc") String musicDesc,
-                              @RequestParam(value = "albumTitle") String albumTitle, @RequestParam(value = "releaseDate") String releaseDate) {
+    public String musicCreate(@RequestParam(value = "coverImages", required = false) String coverImages,
+                              @RequestParam(value = "musicName", required = false) String musicName,
+                              @RequestParam(value = "singerName", required = false) String singerName,
+                              @RequestParam(value = "musicDesc", required = false) String musicDesc,
+                              @RequestParam(value = "albumTitle", required = false) String albumTitle,
+                              @RequestParam(value = "releaseDate", required = false) String releaseDate) {
         Long id = musicService.createMusic(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
         if (id != null) {
             log.info("音乐新增成功,id={}\n", id);

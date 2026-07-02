@@ -20,10 +20,65 @@
     <insert id="insert"
             useGeneratedKeys="true"
             keyProperty="id">
-        insert into music (cover_images, music_name, singer_name, music_desc, album_title, release_date, create_time,
-                           update_time, is_deleted)
-        values (#{music.coverImages}, #{music.musicName}, #{music.singerName}, #{music.musicDesc}, #{music.albumTitle},
-                #{music.releaseDate}, #{music.createTime}, #{music.updateTime}, #{music.isDeleted})
+        insert into music
+        <trim prefix="("
+              suffix=")"
+              suffixOverrides=",">
+            <if test="music.coverImages!=null and music.coverImages!=''">
+                cover_images,
+            </if>
+            <if test="music.musicName!=null and music.musicName!=''">
+                music_name,
+            </if>
+            <if test="music.singerName!=null and music.singerName!=''">
+                singer_name,
+            </if>
+            <if test="music.musicDesc!=null and music.musicDesc!=''">
+                music_desc,
+            </if>
+            <if test="music.albumTitle!=null and music.albumTitle!=''">
+                album_title,
+            </if>
+            <if test="music.releaseDate!=null and music.releaseDate!=''">
+                release_date,
+            </if>
+            <if test="music.createTime!=null">
+                create_time,
+            </if>
+            <if test="music.isDeleted!=null">
+                is_deleted,
+            </if>
+            update_time
+        </trim>
+        <trim prefix="values("
+              suffix=")"
+              suffixOverrides=",">
+            <if test="music.coverImages!=null and music.coverImages!=''">
+                #{music.coverImages},
+            </if>
+            <if test="music.musicName!=null and music.musicName!=''">
+                #{music.musicName},
+            </if>
+            <if test="music.singerName!=null and music.singerName!=''">
+                #{music.singerName},
+            </if>
+            <if test="music.musicDesc!=null and music.musicDesc!=''">
+                #{music.musicDesc},
+            </if>
+            <if test="music.albumTitle!=null and music.albumTitle!=''">
+                #{music.albumTitle},
+            </if>
+            <if test="music.releaseDate!=null and music.releaseDate!=''">
+                #{music.releaseDate},
+            </if>
+            <if test="music.createTime!=null">
+                #{music.createTime},
+            </if>
+            <if test="music.isDeleted!=null">
+                #{music.isDeleted},
+            </if>
+            #{music.updateTime}
+        </trim>
     </insert>
     <update id="update">
         update music
