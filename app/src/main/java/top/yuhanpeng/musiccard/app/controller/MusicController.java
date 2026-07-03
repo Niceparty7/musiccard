@@ -1,15 +1,15 @@
 package top.yuhanpeng.musiccard.app.controller;
 
-import top.yuhanpeng.musiccard.app.domain.MusicListFeedVO;
-import top.yuhanpeng.musiccard.app.domain.MusicListVO;
-import top.yuhanpeng.musiccard.app.domain.MusicInfoVO;
-import top.yuhanpeng.musiccard.module.entity.Music;
-import top.yuhanpeng.musiccard.module.service.MusicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import top.yuhanpeng.musiccard.app.domain.MusicInfoVO;
+import top.yuhanpeng.musiccard.app.domain.MusicListFeedVO;
+import top.yuhanpeng.musiccard.app.domain.MusicListVO;
+import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.service.MusicService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,9 +37,10 @@ public class MusicController {
     }
 
     @RequestMapping("/music/list")
-    public MusicListFeedVO getMusicList() {
+    public MusicListFeedVO getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page) {
         List<MusicListVO> musicCardList = new ArrayList<>();
-        List<Music> list = musicService.getAllMusicInfo();
+        Integer pageSize = 10;
+        List<Music> list = musicService.getAllMusicInfo(page, pageSize);
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
@@ -51,7 +52,9 @@ public class MusicController {
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
-        musicListFeedVO.setList(musicCardList);
+        Boolean isEnd = musicCardList.size() < pageSize ? true : false;
+        musicListFeedVO.setList(musicCardList)
+                .setIsEnd(isEnd);
         log.info(musicListFeedVO.toString());
         return musicListFeedVO;
     }

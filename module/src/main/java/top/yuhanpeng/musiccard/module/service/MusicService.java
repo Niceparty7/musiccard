@@ -16,8 +16,12 @@ public class MusicService {
         return musicMapper.getById(id);
     }
 
-    public List<Music> getAllMusicInfo() {
-        return musicMapper.getAllMusic();
+    public List<Music> getAllMusicInfo(Integer page, Integer pageSize) {
+        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize);
+    }
+
+    public Long getTotal() {
+        return musicMapper.countTotal();
     }
 
     public Long createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {

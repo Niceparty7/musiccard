@@ -12,4 +12,5 @@ import java.util.List;
 @Accessors(chain = true)
 public class MusicListFeedVO {
     private List<MusicListVO> list;
+    Boolean isEnd;
 }
