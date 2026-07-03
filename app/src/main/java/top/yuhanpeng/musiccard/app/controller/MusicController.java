@@ -41,6 +41,7 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         List<Music> list = musicService.getAllMusicInfo(page, pageSize);
+        Boolean isEnd = musicCardList.size() < pageSize;
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
@@ -52,7 +53,6 @@ public class MusicController {
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
-        Boolean isEnd = musicCardList.size() < pageSize ? true : false;
         musicListFeedVO.setList(musicCardList)
                 .setIsEnd(isEnd);
         log.info(musicListFeedVO.toString());

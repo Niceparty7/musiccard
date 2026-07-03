@@ -7,12 +7,12 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Music {
     private Long id;
-    private String coverImages="https://null.com$https://null.com$https://null.com";
-    private String musicName="未知";
-    private String singerName="未知";
-    private String musicDesc="未知";
-    private String albumTitle="未知";
-    private String releaseDate="未知";
+    private String coverImages;
+    private String musicName;
+    private String singerName;
+    private String musicDesc;
+    private String albumTitle;
+    private String releaseDate;
     private Integer createTime;
     private Integer updateTime;
     private Integer isDeleted;

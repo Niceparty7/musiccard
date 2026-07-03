@@ -27,12 +27,12 @@ public class MusicService {
     public Long createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music();
-        music.setCoverImages(coverImages != null ? coverImages : music.getCoverImages())
-                .setMusicName(musicName != null ? musicName : music.getMusicName())
-                .setSingerName(singerName != null ? singerName : music.getSingerName())
-                .setMusicDesc(musicDesc != null ? musicDesc : music.getMusicDesc())
-                .setAlbumTitle(albumTitle != null ? albumTitle : music.getAlbumTitle())
-                .setReleaseDate(releaseDate != null ? releaseDate : music.getReleaseDate())
+        music.setCoverImages(coverImages)
+                .setMusicName(musicName)
+                .setSingerName(singerName)
+                .setMusicDesc(musicDesc)
+                .setAlbumTitle(albumTitle)
+                .setReleaseDate(releaseDate)
                 .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
                 .setIsDeleted(0);
