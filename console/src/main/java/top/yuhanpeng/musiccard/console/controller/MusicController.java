@@ -45,11 +45,12 @@ public class MusicController {
     }
 
     @RequestMapping("/music/list")
-    public MusicListFeedVO getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page) {
+    public MusicListFeedVO getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page,
+                                        @RequestParam(value = "keyword", required = false) String keyword) {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Long total = musicService.getTotal();
         Integer pageSize = 10;
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize);
+        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword.trim());
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
@@ -69,13 +70,19 @@ public class MusicController {
     }
 
     @RequestMapping("/music/create")
-    public String musicCreate(@RequestParam(value = "coverImages", defaultValue = "https://null.com$https://null.com$https://null.com") String coverImages,
-                              @RequestParam(value = "musicName", defaultValue = "未知歌曲") String musicName,
-                              @RequestParam(value = "singerName", defaultValue = "未知歌手") String singerName,
-                              @RequestParam(value = "musicDesc", defaultValue = "暂无介绍") String musicDesc,
-                              @RequestParam(value = "albumTitle", defaultValue = "暂无专辑") String albumTitle,
-                              @RequestParam(value = "releaseDate", defaultValue = "暂无发布日期") String releaseDate) {
-        Long id = musicService.createMusic(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
+    public String musicCreate(@RequestParam(value = "coverImages") String coverImages,
+                              @RequestParam(value = "musicName") String musicName,
+                              @RequestParam(value = "singerName") String singerName,
+                              @RequestParam(value = "musicDesc", required = false) String musicDesc,
+                              @RequestParam(value = "albumTitle", required = false) String albumTitle,
+                              @RequestParam(value = "releaseDate", required = false) String releaseDate) {
+        if (albumTitle != null) {
+            albumTitle = albumTitle.trim();
+        }
+        if (releaseDate != null) {
+            releaseDate = releaseDate.trim();
+        }
+        Long id = musicService.createMusic(coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
         if (id != null) {
             log.info("音乐新增成功,id={}\n", id);
         } else {
@@ -92,6 +99,18 @@ public class MusicController {
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate) {
+        if (musicName != null) {
+            musicName = musicName.trim();
+        }
+        if (singerName != null) {
+            singerName = singerName.trim();
+        }
+        if (albumTitle != null) {
+            albumTitle = albumTitle.trim();
+        }
+        if (releaseDate != null) {
+            releaseDate = releaseDate.trim();
+        }
         int res = musicService.updateMusic(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
         if (res == 1) {
             log.info("音乐更新成功\n");

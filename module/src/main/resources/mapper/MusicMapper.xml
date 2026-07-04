@@ -15,8 +15,11 @@
         select *
         from music
         where is_deleted = 0
+        <if test="keyword!=null and keyword!= '' ">
+            and music_name like concat('%',#{keyword},'%')
+        </if>
         order by id
-            limit #{offSet}, #{pageSize}
+        limit #{offSet}, #{pageSize}
     </select>
 
     <insert id="insert"

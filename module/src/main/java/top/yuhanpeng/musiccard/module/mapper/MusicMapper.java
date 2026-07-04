@@ -10,7 +10,7 @@ import java.util.List;
 public interface MusicMapper {
     Music getById(@Param("id") Long id);
 
-    List<Music> getAllMusic(@Param("offSet") Integer offSet,@Param("pageSize") Integer pageSize);
+    List<Music> getAllMusic(@Param("offSet") Integer offSet,@Param("pageSize") Integer pageSize,@Param("keyword") String keyword);
 
     int update(@Param("music") Music music);
 

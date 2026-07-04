@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import java.util.List;
 
 /**
- * 音乐卡片瀑布流
+ * 音乐卡片列表
  */
 @Data
 @Accessors(chain = true)
