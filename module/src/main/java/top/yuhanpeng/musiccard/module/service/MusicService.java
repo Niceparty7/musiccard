@@ -16,7 +16,7 @@ public class MusicService {
         return musicMapper.getById(id);
     }
 
-    public List<Music> getAllMusicInfo(Integer page, Integer pageSize,String keyword) {
+    public List<Music> getAllMusicInfo(Integer page ,Integer pageSize ,String keyword) {
         return musicMapper.getAllMusic((page - 1) * pageSize, pageSize,keyword);
     }
 

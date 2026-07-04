@@ -1,13 +1,12 @@
 package top.yuhanpeng.musiccard.console.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.yuhanpeng.musiccard.console.domain.MusicInfoVO;
-import top.yuhanpeng.musiccard.console.domain.MusicListFeedVO;
-import top.yuhanpeng.musiccard.console.domain.MusicListVO;
+import top.yuhanpeng.musiccard.console.domain.*;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 
@@ -23,8 +22,8 @@ public class MusicController {
     private MusicService musicService;
 
     @RequestMapping("/music/info")
-    public MusicInfoVO getMusicInfoById(@RequestParam("id") Long id) {
-        Music music = musicService.getMusicById(id);
+    public MusicInfoVO getMusicInfoById(@Valid @RequestBody MusicInfoDTO musicInfoDTO) {
+        Music music = musicService.getMusicById(musicInfoDTO.getId());
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         Long createTimeStamp = music.getCreateTime() * 1000L;
         Long updateTimeStamp = music.getUpdateTime() * 1000L;
@@ -45,12 +44,14 @@ public class MusicController {
     }
 
     @RequestMapping("/music/list")
-    public MusicListFeedVO getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                        @RequestParam(value = "keyword", required = false) String keyword) {
+    public MusicListFeedVO getMusicList(@RequestBody MusicListDTO musicListDTO) {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Long total = musicService.getTotal();
+        Integer page = musicListDTO.getPage();
         Integer pageSize = 10;
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword.trim());
+        String keyword = musicListDTO.getKeyword();
+        keyword = keyword == null ? keyword : keyword.trim();
+        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
@@ -70,19 +71,18 @@ public class MusicController {
     }
 
     @RequestMapping("/music/create")
-    public String musicCreate(@RequestParam(value = "coverImages") String coverImages,
-                              @RequestParam(value = "musicName") String musicName,
-                              @RequestParam(value = "singerName") String singerName,
-                              @RequestParam(value = "musicDesc", required = false) String musicDesc,
-                              @RequestParam(value = "albumTitle", required = false) String albumTitle,
-                              @RequestParam(value = "releaseDate", required = false) String releaseDate) {
-        if (albumTitle != null) {
-            albumTitle = albumTitle.trim();
-        }
-        if (releaseDate != null) {
-            releaseDate = releaseDate.trim();
-        }
-        Long id = musicService.createMusic(coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
+    public String musicCreate(@Valid @RequestBody MusicCreateDTO musicCreateDTO) {
+        String coverImages = musicCreateDTO.getCoverImages();
+        String musicName = musicCreateDTO.getMusicName();
+        musicName = musicName == null ? musicName : musicName.trim();
+        String singerName = musicCreateDTO.getSingerName();
+        singerName = singerName == null ? singerName : singerName.trim();
+        String musicDesc = musicCreateDTO.getMusicDesc();
+        String albumTitle = musicCreateDTO.getAlbumTitle();
+        albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
+        String releaseDate = musicCreateDTO.getReleaseDate();
+        releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
+        Long id = musicService.createMusic(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
         if (id != null) {
             log.info("音乐新增成功,id={}\n", id);
         } else {
@@ -92,25 +92,18 @@ public class MusicController {
     }
 
     @RequestMapping("/music/update")
-    public String musicUpdate(@RequestParam(value = "id") Long id,
-                              @RequestParam(value = "coverImages", required = false) String coverImages,
-                              @RequestParam(value = "musicName", required = false) String musicName,
-                              @RequestParam(value = "singerName", required = false) String singerName,
-                              @RequestParam(value = "musicDesc", required = false) String musicDesc,
-                              @RequestParam(value = "albumTitle", required = false) String albumTitle,
-                              @RequestParam(value = "releaseDate", required = false) String releaseDate) {
-        if (musicName != null) {
-            musicName = musicName.trim();
-        }
-        if (singerName != null) {
-            singerName = singerName.trim();
-        }
-        if (albumTitle != null) {
-            albumTitle = albumTitle.trim();
-        }
-        if (releaseDate != null) {
-            releaseDate = releaseDate.trim();
-        }
+    public String musicUpdate(@Valid @RequestBody MusicUpdateDTO musicUpdateDTO) {
+        Long id = musicUpdateDTO.getId();
+        String coverImages = musicUpdateDTO.getCoverImages();
+        String musicName = musicUpdateDTO.getMusicName();
+        musicName = musicName == null ? musicName : musicName.trim();
+        String singerName = musicUpdateDTO.getSingerName();
+        singerName = singerName == null ? singerName : singerName.trim();
+        String musicDesc = musicUpdateDTO.getMusicDesc();
+        String albumTitle = musicUpdateDTO.getAlbumTitle();
+        albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
+        String releaseDate = musicUpdateDTO.getReleaseDate();
+        releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         int res = musicService.updateMusic(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
         if (res == 1) {
             log.info("音乐更新成功\n");
@@ -121,8 +114,8 @@ public class MusicController {
     }
 
     @RequestMapping("/music/delete")
-    public String musicDelete(@RequestParam(value = "id") Long id) {
-        int res = musicService.deleteMusic(id);
+    public String musicDelete(@Valid @RequestBody MusicDeleteDTO musicDeleteDTO) {
+        int res = musicService.deleteMusic(musicDeleteDTO.getId());
         if (res == 1) {
             log.info("音乐删除成功\n");
         } else {

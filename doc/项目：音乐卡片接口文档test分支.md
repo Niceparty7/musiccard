@@ -1,5 +1,7 @@
 # 项目：音乐卡片_接口文档
 
+测试@RequestBody注解，设置Content-Type实现
+
 ## App端
 
 ## baseUrl:http://localhost:8080
@@ -10,9 +12,12 @@
 
 参数：
 
-page:[Int],
-
-keyword:[String],(required = false)
+```json
+{
+    page:[Int],
+	keyword:[String],(required = false)
+}
+```
 
 返回：
 
@@ -37,7 +42,11 @@ keyword:[String],(required = false)
 
 参数：
 
-id:[Long]
+```json
+{
+    id:[Long]
+}
+```
 
 返回：
 
@@ -62,9 +71,12 @@ id:[Long]
 
 参数：
 
-page:[Int],
-
-keyword:[String],(required = false)
+```json
+{
+    page:[Int],
+	keyword:[String],(required = false)
+}
+```
 
 返回：
 
@@ -90,7 +102,11 @@ keyword:[String],(required = false)
 
 参数：
 
-id:[Long]
+```json
+{
+    id:[Long]
+}
+```
 
 返回：
 
@@ -112,12 +128,17 @@ id:[Long]
 /music/create
 
 参数：
-coverImages:[String]
-musicName:[String]
-singerName:[String]
-albumTitle:[String],(required = false)
-releaseDate:[String],(required = false)
-musicDesc:[String],(required = false)
+
+```json
+{
+    coverImages:[String],
+	musicName:[String],
+	singerName:[String],
+	albumTitle:[String],(required = false),
+	releaseDate:[String],(required = false),
+	musicDesc:[String],(required = false)
+}
+```
 
 返回：
 
@@ -129,13 +150,17 @@ musicDesc:[String],(required = false)
 
 参数：
 
-id:[Long]
-coverImages:[String],(required = false)
-musicName:[String],(required = false)
-singerName:[String],(required = false)
-albumTitle:[String],(required = false)
-releaseDate:[String],(required = false)
-musicDesc:[String],(required = false)
+```json
+{
+    id:[Long],
+	coverImages:[String],(required = false),
+	musicName:[String],(required = false),
+	singerName:[String],(required = false),
+	albumTitle:[String],(required = false),
+	releaseDate:[String],(required = false),
+	musicDesc:[String],(required = false)
+}
+```
 
 
 返回：
@@ -148,7 +173,11 @@ musicDesc:[String],(required = false)
 
 参数：
 
-id:[Long]
+```json
+{
+    id:[Long]
+}
+```
 
 
 返回：

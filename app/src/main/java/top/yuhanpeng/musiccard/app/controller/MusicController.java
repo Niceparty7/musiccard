@@ -1,13 +1,12 @@
 package top.yuhanpeng.musiccard.app.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.yuhanpeng.musiccard.app.domain.MusicInfoVO;
-import top.yuhanpeng.musiccard.app.domain.MusicListFeedVO;
-import top.yuhanpeng.musiccard.app.domain.MusicListVO;
+import top.yuhanpeng.musiccard.app.domain.*;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 
@@ -22,8 +21,8 @@ public class MusicController {
     private MusicService musicService;
 
     @RequestMapping("/music/info")
-    public MusicInfoVO getMusicInfoById(@RequestParam("id") Long id) {
-        Music music = musicService.getMusicById(id);
+    public MusicInfoVO getMusicInfoById(@Valid @RequestBody MusicInfoDTO musicInfoDTO) {
+        Music music = musicService.getMusicById(musicInfoDTO.getId());
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
@@ -37,11 +36,13 @@ public class MusicController {
     }
 
     @RequestMapping("/music/list")
-    public MusicListFeedVO getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                        @RequestParam(value = "keyword", required = false) String keyword) {
+    public MusicListFeedVO getMusicList(@RequestBody MusicListDTO musicListDTO) {
         List<MusicListVO> musicCardList = new ArrayList<>();
+        Integer page = musicListDTO.getPage();
         Integer pageSize = 10;
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize,keyword.trim());
+        String keyword = musicListDTO.getKeyword();
+        keyword = keyword == null ? keyword : keyword.trim();
+        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
