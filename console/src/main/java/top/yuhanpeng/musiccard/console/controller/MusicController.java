@@ -23,14 +23,15 @@ public class MusicController {
     private MusicService musicService;
 
     @RequestMapping("/music/info")
-    public MusicInfoVO getMusicInfoById(@RequestParam("id") Long id) {
+    public MusicInfoVO getMusicInfoById(@RequestParam(value = "id", required = false) Long id) {
         Music music = null;
+        MusicInfoVO musicInfoVO = new MusicInfoVO();
         try {
             music = musicService.getMusicById(id);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("cannot find the id!");
-            return null;
+            return musicInfoVO;
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         Long createTimeStamp = music.getCreateTime() * 1000L;
@@ -38,7 +39,6 @@ public class MusicController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = simpleDateFormat.format(createTimeStamp);
         String updateTime = simpleDateFormat.format(updateTimeStamp);
-        MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
                 .setSingerName(music.getSingerName())
@@ -78,9 +78,9 @@ public class MusicController {
     }
 
     @RequestMapping("/music/create")
-    public String musicCreate(@RequestParam(value = "coverImages") String coverImages,
-                              @RequestParam(value = "musicName") String musicName,
-                              @RequestParam(value = "singerName") String singerName,
+    public String musicCreate(@RequestParam(value = "coverImages", required = false) String coverImages,
+                              @RequestParam(value = "musicName", required = false) String musicName,
+                              @RequestParam(value = "singerName", required = false) String singerName,
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate) {
@@ -93,7 +93,7 @@ public class MusicController {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("coverImages, musicName, singerName cannot be null!");
-            return "coverImages, musicName, singerName cannot be null!";
+            return "coverImages, musicName, singerName等字段不能为空！";
         }
         if (id != null) {
             res = "插入成功,id为" + id;
@@ -130,14 +130,14 @@ public class MusicController {
     }
 
     @RequestMapping("/music/delete")
-    public String musicDelete(@RequestParam(value = "id") Long id) {
+    public String musicDelete(@RequestParam(value = "id", required = false) Long id) {
         int res = 0;
         try {
             res = musicService.deleteMusic(id);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("cannot find the id");
-            return "cannot find the id";
+            return "id不能为空！";
         }
         if (res == 1) {
             log.info("音乐删除成功\n");
