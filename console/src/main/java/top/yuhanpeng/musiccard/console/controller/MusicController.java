@@ -25,13 +25,16 @@ public class MusicController {
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam(value = "id", required = false) Long id) {
         Music music = null;
-        MusicInfoVO musicInfoVO = new MusicInfoVO();
+        Boolean res=true;
         try {
             music = musicService.getMusicById(id);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("cannot find the id!");
-            return musicInfoVO;
+            res=false;
+        }
+        if (!res){
+            return null;
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         Long createTimeStamp = music.getCreateTime() * 1000L;
@@ -39,6 +42,7 @@ public class MusicController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = simpleDateFormat.format(createTimeStamp);
         String updateTime = simpleDateFormat.format(updateTimeStamp);
+        MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
                 .setSingerName(music.getSingerName())
@@ -87,21 +91,20 @@ public class MusicController {
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
-        String res;
+        String res="";
         try {
             id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("coverImages, musicName, singerName cannot be null!");
-            return "coverImages, musicName, singerName等字段不能为空！";
+            res= "coverImages, musicName, singerName等字段不能为空！";
         }
         if (id != null) {
             res = "插入成功,id为" + id;
-            log.info("音乐新增成功,id={}\n", id);
         } else {
-            res = "失败";
-            log.info("音乐新增失败\n");
+            res = "失败 "+res;
         }
+        log.info(res);
         return res;
     }
 
@@ -123,7 +126,7 @@ public class MusicController {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("cannot find the id");
-            return "更新失败，id不存在";
+            res= "更新失败，id不存在";
         }
         log.info(res);
         return res;
@@ -131,19 +134,21 @@ public class MusicController {
 
     @RequestMapping("/music/delete")
     public String musicDelete(@RequestParam(value = "id", required = false) Long id) {
-        int res = 0;
+        Integer affectedRows=0;
+        String res="";
         try {
-            res = musicService.deleteMusic(id);
+            affectedRows = musicService.deleteMusic(id);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("cannot find the id");
-            return "id不能为空！";
+            res= "id为空 or 查找不到该id";
         }
-        if (res == 1) {
-            log.info("音乐删除成功\n");
+        if (affectedRows == 1) {
+            res="成功";
         } else {
-            log.info("音乐删除失败\n");
+            res="失败 "+res;
         }
-        return res == 1 ? "成功" : "失败";
+        log.info(res);
+        return res;
     }
 }
