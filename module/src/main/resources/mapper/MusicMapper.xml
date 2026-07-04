@@ -122,10 +122,10 @@
           and is_deleted = 0
     </update>
 
-<select id="countTotal"
-        resultType="java.lang.Long">
-    select count(*)
-    from music
-    where is_deleted = 0;
-</select>
+    <select id="countTotal"
+            resultType="java.lang.Long">
+        select count(*)
+        from music
+        where is_deleted = 0;
+    </select>
 </mapper>

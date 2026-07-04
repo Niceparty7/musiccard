@@ -12,20 +12,45 @@ public class MusicService {
     @Resource
     private MusicMapper musicMapper;
 
-    public Music getMusicById(Long id) {
-        return musicMapper.getById(id);
+    public Music getMusicById(Long id) throws Exception {
+        if (id == null) {
+            throw new NullPointerException("id cannot be null!");
+        }
+        Music music = musicMapper.getById(id);
+        if (music == null) {
+            throw new NullPointerException("music is null!");
+        }
+        return music;
     }
 
-    public List<Music> getAllMusicInfo(Integer page, Integer pageSize,String keyword) {
-        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize,keyword);
+    public List<Music> getAllMusicInfo(Integer page, Integer pageSize, String keyword) {
+        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword);
     }
 
     public Long getTotal() {
         return musicMapper.countTotal();
     }
 
-    public Long createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
+//    public Long createMusic(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
+//        int timeStamp = (int) (System.currentTimeMillis() / 1000);
+//        Music music = new Music();
+//        music.setCoverImages(coverImages)
+//                .setMusicName(musicName)
+//                .setSingerName(singerName)
+//                .setMusicDesc(musicDesc)
+//                .setAlbumTitle(albumTitle)
+//                .setReleaseDate(releaseDate)
+//                .setCreateTime(timeStamp)
+//                .setUpdateTime(timeStamp)
+//                .setIsDeleted(0);
+//        musicMapper.insert(music);
+//        return music.getId();
+//    }
+
+    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate)
+            throws Exception {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
+
         Music music = new Music();
         music.setCoverImages(coverImages)
                 .setMusicName(musicName)
@@ -36,27 +61,49 @@ public class MusicService {
                 .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
                 .setIsDeleted(0);
-        musicMapper.insert(music);
-        return music.getId();
+        Long resId = id;
+        if (id != null) {
+            music.setId(id);
+            Integer affectedRows = musicMapper.update(music);
+            if (affectedRows == 0) {
+                throw new Exception("cannot find the id");
+            }
+        } else {
+            if (coverImages == null) {
+                throw new NullPointerException("coverImages cannot be null!");
+            }
+            if (musicName == null) {
+                throw new NullPointerException("musicName cannot be null!");
+            }
+            if (singerName == null) {
+                throw new NullPointerException("singerName cannot be null!");
+            }
+            musicMapper.insert(music);
+            resId = music.getId();
+        }
+        return resId;
     }
 
-    public int updateMusic(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
-        int timeStamp = (int) (System.currentTimeMillis() / 1000);
-        Music music = new Music();
-        music.setId(id)
-                .setCoverImages(coverImages)
-                .setMusicName(musicName)
-                .setSingerName(singerName)
-                .setMusicDesc(musicDesc)
-                .setAlbumTitle(albumTitle)
-                .setReleaseDate(releaseDate)
-                .setCreateTime(timeStamp)
-                .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
-        return musicMapper.update(music);
-    }
+//    public Integer updateMusic(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate) {
+//        int timeStamp = (int) (System.currentTimeMillis() / 1000);
+//        Music music = new Music();
+//        music.setId(id)
+//                .setCoverImages(coverImages)
+//                .setMusicName(musicName)
+//                .setSingerName(singerName)
+//                .setMusicDesc(musicDesc)
+//                .setAlbumTitle(albumTitle)
+//                .setReleaseDate(releaseDate)
+//                .setCreateTime(timeStamp)
+//                .setUpdateTime(timeStamp)
+//                .setIsDeleted(0);
+//        return musicMapper.update(music);
+//    }
 
-    public int deleteMusic(Long id) {
+    public Integer deleteMusic(Long id) throws Exception {
+        if (id == null) {
+            throw new NullPointerException("id cannot be null!");
+        }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         return musicMapper.delete(timeStamp, id);
     }

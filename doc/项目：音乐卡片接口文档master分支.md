@@ -10,7 +10,7 @@
 
 参数：
 
-page:[Int],
+page:[Int]
 
 keyword:[String],(required = false)
 
@@ -62,7 +62,7 @@ id:[Long]
 
 参数：
 
-page:[Int],
+page:[Int]
 
 keyword:[String],(required = false)
 
@@ -174,4 +174,3 @@ CREATE TABLE `music` (
   KEY `idx_singer_name` (`singer_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='音乐表'
 ```
-

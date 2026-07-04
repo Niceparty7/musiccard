@@ -23,7 +23,14 @@ public class MusicController {
 
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam("id") Long id) {
-        Music music = musicService.getMusicById(id);
+        Music music = null;
+        try {
+            music = musicService.getMusicById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("cannot find the id!");
+            return null;
+        }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
@@ -41,7 +48,8 @@ public class MusicController {
                                         @RequestParam(value = "keyword", required = false) String keyword) {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize,keyword.trim());
+        keyword = keyword == null ? keyword : keyword.trim();
+        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");

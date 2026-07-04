@@ -24,7 +24,14 @@ public class MusicController {
 
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam("id") Long id) {
-        Music music = musicService.getMusicById(id);
+        Music music = null;
+        try {
+            music = musicService.getMusicById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("cannot find the id!");
+            return null;
+        }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         Long createTimeStamp = music.getCreateTime() * 1000L;
         Long updateTimeStamp = music.getUpdateTime() * 1000L;
@@ -50,7 +57,8 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Long total = musicService.getTotal();
         Integer pageSize = 10;
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword.trim());
+        keyword = keyword == null ? keyword : keyword.trim();
+        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
@@ -76,19 +84,25 @@ public class MusicController {
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate) {
-        if (albumTitle != null) {
-            albumTitle = albumTitle.trim();
+        albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
+        releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
+        Long id = null;
+        String res;
+        try {
+            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("coverImages, musicName, singerName cannot be null!");
+            return "coverImages, musicName, singerName cannot be null!";
         }
-        if (releaseDate != null) {
-            releaseDate = releaseDate.trim();
-        }
-        Long id = musicService.createMusic(coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
         if (id != null) {
+            res = "插入成功,id为" + id;
             log.info("音乐新增成功,id={}\n", id);
         } else {
+            res = "失败";
             log.info("音乐新增失败\n");
         }
-        return id != null ? "插入成功,id为" + id : "失败";
+        return res;
     }
 
     @RequestMapping("/music/update")
@@ -99,30 +113,32 @@ public class MusicController {
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate) {
-        if (musicName != null) {
-            musicName = musicName.trim();
+        musicName = musicName == null ? musicName : musicName.trim();
+        singerName = singerName == null ? singerName : singerName.trim();
+        albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
+        releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
+        String res = "成功";
+        try {
+            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("cannot find the id");
+            return "更新失败，id不存在";
         }
-        if (singerName != null) {
-            singerName = singerName.trim();
-        }
-        if (albumTitle != null) {
-            albumTitle = albumTitle.trim();
-        }
-        if (releaseDate != null) {
-            releaseDate = releaseDate.trim();
-        }
-        int res = musicService.updateMusic(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
-        if (res == 1) {
-            log.info("音乐更新成功\n");
-        } else {
-            log.info("音乐更新失败\n");
-        }
-        return res == 1 ? "成功" : "失败";
+        log.info(res);
+        return res;
     }
 
     @RequestMapping("/music/delete")
     public String musicDelete(@RequestParam(value = "id") Long id) {
-        int res = musicService.deleteMusic(id);
+        int res = 0;
+        try {
+            res = musicService.deleteMusic(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("cannot find the id");
+            return "cannot find the id";
+        }
         if (res == 1) {
             log.info("音乐删除成功\n");
         } else {

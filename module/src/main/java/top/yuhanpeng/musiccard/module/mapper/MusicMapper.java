@@ -12,11 +12,11 @@ public interface MusicMapper {
 
     List<Music> getAllMusic(@Param("offSet") Integer offSet,@Param("pageSize") Integer pageSize,@Param("keyword") String keyword);
 
-    int update(@Param("music") Music music);
+    Integer update(@Param("music") Music music);
 
     Long insert(@Param("music") Music music);
 
-    int delete(@Param("time") Integer time, @Param("id") Long id);
+    Integer delete(@Param("time") Integer time, @Param("id") Long id);
 
     Long countTotal();
 }
