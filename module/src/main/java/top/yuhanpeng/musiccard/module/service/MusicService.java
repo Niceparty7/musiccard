@@ -18,7 +18,7 @@ public class MusicService {
         }
         Music music = musicMapper.getById(id);
         if (music == null) {
-            throw new NullPointerException("music is null!");
+            throw new RuntimeException("music is null!");
         }
         return music;
     }
@@ -66,17 +66,17 @@ public class MusicService {
             music.setId(id);
             Integer affectedRows = musicMapper.update(music);
             if (affectedRows == 0) {
-                throw new Exception("cannot find the id");
+                throw new RuntimeException("cannot find the id");
             }
         } else {
             if (coverImages == null) {
-                throw new NullPointerException("coverImages cannot be null!");
+                throw new RuntimeException("coverImages cannot be null!");
             }
             if (musicName == null) {
-                throw new NullPointerException("musicName cannot be null!");
+                throw new RuntimeException("musicName cannot be null!");
             }
             if (singerName == null) {
-                throw new NullPointerException("singerName cannot be null!");
+                throw new RuntimeException("singerName cannot be null!");
             }
             musicMapper.insert(music);
             resId = music.getId();
@@ -102,7 +102,7 @@ public class MusicService {
 
     public Integer deleteMusic(Long id) throws Exception {
         if (id == null) {
-            throw new NullPointerException("id cannot be null!");
+            throw new RuntimeException("id cannot be null!");
         }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         return musicMapper.delete(timeStamp, id);
