@@ -23,17 +23,16 @@ public class MusicController {
     private MusicService musicService;
 
     @RequestMapping("/music/info")
-    public MusicInfoVO getMusicInfoById(@RequestParam(value = "id", required = false) Long id) {
+    public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
         Music music = null;
-        Boolean res=true;
+        Boolean res = true;
         try {
             music = musicService.getMusicById(id);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("cannot find the id!");
-            res=false;
+            res = false;
         }
-        if (!res){
+        if (!res) {
             return null;
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
@@ -91,18 +90,17 @@ public class MusicController {
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
-        String res="";
+        String res = "";
         try {
             id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("coverImages, musicName, singerName cannot be null!");
-            res= "coverImages, musicName, singerName等字段不能为空！";
+            res = "coverImages, musicName, singerName等字段不能为空！";
         }
         if (id != null) {
             res = "插入成功,id为" + id;
         } else {
-            res = "失败 "+res;
+            res = "失败 " + res;
         }
         log.info(res);
         return res;
@@ -124,9 +122,8 @@ public class MusicController {
         try {
             musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("cannot find the id");
-            res= "更新失败，id不存在";
+            res = "更新失败，id不存在";
         }
         log.info(res);
         return res;
@@ -134,19 +131,18 @@ public class MusicController {
 
     @RequestMapping("/music/delete")
     public String musicDelete(@RequestParam(value = "id", required = false) Long id) {
-        Integer affectedRows=0;
-        String res="";
+        Integer affectedRows = 0;
+        String res = "";
         try {
             affectedRows = musicService.deleteMusic(id);
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("cannot find the id");
-            res= "id为空 or 查找不到该id";
+            res = "id为空";
         }
         if (affectedRows == 1) {
-            res="成功";
+            res = "成功";
         } else {
-            res="失败 "+res;
+            res = "失败 " + res;
         }
         log.info(res);
         return res;
