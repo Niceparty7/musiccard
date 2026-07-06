@@ -27,7 +27,7 @@ public class MusicController {
         Music music = null;
         Boolean res = true;
         try {
-            music = musicService.getMusicById(id);
+            music = musicService.getById(id);
         } catch (Exception e) {
             log.error("cannot find the id!");
             res = false;
@@ -60,8 +60,8 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        Long total = musicService.getTotal(keyword);
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
+        Long total = musicService.countTotal(keyword);
+        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
@@ -134,7 +134,7 @@ public class MusicController {
         Integer affectedRows = 0;
         String res = "";
         try {
-            affectedRows = musicService.deleteMusic(id);
+            affectedRows = musicService.delete(id);
         } catch (Exception e) {
             log.error("cannot find the id");
             res = "id为空";

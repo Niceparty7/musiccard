@@ -26,7 +26,7 @@ public class MusicController {
         Music music = null;
         Boolean res = true;
         try {
-            music = musicService.getMusicById(id);
+            music = musicService.getById(id);
         } catch (Exception e) {
             log.error("cannot find the id!");
             res = false;
@@ -52,7 +52,7 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
+        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");

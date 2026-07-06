@@ -3,13 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.yuhanpeng.musiccard.module.mapper.MusicMapper">
-    <select id="getById"
-            resultType="top.yuhanpeng.musiccard.module.entity.Music">
-        select *
-        from music
-        where id = #{id}
-          and is_deleted = 0
-    </select>
     <select id="getAllMusic"
             resultType="top.yuhanpeng.musiccard.module.entity.Music">
         select *

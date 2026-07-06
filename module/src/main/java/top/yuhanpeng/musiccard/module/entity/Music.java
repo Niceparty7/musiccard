@@ -14,6 +14,6 @@ public class Music {
     private String albumTitle;
     private String releaseDate;
     private Integer createTime;
-    private Integer updateTime;
+    private Integer updateTime = (int) (System.currentTimeMillis() / 1000);
     private Integer isDeleted;
 }
