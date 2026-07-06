@@ -126,6 +126,9 @@
             resultType="java.lang.Long">
         select count(*)
         from music
-        where is_deleted = 0;
+        where is_deleted = 0
+        <if test="keyword!=null and keyword!='' ">
+            and music_name like concat('%',#{keyword},'%')
+        </if>
     </select>
 </mapper>

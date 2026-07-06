@@ -58,9 +58,9 @@ public class MusicController {
     public MusicListFeedVO getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                         @RequestParam(value = "keyword", required = false) String keyword) {
         List<MusicListVO> musicCardList = new ArrayList<>();
-        Long total = musicService.getTotal();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
+        Long total = musicService.getTotal(keyword);
         List<Music> list = musicService.getAllMusicInfo(page, pageSize, keyword);
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
