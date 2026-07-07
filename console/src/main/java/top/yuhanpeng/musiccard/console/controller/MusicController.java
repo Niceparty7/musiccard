@@ -77,24 +77,33 @@ public class MusicController {
     }
 
     @RequestMapping("/music/create")
-    public String musicCreate(@RequestParam(value = "coverImages", required = false) String coverImages,
-                              @RequestParam(value = "musicName", required = false) String musicName,
-                              @RequestParam(value = "singerName", required = false) String singerName,
+    public String musicCreate(@RequestParam(value = "coverImages") String coverImages,
+                              @RequestParam(value = "musicName") String musicName,
+                              @RequestParam(value = "singerName") String singerName,
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate) {
+        musicName = musicName == null ? musicName : musicName.trim();
+        singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
-        Long id = null;
         String res = "";
+        Music music = new Music();
+        music.setCoverImages(coverImages)
+                .setMusicName(musicName)
+                .setSingerName(singerName)
+                .setMusicDesc(musicDesc)
+                .setAlbumTitle(albumTitle)
+                .setReleaseDate(releaseDate);
+        Boolean success = false;
         try {
-            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
+            success = musicService.save(music);
         } catch (Exception e) {
             log.error("coverImages, musicName, singerName cannot be null!", e);
             res = "coverImages, musicName, singerName等字段不能为空！";
         }
-        if (id != null) {
-            res = "插入成功,id为" + id;
+        if (success) {
+            res = "插入成功,id为" + music.getId();
         } else {
             res = "失败 " + res;
         }
@@ -114,19 +123,33 @@ public class MusicController {
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
-        String res = "成功";
+        Music music = new Music();
+        music.setId(id)
+                .setCoverImages(coverImages)
+                .setMusicName(musicName)
+                .setSingerName(singerName)
+                .setMusicDesc(musicDesc)
+                .setAlbumTitle(albumTitle)
+                .setReleaseDate(releaseDate);
+        Boolean success = false;
+        String res = "";
         try {
-            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
+            success = musicService.updateById(music);
         } catch (Exception e) {
             log.error("cannot find the id", e);
-            res = "更新失败，id不存在";
+            res = "id不存在";
+        }
+        if (success) {
+            res = "成功";
+        } else {
+            res = "失败 " + res;
         }
         log.info(res);
         return res;
     }
 
     @RequestMapping("/music/delete")
-    public String musicDelete(@RequestParam(value = "id", required = false) Long id) {
+    public String musicDelete(@RequestParam(value = "id") Long id) {
         Boolean success = false;
         String res = "";
         try {

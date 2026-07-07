@@ -23,45 +23,7 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
         );
         musicLambdaQueryWrapper.orderByAsc(Music::getId);
         IPage<Music> result = null;
-        try {
-            result = baseMapper.selectPage(musicPage, musicLambdaQueryWrapper);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        result = baseMapper.selectPage(musicPage, musicLambdaQueryWrapper);
         return result;
-    }
-
-    @Override
-    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate)
-            throws Exception {
-        Boolean success;
-        Music music = new Music();
-        music.setCoverImages(coverImages)
-                .setMusicName(musicName)
-                .setSingerName(singerName)
-                .setMusicDesc(musicDesc)
-                .setAlbumTitle(albumTitle)
-                .setReleaseDate(releaseDate);
-        Long resId = null;
-        if (id != null) {
-            if (getById(id) == null) {
-                throw new RuntimeException("cannot find the id!");
-            }
-            music.setId(id);
-            success = updateById(music);
-            if (!success) {
-                throw new RuntimeException("update fail!");
-            }
-        } else {
-            if (coverImages == null || musicName == null || singerName == null) {
-                throw new RuntimeException("coverImages,musicName,singerName cannot be null!");
-            }
-            success = save(music);
-            if (!success) {
-                throw new RuntimeException("create fail!");
-            }
-            resId = music.getId();
-        }
-        return resId;
     }
 }
