@@ -22,8 +22,7 @@ public class MusicServiceImpl extends ServiceImpl<MusicMapper, Music> implements
                 keyword
         );
         musicLambdaQueryWrapper.orderByAsc(Music::getId);
-        IPage<Music> result = null;
-        result = baseMapper.selectPage(musicPage, musicLambdaQueryWrapper);
+        IPage<Music> result = baseMapper.selectPage(musicPage, musicLambdaQueryWrapper);
         return result;
     }
 }
