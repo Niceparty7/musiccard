@@ -26,14 +26,8 @@ public class MusicController {
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
         Music music = null;
-        Boolean res = true;
-        try {
-            music = musicService.getById(id);
-        } catch (Exception e) {
-            log.error("cannot find the id!");
-            res = false;
-        }
-        if (!res) {
+        music = musicService.getById(id);
+        if (music == null) {
             return null;
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
@@ -96,7 +90,7 @@ public class MusicController {
         try {
             id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
         } catch (Exception e) {
-            log.error("coverImages, musicName, singerName cannot be null!");
+            log.error("coverImages, musicName, singerName cannot be null!", e);
             res = "coverImages, musicName, singerName等字段不能为空！";
         }
         if (id != null) {
@@ -124,7 +118,7 @@ public class MusicController {
         try {
             musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
         } catch (Exception e) {
-            log.error("cannot find the id");
+            log.error("cannot find the id", e);
             res = "更新失败，id不存在";
         }
         log.info(res);
@@ -133,15 +127,15 @@ public class MusicController {
 
     @RequestMapping("/music/delete")
     public String musicDelete(@RequestParam(value = "id", required = false) Long id) {
-        Integer affectedRows = 0;
+        Boolean success = false;
         String res = "";
         try {
-            affectedRows = musicService.delete(id);
+            success = musicService.removeById(id);
         } catch (Exception e) {
-            log.error("cannot find the id");
+            log.error("cannot find the id", e);
             res = "id为空";
         }
-        if (affectedRows == 1) {
+        if (success) {
             res = "成功";
         } else {
             res = "失败 " + res;

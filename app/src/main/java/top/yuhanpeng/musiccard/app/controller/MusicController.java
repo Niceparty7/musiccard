@@ -25,14 +25,8 @@ public class MusicController {
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
         Music music = null;
-        Boolean res = true;
-        try {
-            music = musicService.getById(id);
-        } catch (Exception e) {
-            log.error("cannot find the id!");
-            res = false;
-        }
-        if (!res) {
+        music = musicService.getById(id);
+        if (music == null) {
             return null;
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
