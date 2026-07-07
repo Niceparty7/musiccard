@@ -1,5 +1,6 @@
 package top.yuhanpeng.musiccard.app.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +53,8 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
+        IPage<Music> musicPage = musicService.getAllMusic(page, pageSize, keyword);
+        List<Music> list = musicPage.getRecords();
         Boolean isEnd = list.size() < pageSize;
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");

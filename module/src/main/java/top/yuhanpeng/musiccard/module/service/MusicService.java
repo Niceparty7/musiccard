@@ -1,11 +1,13 @@
 package top.yuhanpeng.musiccard.module.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
-
-import java.util.List;
 
 @Service
 public class MusicService {
@@ -16,45 +18,33 @@ public class MusicService {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
-        Music music = musicMapper.getById(id);
+        Music music = musicMapper.selectById(id);
         if (music == null) {
             throw new RuntimeException("music is null!");
         }
         return music;
     }
 
-    public Music extractById(Long id) throws Exception {
-        if (id == null) {
-            throw new RuntimeException("id cannot be null!");
+    public IPage<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
+        IPage<Music> musicPage = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Music> musicLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        musicLambdaQueryWrapper.like(
+                StringUtils.hasText(keyword),
+                Music::getMusicName,
+                keyword
+        );
+        musicLambdaQueryWrapper.orderByAsc(Music::getId);
+        IPage<Music> result = null;
+        try {
+            result = musicMapper.selectPage(musicPage, musicLambdaQueryWrapper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        Music music = musicMapper.extractById(id);
-        if (music == null) {
-            throw new RuntimeException("music is null!");
-        }
-        return music;
-    }
-
-    public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
-        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword);
-    }
-
-    public Long countTotal(String keyword) {
-        return musicMapper.countTotal(keyword);
+        return result;
     }
 
     public Long create(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate)
             throws Exception {
-        int timeStamp = (int) (System.currentTimeMillis() / 1000);
-        Music music = new Music();
-        music.setCoverImages(coverImages)
-                .setMusicName(musicName)
-                .setSingerName(singerName)
-                .setMusicDesc(musicDesc)
-                .setAlbumTitle(albumTitle)
-                .setReleaseDate(releaseDate)
-                .setCreateTime(timeStamp)
-                .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
         if (coverImages == null) {
             throw new RuntimeException("coverImages cannot be null!");
         }
@@ -64,6 +54,13 @@ public class MusicService {
         if (singerName == null) {
             throw new RuntimeException("singerName cannot be null!");
         }
+        Music music = new Music();
+        music.setCoverImages(coverImages)
+                .setMusicName(musicName)
+                .setSingerName(singerName)
+                .setMusicDesc(musicDesc)
+                .setAlbumTitle(albumTitle)
+                .setReleaseDate(releaseDate);
         musicMapper.insert(music);
         Long resId = music.getId();
         return resId;
@@ -74,7 +71,6 @@ public class MusicService {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
-        int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music();
         music.setId(id)
                 .setCoverImages(coverImages)
@@ -82,14 +78,11 @@ public class MusicService {
                 .setSingerName(singerName)
                 .setMusicDesc(musicDesc)
                 .setAlbumTitle(albumTitle)
-                .setReleaseDate(releaseDate)
-                .setCreateTime(timeStamp)
-                .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
-        if (musicMapper.extractById(id) == null) {
+                .setReleaseDate(releaseDate);
+        if (getById(id) == null) {
             throw new RuntimeException("cannot find the id");
         }
-        Long affectedRows = (long) musicMapper.update(music);
+        Long affectedRows = (long) musicMapper.updateById(music);
         return affectedRows;
     }
 
@@ -114,7 +107,6 @@ public class MusicService {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
-        int timeStamp = (int) (System.currentTimeMillis() / 1000);
-        return musicMapper.delete(timeStamp, id);
+        return musicMapper.deleteById(id);
     }
 }
