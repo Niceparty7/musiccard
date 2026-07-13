@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.yuhanpeng.musiccard.module.mapper.MusicMapper">
+    <select id="getMusicWithCategoryById"
+            resultType="top.yuhanpeng.musiccard.module.domain.MusicCategoryDTO">
+        select m.id,
+               cover_images,
+               music_name,
+               singer_name,
+               music_desc,
+               album_title,
+               release_date,
+               m.create_time,
+               m.update_time,
+               type_name,
+               type_image
+        from music m
+                 left join category c
+                           on m.type_id = c.id
+        where m.is_deleted = 0
+          and c.is_deleted = 0
+          and m.id = #{id}
+    </select>
     <select id="getAllMusic"
             resultType="top.yuhanpeng.musiccard.module.entity.Music">
         select *
@@ -10,6 +30,19 @@
             and music_name like concat('%',#{keyword},'%')
         </if>
         order by id
+        limit #{offSet}, #{pageSize}
+    </select>
+    <select id="getAllMusicWithCategory"
+            resultType="top.yuhanpeng.musiccard.module.domain.MusicCategoryDTO">
+        select m.id, cover_images, music_name, singer_name, music_desc, album_title, release_date, type_name,
+        type_image, m.create_time, m.update_time
+        from music m left join category c
+        on m.type_id=c.id
+        where m.is_deleted = 0 and c.is_deleted=0
+        <if test="keyword!=null and keyword!= '' ">
+            and music_name like concat('%',#{keyword},'%')
+        </if>
+        order by m.id
         limit #{offSet}, #{pageSize}
     </select>
 

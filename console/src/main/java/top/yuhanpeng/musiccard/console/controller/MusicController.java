@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.yuhanpeng.musiccard.console.domain.MusicInfoVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListFeedVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListVO;
-import top.yuhanpeng.musiccard.module.entity.Category;
-import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.domain.MusicCategoryDTO;
 import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 
@@ -28,10 +27,10 @@ public class MusicController {
 
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
-        Music music = null;
+        MusicCategoryDTO musicCategoryDTO = null;
         Boolean res = true;
         try {
-            music = musicService.getById(id);
+            musicCategoryDTO = musicService.getMusicWithCategoryById(id);
         } catch (Exception e) {
             log.error("cannot find the id!");
             res = false;
@@ -39,29 +38,23 @@ public class MusicController {
         if (!res) {
             return null;
         }
-        Category category = null;
-        try {
-            category = categoryService.getById((long) music.getTypeId());
-        } catch (Exception e) {
-            log.error("category cannot be null", e);
-        }
-        List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
-        Long createTimeStamp = music.getCreateTime() * 1000L;
-        Long updateTimeStamp = music.getUpdateTime() * 1000L;
+        List<String> coverImagesString = Arrays.stream(musicCategoryDTO.getCoverImages().split("\\$")).toList();
+        Long createTimeStamp = musicCategoryDTO.getCreateTime() * 1000L;
+        Long updateTimeStamp = musicCategoryDTO.getUpdateTime() * 1000L;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = simpleDateFormat.format(createTimeStamp);
         String updateTime = simpleDateFormat.format(updateTimeStamp);
         MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
-                .setMusicName(music.getMusicName())
-                .setSingerName(music.getSingerName())
-                .setAlbumTitle(music.getAlbumTitle())
-                .setReleaseDate(music.getReleaseDate())
-                .setMusicDesc(music.getMusicDesc())
+                .setMusicName(musicCategoryDTO.getMusicName())
+                .setSingerName(musicCategoryDTO.getSingerName())
+                .setAlbumTitle(musicCategoryDTO.getAlbumTitle())
+                .setReleaseDate(musicCategoryDTO.getReleaseDate())
+                .setMusicDesc(musicCategoryDTO.getMusicDesc())
                 .setCreateTime(createTime)
                 .setUpdateTime(updateTime)
-                .setTypeName(category.getTypeName())
-                .setTypeImage(category.getTypeImage());
+                .setTypeName(musicCategoryDTO.getTypeName())
+                .setTypeImage(musicCategoryDTO.getTypeImage());
         log.info(musicInfoVO.toString());
         return musicInfoVO;
     }
@@ -73,22 +66,16 @@ public class MusicController {
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
         Long total = musicService.countTotal(keyword);
-        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
-        Category category = null;
-        for (Music music : list) {
-            String[] coverImages = music.getCoverImages().split("\\$");
-            try {
-                category = categoryService.getById((long) music.getTypeId());
-            } catch (Exception e) {
-                log.error("category cannot be null", e);
-            }
+        List<MusicCategoryDTO> list = musicService.getAllMusicWithCategory(page, pageSize, keyword);
+        for (MusicCategoryDTO musicCategoryDTO : list) {
+            String[] coverImages = musicCategoryDTO.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
-            musicListVO.setId(music.getId())
+            musicListVO.setId(musicCategoryDTO.getId())
                     .setWallImage(coverImages[0])
-                    .setMusicName(music.getMusicName())
-                    .setSingerName(music.getSingerName())
-                    .setMusicDesc(music.getMusicDesc())
-                    .setTypeName(category.getTypeName());
+                    .setMusicName(musicCategoryDTO.getMusicName())
+                    .setSingerName(musicCategoryDTO.getSingerName())
+                    .setMusicDesc(musicCategoryDTO.getMusicDesc())
+                    .setTypeName(musicCategoryDTO.getTypeName());
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();

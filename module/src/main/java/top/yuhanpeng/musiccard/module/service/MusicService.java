@@ -2,6 +2,7 @@ package top.yuhanpeng.musiccard.module.service;
 
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import top.yuhanpeng.musiccard.module.domain.MusicCategoryDTO;
 import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.mapper.CategoryMapper;
@@ -27,6 +28,17 @@ public class MusicService {
         return music;
     }
 
+    public MusicCategoryDTO getMusicWithCategoryById(Long id) throws Exception {
+        if (id == null) {
+            throw new RuntimeException("id cannot be null!");
+        }
+        MusicCategoryDTO musicCategoryDTO = musicMapper.getMusicWithCategoryById(id);
+        if (musicCategoryDTO == null) {
+            throw new RuntimeException("musicCategoryDTO is null!");
+        }
+        return musicCategoryDTO;
+    }
+
     public Music extractById(Long id) throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
@@ -40,6 +52,10 @@ public class MusicService {
 
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
         return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword);
+    }
+
+    public List<MusicCategoryDTO> getAllMusicWithCategory(Integer page, Integer pageSize, String keyword) {
+        return musicMapper.getAllMusicWithCategory((page - 1) * pageSize, pageSize, keyword);
     }
 
     public Long countTotal(String keyword) {
