@@ -64,7 +64,7 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
+        List<Music> list = musicService.getAllMusic2(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
         Category category = null;
         for (Music music : list) {

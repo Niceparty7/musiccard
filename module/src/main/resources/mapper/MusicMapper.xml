@@ -13,6 +13,30 @@
         limit #{offSet}, #{pageSize}
     </select>
 
+    <select id="getAllMusic2"
+            resultType="top.yuhanpeng.musiccard.module.entity.Music">
+        select *
+        from music
+        where is_deleted = 0
+        <if test="keyword!=null and keyword!= '' ">
+            and ( music_name like concat('%',#{keyword},'%') or type_id in (${subquery}) )
+        </if>
+        order by id
+        limit #{offSet}, #{pageSize}
+    </select>
+
+    <select id="getAllMusicListDTO"
+            resultType="top.yuhanpeng.musiccard.module.domain.MusicListDTO">
+        select m.id, cover_images, music_name, singer_name, music_desc, type_name
+        from music m left join category c on m.type_id=c.id
+        where m.is_deleted = 0
+        <if test="keyword!=null and keyword!= '' ">
+            and (music_name like concat('%',#{keyword},'%') or type_name like concat('%',#{keyword},'%'))
+        </if>
+        order by id
+        limit #{offSet}, #{pageSize}
+    </select>
+
     <insert id="insert"
             useGeneratedKeys="true"
             keyProperty="id">
@@ -82,6 +106,7 @@
             #{music.updateTime}
         </trim>
     </insert>
+
     <update id="update">
         update music
         <set>

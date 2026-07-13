@@ -2,9 +2,8 @@ package top.yuhanpeng.musiccard.module.service;
 
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import top.yuhanpeng.musiccard.module.entity.Category;
+import top.yuhanpeng.musiccard.module.domain.MusicListDTO;
 import top.yuhanpeng.musiccard.module.entity.Music;
-import top.yuhanpeng.musiccard.module.mapper.CategoryMapper;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
 import java.util.List;
@@ -13,8 +12,6 @@ import java.util.List;
 public class MusicService {
     @Resource
     private MusicMapper musicMapper;
-    @Resource
-    private CategoryMapper categoryMapper;
 
     public Music getById(Long id) throws Exception {
         if (id == null) {
@@ -40,6 +37,24 @@ public class MusicService {
 
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
         return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword);
+    }
+
+    public List<Music> getAllMusic2(Integer page, Integer pageSize, String keyword) {
+        List<Long> ids = musicMapper.getIds(keyword);
+        StringBuffer stringBuffer = new StringBuffer("");
+        for (int i = 0; i < ids.size(); i++) {
+            if (i == ids.size() - 1) {
+                stringBuffer.append(ids.get(i) + "");
+                break;
+            }
+            stringBuffer.append(ids.get(i) + "").append(",");
+        }
+        String subquery = stringBuffer.toString();
+        return musicMapper.getAllMusic2((page - 1) * pageSize, pageSize, keyword, subquery);
+    }
+
+    public List<MusicListDTO> getAllMusicListDTO(Integer page, Integer pageSize, String keyword) {
+        return musicMapper.getAllMusicListDTO((page - 1) * pageSize, pageSize, keyword);
     }
 
     public Long countTotal(String keyword) {
@@ -100,12 +115,6 @@ public class MusicService {
 
     public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
-        if (typeId != null) {
-            Category category = categoryMapper.getById((long) typeId);
-            if (category == null) {//校验分类id是否存在
-                throw new RuntimeException("cannnot find the typeId!");
-            }
-        }
         Long res;
         if (id != null) {
             res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
@@ -127,5 +136,9 @@ public class MusicService {
         }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         return musicMapper.delete(timeStamp, id);
+    }
+
+    public Long getByTypeId(Long typeId) {
+        return musicMapper.getByTypeId(typeId);
     }
 }

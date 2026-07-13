@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.yuhanpeng.musiccard.console.domain.MusicInfoVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListFeedVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListVO;
+import top.yuhanpeng.musiccard.module.domain.MusicListDTO;
 import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.service.CategoryService;
@@ -73,22 +74,16 @@ public class MusicController {
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
         Long total = musicService.countTotal(keyword);
-        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
-        Category category = null;
-        for (Music music : list) {
-            String[] coverImages = music.getCoverImages().split("\\$");
-            try {
-                category = categoryService.getById((long) music.getTypeId());
-            } catch (Exception e) {
-                log.error("category cannot be null", e);
-            }
+        List<MusicListDTO> list = musicService.getAllMusicListDTO(page, pageSize, keyword);
+        for (MusicListDTO musicListDTO : list) {
+            String[] coverImages = musicListDTO.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
-            musicListVO.setId(music.getId())
+            musicListVO.setId(musicListDTO.getId())
                     .setWallImage(coverImages[0])
-                    .setMusicName(music.getMusicName())
-                    .setSingerName(music.getSingerName())
-                    .setMusicDesc(music.getMusicDesc())
-                    .setTypeName(category.getTypeName());
+                    .setMusicName(musicListDTO.getMusicName())
+                    .setSingerName(musicListDTO.getSingerName())
+                    .setMusicDesc(musicListDTO.getMusicDesc())
+                    .setTypeName(musicListDTO.getTypeName());
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
@@ -107,6 +102,16 @@ public class MusicController {
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate,
                               @RequestParam(value = "typeId", required = false) Integer typeId) {
+        Category category = null;
+        try {
+            category = categoryService.getById((long) typeId);
+        } catch (Exception e) {
+            log.error("cannnot find the typeId", e);
+        }
+        if (category == null) {
+            log.error("typeId不存在");
+            return "typeId不存在";
+        }
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
@@ -115,7 +120,7 @@ public class MusicController {
             id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId);
         } catch (Exception e) {
             log.error("coverImages, musicName, singerName cannot be null!");
-            res = "coverImages, musicName, singerName等字段为空或typeId不存在！";
+            res = "coverImages, musicName, singerName等字段不能为空";
         }
         if (id != null) {
             res = "插入成功,id为" + id;
@@ -135,6 +140,16 @@ public class MusicController {
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate,
                               @RequestParam(value = "typeId", required = false) Integer typeId) {
+        Category category = null;
+        try {
+            category = categoryService.getById((long) typeId);
+        } catch (Exception e) {
+            log.error("cannnot find the typeId", e);
+        }
+        if (category == null) {
+            log.error("typeId不存在");
+            return "typeId不存在";
+        }
         musicName = musicName == null ? musicName : musicName.trim();
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
@@ -144,7 +159,7 @@ public class MusicController {
             musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
         } catch (Exception e) {
             log.error("cannot find the id");
-            res = "更新失败，id不存在或typeId不存在";
+            res = "更新失败，id不存在";
         }
         log.info(res);
         return res;

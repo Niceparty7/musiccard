@@ -10,6 +10,7 @@ import top.yuhanpeng.musiccard.console.domain.CategoryListFeedVO;
 import top.yuhanpeng.musiccard.console.domain.CategoryListVO;
 import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.service.CategoryService;
+import top.yuhanpeng.musiccard.module.service.MusicService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,8 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private MusicService musicService;
 
     @RequestMapping("/category/list")
     public CategoryListFeedVO getCategoryList() {
@@ -99,12 +102,17 @@ public class CategoryController {
 
     @RequestMapping("/category/delete")
     public String categoryDelete(@RequestParam(value = "id") Long id) {
+        Long countMusicNum = musicService.getByTypeId(id);
+        if (countMusicNum > 0) {
+            log.error("删除失败，该分类下仍有音乐，无法删除");
+            return "删除失败，该分类下仍有音乐，无法删除";
+        }
         Integer affectedRows = 0;
         String res = "";
         try {
             affectedRows = categoryService.delete(id);
         } catch (Exception e) {
-            res = "无法找到id或者该分类下仍有音乐，无法删除";
+            res = "无法找到该id";
             log.error("cannot find the id", e);
         }
         if (affectedRows != 0) {

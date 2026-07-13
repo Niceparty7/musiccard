@@ -4,7 +4,6 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.mapper.CategoryMapper;
-import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
 import java.util.List;
 
@@ -17,9 +16,6 @@ import java.util.List;
 public class CategoryService {
     @Resource
     private CategoryMapper categoryMapper;
-    @Resource
-    private MusicMapper musicMapper;
-
     public Category getById(Long id) throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
@@ -105,10 +101,6 @@ public class CategoryService {
     public Integer delete(Long id) throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
-        }
-        Long countMusicNum = musicMapper.getByTypeId(id);
-        if (countMusicNum != 0) {
-            throw new RuntimeException("there is still music,so this category cannot be deleted");
         }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         return categoryMapper.delete(timeStamp, id);
