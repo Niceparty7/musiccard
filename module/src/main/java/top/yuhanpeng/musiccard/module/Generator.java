@@ -42,7 +42,7 @@ public class Generator {
                 })
 
                 .strategyConfig(builder -> {
-                    builder.addInclude("music")
+                    builder.addInclude("category")
                             .entityBuilder()
                             .enableLombok()
                             .logicDeleteColumnName("is_deleted")

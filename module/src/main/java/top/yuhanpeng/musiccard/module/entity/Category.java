@@ -5,16 +5,12 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class Music {
+public class Category {
     private Long id;
-    private String coverImages;
-    private String musicName;
-    private String singerName;
-    private String musicDesc;
-    private String albumTitle;
-    private String releaseDate;
+    private String typeName;
+    private String typeImage;
+    private String typeDesc;
     private Integer createTime;
     private Integer updateTime = (int) (System.currentTimeMillis() / 1000);
     private Integer isDeleted;
-    private Integer typeId;
 }

@@ -14,4 +14,5 @@ public class MusicListVO {
     private String musicName;
     private String singerName;
     private String musicDesc;
+    private String typeName;
 }

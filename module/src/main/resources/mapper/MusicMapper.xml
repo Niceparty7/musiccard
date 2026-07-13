@@ -44,6 +44,9 @@
             <if test="music.isDeleted!=null">
                 is_deleted,
             </if>
+            <if test="music.typeId!=null">
+                type_id,
+            </if>
             update_time
         </trim>
         <trim prefix="values("
@@ -73,6 +76,9 @@
             <if test="music.isDeleted!=null">
                 #{music.isDeleted},
             </if>
+            <if test="music.typeId!=null">
+                #{music.typeId},
+            </if>
             #{music.updateTime}
         </trim>
     </insert>
@@ -99,6 +105,9 @@
             </if>
             <if test="music.isDeleted!=null">
                 is_deleted=#{music.isDeleted},
+            </if>
+            <if test="music.typeId!=null">
+                type_id=#{music.typeId},
             </if>
             update_time=#{music.updateTime}
         </set>

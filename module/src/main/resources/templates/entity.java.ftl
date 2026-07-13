@@ -10,5 +10,4 @@ public class ${entity} {
 <#list table.fields as field>
     private ${field.propertyType} ${field.propertyName};
 </#list>
-
 }

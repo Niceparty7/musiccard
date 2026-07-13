@@ -42,7 +42,7 @@ public class MusicService {
         return musicMapper.countTotal(keyword);
     }
 
-    public Long create(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate)
+    public Long create(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music();
@@ -54,7 +54,8 @@ public class MusicService {
                 .setReleaseDate(releaseDate)
                 .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
+                .setIsDeleted(0)
+                .setTypeId(typeId);
         if (coverImages == null) {
             throw new RuntimeException("coverImages cannot be null!");
         }
@@ -69,7 +70,7 @@ public class MusicService {
         return resId;
     }
 
-    public Long update(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate)
+    public Long update(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
@@ -83,26 +84,26 @@ public class MusicService {
                 .setMusicDesc(musicDesc)
                 .setAlbumTitle(albumTitle)
                 .setReleaseDate(releaseDate)
-                .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
-        if (musicMapper.extractById(id) == null) {
+                .setIsDeleted(0)
+                .setTypeId(typeId);
+        if (extractById(id) == null) {
             throw new RuntimeException("cannot find the id");
         }
         Long affectedRows = (long) musicMapper.update(music);
         return affectedRows;
     }
 
-    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate)
+    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
         Long res;
         if (id != null) {
-            res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
+            res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
             if (res == 0) {
                 throw new RuntimeException("update fail!");
             }
         } else {
-            res = create(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
+            res = create(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
             if (res == null) {
                 throw new RuntimeException("create fail!");
             }

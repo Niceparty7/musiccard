@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <#assign obj = entity?uncap_first>
-
 <mapper namespace="${package.Mapper}.${entity}Mapper">
-
     <select id="getAll${entity}"
             resultType="${package.Entity}.${entity}">
         select *
@@ -78,5 +73,4 @@
             and music_name like concat('%', <#noparse>#{keyword}</#noparse>, '%')
         </if>
     </select>
-
 </mapper>

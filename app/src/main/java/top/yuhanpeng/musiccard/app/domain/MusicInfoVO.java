@@ -17,4 +17,6 @@ public class MusicInfoVO {
     private String albumTitle;
     private String releaseDate;
     private String musicDesc;
+    private String typeName;
+    private String typeImage;
 }

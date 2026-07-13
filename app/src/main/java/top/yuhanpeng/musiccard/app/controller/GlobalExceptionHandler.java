@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public String handler(Exception e) {
-        log.error("发现全局异常");
+        log.error("发现全局异常", e);
         return "网络繁忙";
     }
 }

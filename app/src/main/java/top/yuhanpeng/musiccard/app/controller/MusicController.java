@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import top.yuhanpeng.musiccard.app.domain.MusicInfoVO;
 import top.yuhanpeng.musiccard.app.domain.MusicListFeedVO;
 import top.yuhanpeng.musiccard.app.domain.MusicListVO;
+import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 
 import java.util.ArrayList;
@@ -20,6 +22,8 @@ import java.util.List;
 public class MusicController {
     @Autowired
     private MusicService musicService;
+    @Autowired
+    private CategoryService categoryService;
 
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
@@ -34,6 +38,12 @@ public class MusicController {
         if (!res) {
             return null;
         }
+        Category category = null;
+        try {
+            category = categoryService.getById((long) music.getTypeId());
+        } catch (Exception e) {
+            log.error("category cannot be null", e);
+        }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
@@ -41,7 +51,9 @@ public class MusicController {
                 .setSingerName(music.getSingerName())
                 .setAlbumTitle(music.getAlbumTitle())
                 .setReleaseDate(music.getReleaseDate())
-                .setMusicDesc(music.getMusicDesc());
+                .setMusicDesc(music.getMusicDesc())
+                .setTypeName(category.getTypeName())
+                .setTypeImage(category.getTypeImage());
         log.info(musicInfoVO.toString());
         return musicInfoVO;
     }
@@ -54,14 +66,21 @@ public class MusicController {
         keyword = keyword == null ? keyword : keyword.trim();
         List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
+        Category category = null;
         for (Music music : list) {
+            try {
+                category = categoryService.getById((long) music.getTypeId());
+            } catch (Exception e) {
+                log.error("category cannot be null", e);
+            }
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
             musicListVO.setId(music.getId())
                     .setWallImage(coverImages[0])
                     .setMusicName(music.getMusicName())
                     .setSingerName(music.getSingerName())
-                    .setMusicDesc(music.getMusicDesc());
+                    .setMusicDesc(music.getMusicDesc())
+                    .setTypeName(category.getTypeName());
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();

@@ -19,4 +19,6 @@ public class MusicInfoVO {
     private String musicDesc;
     private String createTime;
     private String updateTime;
+    private String typeName;
+    private String typeImage;
 }

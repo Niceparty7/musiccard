@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import top.yuhanpeng.musiccard.console.domain.MusicInfoVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListFeedVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListVO;
+import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +23,8 @@ import java.util.List;
 public class MusicController {
     @Autowired
     private MusicService musicService;
+    @Autowired
+    private CategoryService categoryService;
 
     @RequestMapping("/music/info")
     public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
@@ -34,6 +38,12 @@ public class MusicController {
         }
         if (!res) {
             return null;
+        }
+        Category category = null;
+        try {
+            category = categoryService.getById((long) music.getTypeId());
+        } catch (Exception e) {
+            log.error("category cannot be null", e);
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         Long createTimeStamp = music.getCreateTime() * 1000L;
@@ -49,7 +59,9 @@ public class MusicController {
                 .setReleaseDate(music.getReleaseDate())
                 .setMusicDesc(music.getMusicDesc())
                 .setCreateTime(createTime)
-                .setUpdateTime(updateTime);
+                .setUpdateTime(updateTime)
+                .setTypeName(category.getTypeName())
+                .setTypeImage(category.getTypeImage());
         log.info(musicInfoVO.toString());
         return musicInfoVO;
     }
@@ -62,14 +74,21 @@ public class MusicController {
         keyword = keyword == null ? keyword : keyword.trim();
         Long total = musicService.countTotal(keyword);
         List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
+        Category category = null;
         for (Music music : list) {
             String[] coverImages = music.getCoverImages().split("\\$");
+            try {
+                category = categoryService.getById((long) music.getTypeId());
+            } catch (Exception e) {
+                log.error("category cannot be null", e);
+            }
             MusicListVO musicListVO = new MusicListVO();
             musicListVO.setId(music.getId())
                     .setWallImage(coverImages[0])
                     .setMusicName(music.getMusicName())
                     .setSingerName(music.getSingerName())
-                    .setMusicDesc(music.getMusicDesc());
+                    .setMusicDesc(music.getMusicDesc())
+                    .setTypeName(category.getTypeName());
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
@@ -86,13 +105,14 @@ public class MusicController {
                               @RequestParam(value = "singerName", required = false) String singerName,
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
-                              @RequestParam(value = "releaseDate", required = false) String releaseDate) {
+                              @RequestParam(value = "releaseDate", required = false) String releaseDate,
+                              @RequestParam(value = "typeId", required = false) Integer typeId) {
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
         String res = "";
         try {
-            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate);
+            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId);
         } catch (Exception e) {
             log.error("coverImages, musicName, singerName cannot be null!");
             res = "coverImages, musicName, singerName等字段不能为空！";
@@ -113,14 +133,15 @@ public class MusicController {
                               @RequestParam(value = "singerName", required = false) String singerName,
                               @RequestParam(value = "musicDesc", required = false) String musicDesc,
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
-                              @RequestParam(value = "releaseDate", required = false) String releaseDate) {
+                              @RequestParam(value = "releaseDate", required = false) String releaseDate,
+                              @RequestParam(value = "typeId", required = false) Integer typeId) {
         musicName = musicName == null ? musicName : musicName.trim();
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         String res = "成功";
         try {
-            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate);
+            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
         } catch (Exception e) {
             log.error("cannot find the id");
             res = "更新失败，id不存在";
