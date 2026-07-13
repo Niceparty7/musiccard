@@ -20,6 +20,7 @@ public interface CategoryMapper {
     @Select("select * from category where id = #{id}")
     Category extractById(@Param("id") Long id);
 
+    @Select("select * from category where is_deleted = 0")
     List<Category> getAllCategory();
 
     Integer update(@Param("category") Category category);

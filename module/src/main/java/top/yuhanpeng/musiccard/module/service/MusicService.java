@@ -2,7 +2,9 @@ package top.yuhanpeng.musiccard.module.service;
 
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.mapper.CategoryMapper;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.List;
 public class MusicService {
     @Resource
     private MusicMapper musicMapper;
+    @Resource
+    private CategoryMapper categoryMapper;
 
     public Music getById(Long id) throws Exception {
         if (id == null) {
@@ -96,6 +100,12 @@ public class MusicService {
 
     public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
+        if (typeId != null) {
+            Category category = categoryMapper.getById((long) typeId);
+            if (category == null) {//校验分类id是否存在
+                throw new RuntimeException("cannnot find the typeId!");
+            }
+        }
         Long res;
         if (id != null) {
             res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);

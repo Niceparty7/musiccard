@@ -24,4 +24,7 @@ public interface MusicMapper {
     Integer delete(@Param("time") Integer time, @Param("id") Long id);
 
     Long countTotal(@Param("keyword") String keyword);
+
+    @Select("select count(*) from music where type_id=#{typeId} and is_deleted=0")
+    Long getByTypeId(@Param("typeId") Long typeId);
 }

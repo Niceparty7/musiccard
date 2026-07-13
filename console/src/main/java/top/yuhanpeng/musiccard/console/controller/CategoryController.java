@@ -104,7 +104,7 @@ public class CategoryController {
         try {
             affectedRows = categoryService.delete(id);
         } catch (Exception e) {
-            res = "id为空";
+            res = "无法找到id或者该分类下仍有音乐，无法删除";
             log.error("cannot find the id", e);
         }
         if (affectedRows != 0) {
