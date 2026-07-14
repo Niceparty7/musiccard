@@ -16,9 +16,7 @@ public interface MusicMapper {
     @Select("select * from music where id=#{id}")
     Music extractById(@Param("id") Long id);
 
-    List<Music> getAllMusic(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword);
-
-    List<Music> getAllMusic2(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword, @Param("subquery") String subquery);
+    List<Music> getAllMusic(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword, @Param("subquery") String subquery);
 
     List<MusicListDTO> getAllMusicListDTO(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword);
 

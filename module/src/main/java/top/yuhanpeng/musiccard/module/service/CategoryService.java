@@ -16,6 +16,7 @@ import java.util.List;
 public class CategoryService {
     @Resource
     private CategoryMapper categoryMapper;
+
     public Category getById(Long id) throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
@@ -43,6 +44,12 @@ public class CategoryService {
     }
 
     public Long create(String typeName, String typeImage, String typeDesc) throws Exception {
+        if (typeName == null) {
+            throw new RuntimeException("typeName cannot be null!");
+        }
+        if (typeImage == null) {
+            throw new RuntimeException("typeImage cannot be null!");
+        }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Category category = new Category()
                 .setTypeName(typeName)
@@ -51,15 +58,6 @@ public class CategoryService {
                 .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
                 .setIsDeleted(0);
-        if (typeName == null) {
-            throw new RuntimeException("typeName cannot be null!");
-        }
-        if (typeImage == null) {
-            throw new RuntimeException("typeImage cannot be null!");
-        }
-        if (typeDesc == null) {
-            throw new RuntimeException("typeDesc cannot be null!");
-        }
         categoryMapper.insert(category);
         return category.getId();
     }

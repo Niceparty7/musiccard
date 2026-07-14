@@ -54,6 +54,10 @@ public class CategoryController {
         } catch (Exception e) {
             log.error("category cannot be null", e);
         }
+        if (category==null){
+            log.info("id不存在");
+            return null;
+        }
         CategoryInfoVO categoryInfoVO = new CategoryInfoVO();
         categoryInfoVO.setTypeName(category.getTypeName())
                 .setTypeImage(category.getTypeImage())
@@ -62,9 +66,9 @@ public class CategoryController {
     }
 
     @RequestMapping("/category/create")
-    public String categoryCreate(@RequestParam(value = "typeName") String typeName,
-                                 @RequestParam(value = "typeImage") String typeImage,
-                                 @RequestParam(value = "typeDesc", required = false) String typeDesc) {
+    public String categoryCreate(@RequestParam(value = "typeName", required = false) String typeName,
+                                 @RequestParam(value = "typeImage", required = false) String typeImage,
+                                 @RequestParam(value = "typeDesc", defaultValue = "暂无描述") String typeDesc) {
         Long id = null;
         String res = "";
         typeName = typeName == null ? typeName : typeName.trim();

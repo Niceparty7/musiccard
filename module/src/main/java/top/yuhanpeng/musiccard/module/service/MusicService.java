@@ -34,12 +34,7 @@ public class MusicService {
         }
         return music;
     }
-
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
-        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword);
-    }
-
-    public List<Music> getAllMusic2(Integer page, Integer pageSize, String keyword) {
         List<Long> ids = musicMapper.getIds(keyword);
         StringBuffer stringBuffer = new StringBuffer("");
         for (int i = 0; i < ids.size(); i++) {
@@ -50,7 +45,7 @@ public class MusicService {
             stringBuffer.append(ids.get(i) + "").append(",");
         }
         String subquery = stringBuffer.toString();
-        return musicMapper.getAllMusic2((page - 1) * pageSize, pageSize, keyword, subquery);
+        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery);
     }
 
     public List<MusicListDTO> getAllMusicListDTO(Integer page, Integer pageSize, String keyword) {

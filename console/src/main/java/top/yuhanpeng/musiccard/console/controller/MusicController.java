@@ -46,6 +46,9 @@ public class MusicController {
         } catch (Exception e) {
             log.error("category cannot be null", e);
         }
+        if (category == null) {
+            return null;
+        }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         Long createTimeStamp = music.getCreateTime() * 1000L;
         Long updateTimeStamp = music.getUpdateTime() * 1000L;
@@ -102,15 +105,17 @@ public class MusicController {
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate,
                               @RequestParam(value = "typeId", required = false) Integer typeId) {
-        Category category = null;
-        try {
-            category = categoryService.getById((long) typeId);
-        } catch (Exception e) {
-            log.error("cannnot find the typeId", e);
-        }
-        if (category == null) {
-            log.error("typeId不存在");
-            return "typeId不存在";
+        if (typeId != null) {
+            Category category = null;
+            try {
+                category = categoryService.getById((long) typeId);
+            } catch (Exception e) {
+                log.error("cannnot find the typeId", e);
+            }
+            if (category == null) {
+                log.error("typeId不存在");
+                return "typeId不存在";
+            }
         }
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
@@ -140,15 +145,17 @@ public class MusicController {
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate,
                               @RequestParam(value = "typeId", required = false) Integer typeId) {
-        Category category = null;
-        try {
-            category = categoryService.getById((long) typeId);
-        } catch (Exception e) {
-            log.error("cannnot find the typeId", e);
-        }
-        if (category == null) {
-            log.error("typeId不存在");
-            return "typeId不存在";
+        if (typeId != null) {
+            Category category = null;
+            try {
+                category = categoryService.getById((long) typeId);
+            } catch (Exception e) {
+                log.error("cannnot find the typeId", e);
+            }
+            if (category == null) {
+                log.error("typeId不存在");
+                return "typeId不存在";
+            }
         }
         musicName = musicName == null ? musicName : musicName.trim();
         singerName = singerName == null ? singerName : singerName.trim();

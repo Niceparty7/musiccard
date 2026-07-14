@@ -44,6 +44,9 @@ public class MusicController {
         } catch (Exception e) {
             log.error("category cannot be null", e);
         }
+        if (category == null) {
+            return null;
+        }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
         MusicInfoVO musicInfoVO = new MusicInfoVO();
         musicInfoVO.setCoverImages(coverImagesString)
@@ -64,7 +67,7 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = musicService.getAllMusic2(page, pageSize, keyword);
+        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
         Category category = null;
         for (Music music : list) {
@@ -72,6 +75,10 @@ public class MusicController {
                 category = categoryService.getById((long) music.getTypeId());
             } catch (Exception e) {
                 log.error("category cannot be null", e);
+            }
+            //该分类不存在，不展示当前音乐
+            if (category == null) {
+                continue;
             }
             String[] coverImages = music.getCoverImages().split("\\$");
             MusicListVO musicListVO = new MusicListVO();
