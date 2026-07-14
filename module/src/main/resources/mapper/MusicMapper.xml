@@ -138,10 +138,10 @@
     <select id="countTotal"
             resultType="java.lang.Long">
         select count(*)
-        from music
-        where is_deleted = 0
+        from music m left join category c on m.type_id=c.id
+        where m.is_deleted = 0 and c.is_deleted=0
         <if test="keyword!=null and keyword!='' ">
-            and music_name like concat('%',#{keyword},'%')
+            and ( music_name like concat('%',#{keyword},'%') or type_name like concat('%',#{keyword},'%') )
         </if>
     </select>
 </mapper>

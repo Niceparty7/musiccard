@@ -3,6 +3,7 @@ package top.yuhanpeng.musiccard.module.service;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import top.yuhanpeng.musiccard.module.domain.MusicListDTO;
+import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
@@ -12,6 +13,8 @@ import java.util.List;
 public class MusicService {
     @Resource
     private MusicMapper musicMapper;
+    @Resource
+    private CategoryService categoryService;
 
     public Music getById(Long id) throws Exception {
         if (id == null) {
@@ -34,6 +37,7 @@ public class MusicService {
         }
         return music;
     }
+
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
         List<Long> ids = musicMapper.getIds(keyword);
         StringBuffer stringBuffer = new StringBuffer("");
@@ -111,6 +115,12 @@ public class MusicService {
     public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
         Long res;
+        if (typeId != null) {
+            Category category = categoryService.getById((long) typeId);
+            if (category == null) {
+                throw new RuntimeException("cannot find the typeId");
+            }
+        }
         if (id != null) {
             res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
             if (res == 0) {

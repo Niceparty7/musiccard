@@ -105,18 +105,6 @@ public class MusicController {
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate,
                               @RequestParam(value = "typeId", required = false) Integer typeId) {
-        if (typeId != null) {
-            Category category = null;
-            try {
-                category = categoryService.getById((long) typeId);
-            } catch (Exception e) {
-                log.error("cannnot find the typeId", e);
-            }
-            if (category == null) {
-                log.error("typeId不存在");
-                return "typeId不存在";
-            }
-        }
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
@@ -125,7 +113,7 @@ public class MusicController {
             id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId);
         } catch (Exception e) {
             log.error("coverImages, musicName, singerName cannot be null!");
-            res = "coverImages, musicName, singerName等字段不能为空";
+            res = "coverImages, musicName, singerName等字段为空或typeId不存在";
         }
         if (id != null) {
             res = "插入成功,id为" + id;
@@ -145,18 +133,6 @@ public class MusicController {
                               @RequestParam(value = "albumTitle", required = false) String albumTitle,
                               @RequestParam(value = "releaseDate", required = false) String releaseDate,
                               @RequestParam(value = "typeId", required = false) Integer typeId) {
-        if (typeId != null) {
-            Category category = null;
-            try {
-                category = categoryService.getById((long) typeId);
-            } catch (Exception e) {
-                log.error("cannnot find the typeId", e);
-            }
-            if (category == null) {
-                log.error("typeId不存在");
-                return "typeId不存在";
-            }
-        }
         musicName = musicName == null ? musicName : musicName.trim();
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
@@ -166,7 +142,7 @@ public class MusicController {
             musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
         } catch (Exception e) {
             log.error("cannot find the id");
-            res = "更新失败，id不存在";
+            res = "更新失败，id不存在或typeId不存在";
         }
         log.info(res);
         return res;
