@@ -55,8 +55,8 @@ public class MusicController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = simpleDateFormat.format(createTimeStamp);
         String updateTime = simpleDateFormat.format(updateTimeStamp);
-        MusicInfoVO musicInfoVO = new MusicInfoVO();
-        musicInfoVO.setCoverImages(coverImagesString)
+        MusicInfoVO musicInfoVO = new MusicInfoVO()
+                .setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
                 .setSingerName(music.getSingerName())
                 .setAlbumTitle(music.getAlbumTitle())
@@ -80,8 +80,8 @@ public class MusicController {
         List<MusicListDTO> list = musicService.getAllMusicListDTO(page, pageSize, keyword);
         for (MusicListDTO musicListDTO : list) {
             String[] coverImages = musicListDTO.getCoverImages().split("\\$");
-            MusicListVO musicListVO = new MusicListVO();
-            musicListVO.setId(musicListDTO.getId())
+            MusicListVO musicListVO = new MusicListVO()
+                    .setId(musicListDTO.getId())
                     .setWallImage(coverImages[0])
                     .setMusicName(musicListDTO.getMusicName())
                     .setSingerName(musicListDTO.getSingerName())
@@ -89,8 +89,8 @@ public class MusicController {
                     .setTypeName(musicListDTO.getTypeName());
             musicCardList.add(musicListVO);
         }
-        MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
-        musicListFeedVO.setList(musicCardList)
+        MusicListFeedVO musicListFeedVO = new MusicListFeedVO()
+                .setList(musicCardList)
                 .setTotal(total)
                 .setPageSize(pageSize);
         log.info(musicListFeedVO.toString());

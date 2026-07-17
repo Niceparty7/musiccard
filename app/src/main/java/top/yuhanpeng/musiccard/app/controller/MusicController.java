@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 import top.yuhanpeng.musiccard.app.domain.MusicInfoVO;
 import top.yuhanpeng.musiccard.app.domain.MusicListFeedVO;
 import top.yuhanpeng.musiccard.app.domain.MusicListVO;
+import top.yuhanpeng.musiccard.app.domain.MusicListWallImageVO;
 import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
+import top.yuhanpeng.musiccard.module.utils.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +50,8 @@ public class MusicController {
             return null;
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
-        MusicInfoVO musicInfoVO = new MusicInfoVO();
-        musicInfoVO.setCoverImages(coverImagesString)
+        MusicInfoVO musicInfoVO = new MusicInfoVO()
+                .setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
                 .setSingerName(music.getSingerName())
                 .setAlbumTitle(music.getAlbumTitle())
@@ -81,17 +83,27 @@ public class MusicController {
                 continue;
             }
             String[] coverImages = music.getCoverImages().split("\\$");
-            MusicListVO musicListVO = new MusicListVO();
-            musicListVO.setId(music.getId())
-                    .setWallImage(coverImages[0])
+            String wallImageUrl = coverImages[0];
+            Float ar = (float) 0;
+            try {
+                ar = ImageUtils.getWallImageAR(wallImageUrl);
+            } catch (Exception e) {
+                log.error("cannot get the ar", e);
+            }
+            MusicListWallImageVO musicListWallImageVO = new MusicListWallImageVO()
+                    .setUrl(wallImageUrl)
+                    .setAr(ar);
+            MusicListVO musicListVO = new MusicListVO()
+                    .setId(music.getId())
+                    .setWallImage(musicListWallImageVO)
                     .setMusicName(music.getMusicName())
                     .setSingerName(music.getSingerName())
                     .setMusicDesc(music.getMusicDesc())
                     .setTypeName(category.getTypeName());
             musicCardList.add(musicListVO);
         }
-        MusicListFeedVO musicListFeedVO = new MusicListFeedVO();
-        musicListFeedVO.setList(musicCardList)
+        MusicListFeedVO musicListFeedVO = new MusicListFeedVO()
+                .setList(musicCardList)
                 .setIsEnd(isEnd);
         log.info(musicListFeedVO.toString());
         return musicListFeedVO;

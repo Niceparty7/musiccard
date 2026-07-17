@@ -26,20 +26,19 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-
     @RequestMapping("/category/list")
 
     public CategoryListFeedVO getCategoryList() {
         List<Category> categories = categoryService.getAllCategory();
         List<CategoryListVO> list = new ArrayList<>();
         for (Category category : categories) {
-            CategoryListVO categoryListVO = new CategoryListVO();
-            categoryListVO.setTypeName(category.getTypeName())
+            CategoryListVO categoryListVO = new CategoryListVO()
+                    .setTypeName(category.getTypeName())
                     .setTypeImage(category.getTypeImage());
             list.add(categoryListVO);
         }
-        CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO();
-        categoryListFeedVO.setList(list);
+        CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO()
+                .setList(list);
         return categoryListFeedVO;
     }
 }

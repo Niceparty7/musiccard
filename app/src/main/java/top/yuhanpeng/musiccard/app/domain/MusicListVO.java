@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MusicListVO {
     private Long id;
-    private String wallImage;
+    private MusicListWallImageVO wallImage;
     private String musicName;
     private String singerName;
     private String musicDesc;

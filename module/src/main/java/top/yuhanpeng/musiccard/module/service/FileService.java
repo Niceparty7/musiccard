@@ -1,18 +1,81 @@
 package top.yuhanpeng.musiccard.module.service;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import top.yuhanpeng.musiccard.module.entity.File;
+import top.yuhanpeng.musiccard.module.entity.Type;
+import top.yuhanpeng.musiccard.module.mapper.FileMapper;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.InputStream;
 import java.util.Random;
 
 @Service
 public class FileService {
-    @Value("${file.upload-path}")
-    private String uploadPath;
+    @Autowired
+    private FileMapper fileMapper;
+    @Value("${oss.bucket}")
+    private String bucket;
+    @Value("${oss.endpoint}")
+    private String endpoint;
+    @Value("${oss.host}")
+    private String host;
+    @Value("${oss.dir}")
+    private String dir;
+    private OSS ossClient;
+
+    @PostConstruct
+    public void init() {
+        String accessKeyId = System.getenv("OSS_ACCESS_KEY_ID");
+        String accessKeySecret = System.getenv("OSS_ACCESS_KEY_SECRET");
+        if (accessKeyId == null || accessKeySecret == null) {
+            throw new RuntimeException("OSS_ACCESS_KEY_ID or OSS_ACCESS_KEY_SECRET is null");
+        }
+        ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        if (ossClient != null) {
+            ossClient.shutdown();
+        }
+    }
+
+    public String uploadAndSave(MultipartFile multipartFile) throws Exception {
+        String url = "";
+        try {
+            url = upload(multipartFile);
+        } catch (Exception e) {
+            throw new RuntimeException("upload failed");
+        }
+        Type type = determineType(multipartFile.getContentType());
+        int timeStamp = (int) (System.currentTimeMillis() / 1000);
+        File file = new File()
+                .setType(type)
+                .setUrl(url)
+                .setCreateTime(timeStamp)
+                .setUpdateTime(timeStamp)
+                .setIsDeleted(0);
+        fileMapper.insert(file);
+        return url;
+    }
+
+    private Type determineType(String contentType) {
+        if (contentType != null && contentType.startsWith("image/")) {
+            return Type.IMAGE;
+        } else if (contentType != null && contentType.startsWith("video/")) {
+            return Type.VIDEO;
+        } else {
+            return Type.FILE;
+        }
+    }
 
     public String upload(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
@@ -25,17 +88,13 @@ public class FileService {
 
         String folder;
         if (contentType != null && contentType.startsWith("image/")) {
-            folder = "image";
+            folder = Type.IMAGE.name().toLowerCase();
 
         } else if (contentType != null && contentType.startsWith("video/")) {
-            folder = "video";
+            folder = Type.VIDEO.name().toLowerCase();
 
         } else {
-            folder = "file";
-        }
-        File dir = new File(uploadPath, folder);
-        if (!dir.exists()) {
-            dir.mkdirs();
+            folder = Type.FILE.name().toLowerCase();
         }
 
         Random random = new Random();
@@ -50,9 +109,9 @@ public class FileService {
             Integer height = bufferedImage.getHeight();
             newFileName = prefix + timeStamp + "_" + width + "x" + height + "." + suffix;
         }
-
-        File dest = new File(dir, newFileName);
-        file.transferTo(dest);
-        return dest.getAbsolutePath();
+        String key = dir + "/" + folder + "/" + newFileName;
+        InputStream inputStream = file.getInputStream();
+        ossClient.putObject(bucket, key, inputStream);
+        return host + "/" + key;
     }
 }

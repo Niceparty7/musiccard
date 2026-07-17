@@ -36,13 +36,13 @@ public class CategoryController {
         List<Category> categories = categoryService.getAllCategory();
         List<CategoryListVO> list = new ArrayList<>();
         for (Category category : categories) {
-            CategoryListVO categoryListVO = new CategoryListVO();
-            categoryListVO.setTypeName(category.getTypeName())
+            CategoryListVO categoryListVO = new CategoryListVO()
+                    .setTypeName(category.getTypeName())
                     .setTypeImage(category.getTypeImage());
             list.add(categoryListVO);
         }
-        CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO();
-        categoryListFeedVO.setList(list);
+        CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO()
+                .setList(list);
         return categoryListFeedVO;
     }
 
@@ -54,12 +54,12 @@ public class CategoryController {
         } catch (Exception e) {
             log.error("category cannot be null", e);
         }
-        if (category==null){
+        if (category == null) {
             log.info("id不存在");
             return null;
         }
-        CategoryInfoVO categoryInfoVO = new CategoryInfoVO();
-        categoryInfoVO.setTypeName(category.getTypeName())
+        CategoryInfoVO categoryInfoVO = new CategoryInfoVO()
+                .setTypeName(category.getTypeName())
                 .setTypeImage(category.getTypeImage())
                 .setTypeDesc(category.getTypeDesc());
         return categoryInfoVO;

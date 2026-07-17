@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller;
+package top.yuhanpeng.musiccard.app.controller.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ public class FileController {
 
     @RequestMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file) {
-        String res = "成功";
+        String res = null;
         try {
-            fileService.upload(file);
+            res = fileService.uploadAndSave(file);
         } catch (Exception e) {
             res = "文件上传失败";
             log.error("文件上传失败", e);
