@@ -2,6 +2,7 @@ package top.yuhanpeng.musiccard.module.entity;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import top.yuhanpeng.musiccard.module.Type;
 
 @Data
 @Accessors(chain = true)

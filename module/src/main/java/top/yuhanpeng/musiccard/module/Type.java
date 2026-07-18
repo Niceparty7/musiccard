@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.module.entity;
+package top.yuhanpeng.musiccard.module;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

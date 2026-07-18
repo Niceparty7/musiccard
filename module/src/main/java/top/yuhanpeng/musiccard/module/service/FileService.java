@@ -8,13 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import top.yuhanpeng.musiccard.module.Type;
 import top.yuhanpeng.musiccard.module.entity.File;
-import top.yuhanpeng.musiccard.module.entity.Type;
 import top.yuhanpeng.musiccard.module.mapper.FileMapper;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @Service
@@ -96,7 +98,8 @@ public class FileService {
         } else {
             folder = Type.FILE.name().toLowerCase();
         }
-
+        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("/yyMM/dd"));
+        folder += date;
         Random random = new Random();
         Integer prefix = random.nextInt(1000) + 1;
         String timeStamp = System.currentTimeMillis() + "";

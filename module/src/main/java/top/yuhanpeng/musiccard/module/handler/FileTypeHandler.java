@@ -3,7 +3,7 @@ package top.yuhanpeng.musiccard.module.handler;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedTypes;
-import top.yuhanpeng.musiccard.module.entity.Type;
+import top.yuhanpeng.musiccard.module.Type;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
