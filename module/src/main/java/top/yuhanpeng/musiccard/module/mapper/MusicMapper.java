@@ -16,6 +16,9 @@ public interface MusicMapper {
     @Select("select * from music where id=#{id}")
     Music extractById(@Param("id") Long id);
 
+    @Select("select * from music where is_deleted=0")
+    List<Music> getAllMusicList();
+
     List<Music> getAllMusic(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword, @Param("subquery") String subquery);
 
     List<MusicListDTO> getAllMusicListDTO(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword);

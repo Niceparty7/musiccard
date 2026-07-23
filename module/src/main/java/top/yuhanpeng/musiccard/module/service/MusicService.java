@@ -1,12 +1,17 @@
 package top.yuhanpeng.musiccard.module.service;
 
+import com.alibaba.excel.EasyExcel;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import top.yuhanpeng.musiccard.module.domain.MusicExcelDTO;
 import top.yuhanpeng.musiccard.module.domain.MusicListDTO;
 import top.yuhanpeng.musiccard.module.entity.Category;
 import top.yuhanpeng.musiccard.module.entity.Music;
+import top.yuhanpeng.musiccard.module.listener.MusicExcelListener;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 @Service
@@ -63,8 +68,8 @@ public class MusicService {
     public Long create(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
             throws Exception {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
-        Music music = new Music();
-        music.setCoverImages(coverImages)
+        Music music = new Music()
+                .setCoverImages(coverImages)
                 .setMusicName(musicName)
                 .setSingerName(singerName)
                 .setMusicDesc(musicDesc)
@@ -94,8 +99,8 @@ public class MusicService {
             throw new RuntimeException("id cannot be null!");
         }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
-        Music music = new Music();
-        music.setId(id)
+        Music music = new Music()
+                .setId(id)
                 .setCoverImages(coverImages)
                 .setMusicName(musicName)
                 .setSingerName(singerName)
@@ -145,5 +150,31 @@ public class MusicService {
 
     public Long getByTypeId(Long typeId) {
         return musicMapper.getByTypeId(typeId);
+    }
+
+    public void export(OutputStream outputStream) throws Exception {
+        List<Music> list = musicMapper.getAllMusicList();
+        List<MusicExcelDTO> excelList = list.stream()
+                .map(item -> {
+                    MusicExcelDTO musicExcelDTO = new MusicExcelDTO();
+                    musicExcelDTO.setMusicName(item.getMusicName());
+                    musicExcelDTO.setSingerName(item.getSingerName());
+                    musicExcelDTO.setCoverImages(item.getCoverImages());
+                    musicExcelDTO.setMusicDesc(item.getMusicDesc());
+                    musicExcelDTO.setAlbumTitle(item.getAlbumTitle());
+                    musicExcelDTO.setReleaseDate(item.getReleaseDate());
+                    musicExcelDTO.setIsDeleted(item.getIsDeleted());
+                    musicExcelDTO.setTypeId(item.getTypeId());
+                    musicExcelDTO.setCreateTime(item.getCreateTime());
+                    musicExcelDTO.setUpdateTime(item.getUpdateTime());
+                    return musicExcelDTO;
+                }).toList();
+        EasyExcel.write(outputStream, MusicExcelDTO.class)
+                .sheet("音乐数据")
+                .doWrite(excelList);
+    }
+
+    public void upload(InputStream inputStream) throws Exception {
+        EasyExcel.read(inputStream, MusicExcelDTO.class, new MusicExcelListener(musicMapper)).sheet().doRead();
     }
 }
