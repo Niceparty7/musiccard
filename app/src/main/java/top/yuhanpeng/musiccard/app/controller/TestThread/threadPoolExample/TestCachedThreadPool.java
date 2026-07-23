@@ -1,12 +1,12 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread;
+package top.yuhanpeng.musiccard.app.controller.TestThread.threadPoolExample;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TestFixedThreadPool {
+public class TestCachedThreadPool {
 
     public static void main(String[] args) {
-        ExecutorService pool = Executors.newFixedThreadPool(3);
+        ExecutorService pool = Executors.newCachedThreadPool();
         for (int i = 0; i < 10; i++) {
             int num = i;
             pool.execute(() -> {

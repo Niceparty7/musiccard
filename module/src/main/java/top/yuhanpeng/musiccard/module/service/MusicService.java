@@ -1,8 +1,12 @@
 package top.yuhanpeng.musiccard.module.service;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
 import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import top.yuhanpeng.musiccard.module.domain.MusicExcelDTO;
 import top.yuhanpeng.musiccard.module.domain.MusicListDTO;
 import top.yuhanpeng.musiccard.module.entity.Category;
@@ -10,12 +14,18 @@ import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.listener.MusicExcelListener;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Service
+@RequiredArgsConstructor
 public class MusicService {
+    private final Executor excelExecutor;
     @Resource
     private MusicMapper musicMapper;
     @Resource
@@ -176,5 +186,67 @@ public class MusicService {
 
     public void upload(InputStream inputStream) throws Exception {
         EasyExcel.read(inputStream, MusicExcelDTO.class, new MusicExcelListener(musicMapper)).sheet().doRead();
+    }
+
+    public File exportZip() throws Exception {
+        List<CompletableFuture<File>> futures = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int mod = i;
+            CompletableFuture<File> future =
+                    CompletableFuture.supplyAsync(() -> {
+                                List<Music> list = musicMapper.selectByMod(mod);
+                                File file = new File("music_" + mod + ".xlsx");
+                                EasyExcel.write(file, MusicExcelDTO.class)
+                                        .sheet("音乐数据")
+                                        .doWrite(convert(list));
+                                return file;
+                            },
+                            excelExecutor
+                    );
+            futures.add(future);
+        }
+        List<File> files = futures.stream()
+                .map(CompletableFuture::join)
+                .toList();
+        File zipFile = new File("music.zip");
+        ZipUtil.zip(zipFile, true, files.toArray(new File[0]));
+        return zipFile;
+    }
+
+    private List<MusicExcelDTO> convert(List<Music> list) {
+        return list.stream()
+                .map(item -> {
+                    MusicExcelDTO dto = new MusicExcelDTO();
+                    dto.setMusicName(item.getMusicName());
+                    dto.setSingerName(item.getSingerName());
+                    dto.setCoverImages(item.getCoverImages());
+                    dto.setMusicDesc(item.getMusicDesc());
+                    dto.setAlbumTitle(item.getAlbumTitle());
+                    dto.setReleaseDate(item.getReleaseDate());
+                    dto.setCreateTime(item.getCreateTime());
+                    dto.setUpdateTime(item.getUpdateTime());
+                    dto.setTypeId(item.getTypeId());
+                    return dto;
+                }).toList();
+    }
+
+    public void uploadZip(MultipartFile multipartFile) throws Exception {
+        File zip = File.createTempFile("music", ".zip");
+        multipartFile.transferTo(zip);
+        File dir = new File("temp/music");
+        ZipUtil.unzip(zip, dir);
+        List<File> files = FileUtil.loopFiles(dir, pathname -> pathname.getName().endsWith(".xlsx"));
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (File file : files) {
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                        EasyExcel.read(file, MusicExcelDTO.class, new MusicExcelListener(musicMapper))
+                                .sheet()
+                                .doRead();
+                    },
+                    excelExecutor
+            );
+            futures.add(future);
+        }
+        futures.forEach(CompletableFuture::join);
     }
 }

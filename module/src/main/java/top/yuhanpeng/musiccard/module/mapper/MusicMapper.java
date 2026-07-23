@@ -36,4 +36,9 @@ public interface MusicMapper {
 
     @Select("select id from category where is_deleted=0 and type_name like concat('%',#{keyword},'%')")
     List<Long> getIds(@Param("keyword") String keyword);
+
+    Integer insertBatch(@Param("list") List<Music> list);
+
+    @Select("select * from music where id % 10 = #{mod}")
+    List<Music> selectByMod(@Param("mod") Integer mod);
 }

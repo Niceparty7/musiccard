@@ -1,15 +1,15 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread;
+package top.yuhanpeng.musiccard.app.controller.TestThread.threadExample;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class TestController extends Thread {
+public class TestExtendThread2 extends Thread {
 
     private List<Integer> list;
-    private StringBuilder sb;
+    private StringBuffer sb;
 
-    public TestController(List<Integer> list, StringBuilder stringBuilder) {
+    public TestExtendThread2(List<Integer> list, StringBuffer stringBuilder) {
         this.list = list;
         this.sb = stringBuilder;
     }
@@ -19,9 +19,9 @@ public class TestController extends Thread {
         for (int i = 0; i < 100; i++) {
             list.add(i);
         }
-        StringBuilder sb = new StringBuilder();
-        TestController t1 = new TestController(list, sb);
-        TestController t2 = new TestController(list, sb);
+        StringBuffer sb = new StringBuffer();
+        TestExtendThread2 t1 = new TestExtendThread2(list, sb);
+        TestExtendThread2 t2 = new TestExtendThread2(list, sb);
         t1.start();
         t2.start();
         t1.join();

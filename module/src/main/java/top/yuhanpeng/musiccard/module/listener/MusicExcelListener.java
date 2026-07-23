@@ -7,9 +7,13 @@ import top.yuhanpeng.musiccard.module.domain.MusicExcelDTO;
 import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.mapper.MusicMapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 public class MusicExcelListener extends AnalysisEventListener<MusicExcelDTO> {
     private final MusicMapper musicMapper;
+    private final List<Music> list = new ArrayList<>();
 
     public MusicExcelListener(MusicMapper musicMapper) {
         this.musicMapper = musicMapper;
@@ -28,11 +32,18 @@ public class MusicExcelListener extends AnalysisEventListener<MusicExcelDTO> {
                 .setUpdateTime(data.getUpdateTime())
                 .setIsDeleted(0)
                 .setTypeId(data.getTypeId());
-        musicMapper.insert(music);
+        list.add(music);
+        if (list.size() >= 20) {
+            musicMapper.insertBatch(list);
+            list.clear();
+        }
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
+        if (!list.isEmpty()) {
+            musicMapper.insertBatch(list);
+        }
         log.info("Excel读取完成");
     }
 }

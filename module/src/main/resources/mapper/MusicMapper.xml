@@ -144,4 +144,35 @@
             and ( music_name like concat('%',#{keyword},'%') or type_name like concat('%',#{keyword},'%') )
         </if>
     </select>
+
+    <insert id="insertBatch">
+        insert into music
+        (
+        music_name,
+        singer_name,
+        cover_images,
+        music_desc,
+        album_title,
+        release_date,
+        create_time,
+        update_time,
+        type_id
+        )
+        values
+        <foreach collection="list"
+                 item="item"
+                 separator=",">
+            (
+            #{item.musicName},
+            #{item.singerName},
+            #{item.coverImages},
+            #{item.musicDesc},
+            #{item.albumTitle},
+            #{item.releaseDate},
+            #{item.createTime},
+            #{item.updateTime},
+            #{item.typeId}
+            )
+        </foreach>
+    </insert>
 </mapper>

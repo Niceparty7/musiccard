@@ -17,8 +17,10 @@ import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 import top.yuhanpeng.musiccard.module.utils.ImageUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -134,6 +136,34 @@ public class MusicController {
         } catch (Exception e) {
             res = "上传失败";
             log.error("上传失败", e);
+        }
+        return res;
+    }
+
+    @RequestMapping("/music/downloadzip")
+    public void downloadzip(HttpServletResponse response) throws IOException {
+        response.setContentType("application/zip");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-Disposition", "attachment;filename=music.zip");
+        String res = "批量下载成功";
+        File zip = null;
+        try {
+            zip = musicService.exportZip();
+        } catch (Exception e) {
+            res = "批量下载失败";
+            log.error("批量下载失败", e);
+        }
+        Files.copy(zip.toPath(), response.getOutputStream());
+    }
+
+    @RequestMapping("/music/uploadzip")
+    public String uploadZip(MultipartFile file) throws Exception {
+        String res = "批量上传成功";
+        try {
+            musicService.uploadZip(file);
+        } catch (Exception e) {
+            res = "批量上传失败";
+            log.error("批量上传失败", e);
         }
         return res;
     }

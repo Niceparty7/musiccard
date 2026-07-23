@@ -13,7 +13,7 @@ import java.util.concurrent.Semaphore;
 @Slf4j
 @NotThreadSafe
 @RestController
-public class StringExample2 {
+public class StringExampleController1 {
 
     // 请求总数
     public static int clientTotal = 5000;
@@ -21,10 +21,10 @@ public class StringExample2 {
     // 同时并发执行的线程数
     public static int threadTotal = 200;
 
-    public static StringBuffer sb = new StringBuffer();
+    public static StringBuilder sb = new StringBuilder();
 
-    @RequestMapping("/test/thread2")
-    public  String testThread() throws Exception {
+    @RequestMapping("/test/thread")
+    public String testThread() throws Exception {
         ExecutorService executorService = Executors.newCachedThreadPool();
         final Semaphore semaphore = new Semaphore(threadTotal);
         final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);

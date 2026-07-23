@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread;
+package top.yuhanpeng.musiccard.app.controller.TestThread.JUC;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;

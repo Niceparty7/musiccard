@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller.TestController;
+package top.yuhanpeng.musiccard.app.controller.TestThread;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,7 @@ class Sale {
     private double amount;     // 销售额
 }
 
-public class ParallelStreamTest {
+public class TestParallelStream {
     public static void main(String[] args) {
         // mock50万条数据
         List<Sale> sales = IntStream.rangeClosed(1, 500000)
