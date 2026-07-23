@@ -192,17 +192,16 @@ public class MusicService {
         List<CompletableFuture<File>> futures = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             int mod = i;
-            CompletableFuture<File> future =
-                    CompletableFuture.supplyAsync(() -> {
-                                List<Music> list = musicMapper.selectByMod(mod);
-                                File file = new File("music_" + mod + ".xlsx");
-                                EasyExcel.write(file, MusicExcelDTO.class)
-                                        .sheet("音乐数据")
-                                        .doWrite(convert(list));
-                                return file;
-                            },
-                            excelExecutor
-                    );
+            CompletableFuture<File> future = CompletableFuture.supplyAsync(() -> {
+                        List<Music> list = musicMapper.selectByMod(mod);
+                        File file = new File("music_" + mod + ".xlsx");
+                        EasyExcel.write(file, MusicExcelDTO.class)
+                                .sheet("音乐数据")
+                                .doWrite(convert(list));
+                        return file;
+                    },
+                    excelExecutor
+            );
             futures.add(future);
         }
         List<File> files = futures.stream()
