@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread;
+package top.yuhanpeng.musiccard.app.controller.testthread;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

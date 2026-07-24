@@ -1,12 +1,9 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread.JUC;
+package top.yuhanpeng.musiccard.app.controller.testthread.juc;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-public class TestCountDownLatch {
-    public static void main(String[] args) throws InterruptedException {
+public class TestCyclicBarrier {
+    public static void main(String[] args) throws Exception {
         ThreadPoolExecutor pool = new ThreadPoolExecutor(
                 3,
                 10,
@@ -15,19 +12,21 @@ public class TestCountDownLatch {
                 new ArrayBlockingQueue<>(100),
                 new ThreadPoolExecutor.AbortPolicy()
         );
-        CountDownLatch countDownLatch = new CountDownLatch(3);
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(3);
 
         for (int i = 0; i < 10; i++) {
             int num = i;
             pool.submit(() -> {
-                try {
                     System.out.println(Thread.currentThread().getName() + "执行任务：" + num);
-                } finally {
-                    countDownLatch.countDown();
+                try {
+                    cyclicBarrier.await();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (BrokenBarrierException e) {
+                    throw new RuntimeException(e);
                 }
             });
         }
-        countDownLatch.await();
         pool.shutdown();
     }
 }

@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread.threadExample;
+package top.yuhanpeng.musiccard.app.controller.testthread.threadexample;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread.JUC;
+package top.yuhanpeng.musiccard.app.controller.testthread.juc;
 
 import java.util.concurrent.*;
 
-public class TestCyclicBarrier {
+public class TestSemaphore {
     public static void main(String[] args) throws Exception {
         ThreadPoolExecutor pool = new ThreadPoolExecutor(
                 3,
@@ -12,18 +12,18 @@ public class TestCyclicBarrier {
                 new ArrayBlockingQueue<>(100),
                 new ThreadPoolExecutor.AbortPolicy()
         );
-        CyclicBarrier cyclicBarrier = new CyclicBarrier(3);
+        Semaphore semaphore = new Semaphore(3);
 
         for (int i = 0; i < 10; i++) {
             int num = i;
             pool.submit(() -> {
-                    System.out.println(Thread.currentThread().getName() + "执行任务：" + num);
                 try {
-                    cyclicBarrier.await();
+                    semaphore.acquire();
+                    System.out.println(Thread.currentThread().getName() + "执行任务：" + num);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
-                } catch (BrokenBarrierException e) {
-                    throw new RuntimeException(e);
+                } finally {
+                    semaphore.release();
                 }
             });
         }

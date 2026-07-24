@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread.threadPoolExample;
+package top.yuhanpeng.musiccard.app.controller.testthread.threadpoolexample;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

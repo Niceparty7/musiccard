@@ -1,4 +1,4 @@
-package top.yuhanpeng.musiccard.app.controller.TestThread;
+package top.yuhanpeng.musiccard.app.controller.testthread;
 
 /**
  * 多源数据接口伪代码

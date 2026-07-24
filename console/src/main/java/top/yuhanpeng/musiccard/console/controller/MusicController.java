@@ -1,10 +1,12 @@
 package top.yuhanpeng.musiccard.console.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import top.yuhanpeng.musiccard.console.domain.MusicInfoVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListFeedVO;
 import top.yuhanpeng.musiccard.console.domain.MusicListVO;
@@ -14,6 +16,10 @@ import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -164,6 +170,59 @@ public class MusicController {
             res = "失败 " + res;
         }
         log.info(res);
+        return res;
+    }
+
+    @RequestMapping("/music/download")
+    public void download(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("音乐列表", "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        try {
+            musicService.export(response.getOutputStream());
+        } catch (Exception e) {
+            log.error("下载失败", e);
+        }
+    }
+
+    @RequestMapping("/music/upload")
+    public String upload(MultipartFile file) throws IOException {
+        String res = "成功";
+        try {
+            musicService.upload(file.getInputStream());
+        } catch (Exception e) {
+            res = "上传失败";
+            log.error("上传失败", e);
+        }
+        return res;
+    }
+
+    @RequestMapping("/music/downloadzip")
+    public void downloadzip(HttpServletResponse response) throws IOException {
+        response.setContentType("application/zip");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-Disposition", "attachment;filename=music.zip");
+        String res = "批量下载成功";
+        File zip = null;
+        try {
+            zip = musicService.exportZip();
+        } catch (Exception e) {
+            res = "批量下载失败";
+            log.error("批量下载失败", e);
+        }
+        Files.copy(zip.toPath(), response.getOutputStream());
+    }
+
+    @RequestMapping("/music/uploadzip")
+    public String uploadZip(MultipartFile file) throws Exception {
+        String res = "批量上传成功";
+        try {
+            musicService.uploadZip(file);
+        } catch (Exception e) {
+            res = "批量上传失败";
+            log.error("批量上传失败", e);
+        }
         return res;
     }
 }
