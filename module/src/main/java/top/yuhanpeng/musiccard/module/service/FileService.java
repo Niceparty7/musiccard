@@ -1,5 +1,6 @@
 package top.yuhanpeng.musiccard.module.service;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import jakarta.annotation.PostConstruct;
@@ -104,13 +105,14 @@ public class FileService {
         Integer prefix = random.nextInt(1000) + 1;
         String timeStamp = System.currentTimeMillis() + "";
         String newFileName = "";
+        String md5Hex = DigestUtil.md5Hex(prefix + timeStamp);
         if (contentType != null && !contentType.startsWith("image/")) {
-            newFileName = prefix + timeStamp + "." + suffix;
+            newFileName = md5Hex + "." + suffix;
         } else {
             BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
             Integer width = bufferedImage.getWidth();
             Integer height = bufferedImage.getHeight();
-            newFileName = prefix + timeStamp + "_" + width + "x" + height + "." + suffix;
+            newFileName = md5Hex + "_" + width + "x" + height + "." + suffix;
         }
         String key = dir + "/" + folder + "/" + newFileName;
         InputStream inputStream = file.getInputStream();
