@@ -42,7 +42,7 @@ public class Generator {
                 })
 
                 .strategyConfig(builder -> {
-                    builder.addInclude("category")
+                    builder.addInclude("user")
                             .entityBuilder()
                             .enableLombok()
                             .logicDeleteColumnName("is_deleted")
