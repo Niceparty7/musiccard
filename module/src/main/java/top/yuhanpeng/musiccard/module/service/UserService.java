@@ -1,14 +1,13 @@
 package top.yuhanpeng.musiccard.module.service;
 
 import cn.hutool.crypto.digest.DigestUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
-import top.yuhanpeng.musiccard.module.domain.UserVO;
+import top.yuhanpeng.musiccard.module.domain.UserDTO;
 import top.yuhanpeng.musiccard.module.entity.User;
 import top.yuhanpeng.musiccard.module.mapper.UserMapper;
 import top.yuhanpeng.musiccard.module.utils.JwtUtil;
@@ -26,7 +25,7 @@ public class UserService {
     @Resource
     private UserMapper userMapper;
 
-    public User getById(Long id) {
+    public User getById(Long id) throws Exception{
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
@@ -37,7 +36,7 @@ public class UserService {
         return user;
     }
 
-    public User extractById(Long id) {
+    public User extractById(Long id)throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
@@ -49,7 +48,8 @@ public class UserService {
         return user;
     }
 
-    public Long create(String phone, String password, String salt, String name, String avatar, Integer createTime, Integer updateTime, Byte isDeleted) {
+    public Long create(String phone, String password, String salt, String name, String avatar, Integer createTime, Integer updateTime, Byte isDeleted)
+    throws Exception{
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         User user = new User()
                 .setPhone(phone)
@@ -79,7 +79,8 @@ public class UserService {
         return user.getId();
     }
 
-    public Long update(Long id, String phone, String password, String salt, String name, String avatar, Integer createTime, Integer updateTime, Byte isDeleted) {
+    public Long update(Long id, String phone, String password, String salt, String name, String avatar, Integer createTime, Integer updateTime, Byte isDeleted)
+    throws Exception{
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
@@ -100,7 +101,8 @@ public class UserService {
         return (long) userMapper.update(user);
     }
 
-    public Long edit(Long id, String phone, String password, String salt, String name, String avatar, Integer createTime, Integer updateTime, Byte isDeleted) {
+    public Long edit(Long id, String phone, String password, String salt, String name, String avatar, Integer createTime, Integer updateTime, Byte isDeleted)
+    throws Exception{
         Long res;
         if (id != null) {
             res = update(id, phone, password, salt, name, avatar, createTime, updateTime, isDeleted);
@@ -116,7 +118,7 @@ public class UserService {
         return res;
     }
 
-    public Integer delete(Long id) {
+    public Integer delete(Long id) throws Exception{
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
@@ -124,7 +126,7 @@ public class UserService {
         return userMapper.delete(timeStamp, id);
     }
 
-    public String login(String phone, String password) throws JsonProcessingException {
+    public String login(String phone, String password) throws Exception {
         User user = userMapper.extractByPhone(phone);
         if (user == null) {
             throw new RuntimeException("手机号未注册");
@@ -133,14 +135,14 @@ public class UserService {
         if (!encodePassword.equals(user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
-        UserVO userVO = new UserVO().setUserId(user.getId());
+        UserDTO userDTO = new UserDTO().setUserId(user.getId());
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(userVO);
+        String json = objectMapper.writeValueAsString(userDTO);
         String token = JwtUtil.createToken(json);
         return token;
     }
 
-    public String adminLogin(String phone, String password, HttpSession session, HttpServletResponse response) throws JsonProcessingException {
+    public String adminLogin(String phone, String password, HttpSession session, HttpServletResponse response) throws Exception {
         User user = userMapper.extractByPhone(phone);
         if (user == null) {
             throw new RuntimeException("手机号未注册");
@@ -149,9 +151,9 @@ public class UserService {
         if (!encodePassword.equals(user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
-        UserVO userVO = new UserVO().setUserId(user.getId());
+        UserDTO userDTO = new UserDTO().setUserId(user.getId());
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(userVO);
+        String json = objectMapper.writeValueAsString(userDTO);
         String token = JwtUtil.createToken(json);
         Cookie cookie = new Cookie("sign", token);
         cookie.setHttpOnly(true);
@@ -185,11 +187,11 @@ public class UserService {
         try {
             id = userMapper.insert(user);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("插入用户失败");
         }
-        UserVO userVO = new UserVO().setUserId(id);
+        UserDTO userDTO = new UserDTO().setUserId(id);
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(userVO);
+        String json = objectMapper.writeValueAsString(userDTO);
         String token = JwtUtil.createToken(json);
         return token;
     }

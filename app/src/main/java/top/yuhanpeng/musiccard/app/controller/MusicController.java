@@ -1,5 +1,7 @@
 package top.yuhanpeng.musiccard.app.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import top.yuhanpeng.musiccard.module.entity.Music;
 import top.yuhanpeng.musiccard.module.service.CategoryService;
 import top.yuhanpeng.musiccard.module.service.MusicService;
 import top.yuhanpeng.musiccard.module.utils.ImageUtils;
+import top.yuhanpeng.musiccard.module.utils.JwtUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +37,18 @@ public class MusicController {
     private CategoryService categoryService;
 
     @RequestMapping("/music/info")
-    public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id) {
+    public MusicInfoVO getMusicInfoById(@RequestParam(value = "id") Long id, HttpServletRequest request) {
+        String token = request.getHeader("sign");
+        if (token == null) {
+            log.error("token未获取，未登录");
+            return null;
+        }
+        try {
+            Long userId = JwtUtil.getUserId(token);
+        } catch (JsonProcessingException e) {
+            log.error("token解析失败，未登录");
+            return null;
+        }
         Music music = null;
         Boolean res = true;
         try {
@@ -116,7 +130,16 @@ public class MusicController {
     }
 
     @RequestMapping("/music/download")
-    public void download(HttpServletResponse response) throws IOException {
+    public void download(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String token = request.getHeader("sign");
+        if (token == null) {
+            log.error("token未获取，未登录");
+        }
+        try {
+            Long userId = JwtUtil.getUserId(token);
+        } catch (JsonProcessingException e) {
+            log.error("token解析失败，未登录");
+        }
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("音乐列表", "UTF-8").replaceAll("\\+", "%20");
@@ -129,7 +152,16 @@ public class MusicController {
     }
 
     @RequestMapping("/music/upload")
-    public String upload(MultipartFile file) throws IOException {
+    public String upload(MultipartFile file, HttpServletRequest request) throws IOException {
+        String token = request.getHeader("sign");
+        if (token == null) {
+            log.error("token未获取，未登录");
+        }
+        try {
+            Long userId = JwtUtil.getUserId(token);
+        } catch (JsonProcessingException e) {
+            log.error("token解析失败，未登录");
+        }
         String res = "成功";
         try {
             musicService.upload(file.getInputStream());
@@ -141,7 +173,16 @@ public class MusicController {
     }
 
     @RequestMapping("/music/downloadzip")
-    public void downloadzip(HttpServletResponse response) throws IOException {
+    public void downloadzip(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String token = request.getHeader("sign");
+        if (token == null) {
+            log.error("token未获取，未登录");
+        }
+        try {
+            Long userId = JwtUtil.getUserId(token);
+        } catch (JsonProcessingException e) {
+            log.error("token解析失败，未登录");
+        }
         response.setContentType("application/zip");
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=music.zip");
@@ -157,7 +198,16 @@ public class MusicController {
     }
 
     @RequestMapping("/music/uploadzip")
-    public String uploadZip(MultipartFile file) throws Exception {
+    public String uploadZip(MultipartFile file, HttpServletRequest request) throws Exception {
+        String token = request.getHeader("sign");
+        if (token == null) {
+            log.error("token未获取，未登录");
+        }
+        try {
+            Long userId = JwtUtil.getUserId(token);
+        } catch (JsonProcessingException e) {
+            log.error("token解析失败，未登录");
+        }
         String res = "批量上传成功";
         try {
             musicService.uploadZip(file);

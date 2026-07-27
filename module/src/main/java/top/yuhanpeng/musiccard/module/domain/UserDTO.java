@@ -5,6 +5,6 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class UserVO {
+public class UserDTO {
     private Long userId;
 }

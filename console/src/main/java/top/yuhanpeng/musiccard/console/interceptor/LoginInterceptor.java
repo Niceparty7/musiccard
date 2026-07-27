@@ -12,11 +12,11 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            throw new RuntimeException("未登录");
+            throw new RuntimeException("未登录或登录已过期");
         }
         Object user = session.getAttribute("user");
         if (user == null) {
-            throw new RuntimeException("登录过期");
+            throw new RuntimeException("请重新登录");
         }
         return true;
     }

@@ -24,11 +24,14 @@ import top.yuhanpeng.musiccard.module.service.UserService;
 public class UserController {
     @Resource
     private UserService userService;
+
     @RequestMapping("/user/login")
     public LoginVO login(@RequestParam(value = "phone") String phone,
                          @RequestParam(value = "password") String password,
                          HttpSession session,
                          HttpServletResponse response) {
+        phone = phone == null ? phone : phone.trim();
+        password = password == null ? password : password.trim();
         String res = "";
         try {
             res = userService.adminLogin(phone, password, session, response);

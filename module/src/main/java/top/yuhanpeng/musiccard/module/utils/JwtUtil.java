@@ -6,12 +6,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import top.yuhanpeng.musiccard.module.domain.UserVO;
+import top.yuhanpeng.musiccard.module.domain.UserDTO;
 
 import java.util.Date;
 
 public class JwtUtil {
-    private final static String SECRET = "musiccard-jwt-secret-key-2026-long-secret";
+    private final static String SECRET = System.getenv("JWT_SECRET");
 
     public static Long getUserId(String token) throws JsonProcessingException {
         Claims claims = Jwts.parserBuilder()
@@ -21,8 +21,8 @@ public class JwtUtil {
                 .getBody();
         String json = claims.getSubject();
         ObjectMapper objectMapper = new ObjectMapper();
-        UserVO userVO = objectMapper.readValue(json, UserVO.class);
-        return userVO.getUserId();
+        UserDTO userDTO = objectMapper.readValue(json, UserDTO.class);
+        return userDTO.getUserId();
     }
 
     public static String createToken(String user) {

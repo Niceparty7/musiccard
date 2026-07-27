@@ -26,6 +26,8 @@ public class UserController {
     @RequestMapping("/user/login")
     public LoginVO login(@RequestParam(value = "phone") String phone,
                          @RequestParam(value = "password") String password) {
+        phone = phone == null ? phone : phone.trim();
+        password = password == null ? password : password.trim();
         String res = "";
         try {
             res = userService.login(phone, password);
@@ -41,6 +43,9 @@ public class UserController {
                             @RequestParam(value = "password") String password,
                             @RequestParam(value = "name", required = false) String name,
                             @RequestParam(value = "avatar", required = false) String avatar) {
+        phone = phone == null ? phone : phone.trim();
+        password = password == null ? password : password.trim();
+        name = name == null ? name : name.trim();
         String res = "";
         try {
             res = userService.register(phone, password, name, avatar);
