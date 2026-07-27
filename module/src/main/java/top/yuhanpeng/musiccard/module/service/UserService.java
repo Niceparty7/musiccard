@@ -1,8 +1,14 @@
 package top.yuhanpeng.musiccard.module.service;
 
 import cn.hutool.crypto.digest.DigestUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
+import top.yuhanpeng.musiccard.module.domain.UserVO;
 import top.yuhanpeng.musiccard.module.entity.User;
 import top.yuhanpeng.musiccard.module.mapper.UserMapper;
 import top.yuhanpeng.musiccard.module.utils.JwtUtil;
@@ -118,7 +124,7 @@ public class UserService {
         return userMapper.delete(timeStamp, id);
     }
 
-    public String login(String phone, String password) {
+    public String login(String phone, String password) throws JsonProcessingException {
         User user = userMapper.extractByPhone(phone);
         if (user == null) {
             throw new RuntimeException("手机号未注册");
@@ -127,7 +133,32 @@ public class UserService {
         if (!encodePassword.equals(user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
-        String token = JwtUtil.createToken(user.getId());
+        UserVO userVO = new UserVO().setUserId(user.getId());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(userVO);
+        String token = JwtUtil.createToken(json);
+        return token;
+    }
+
+    public String adminLogin(String phone, String password, HttpSession session, HttpServletResponse response) throws JsonProcessingException {
+        User user = userMapper.extractByPhone(phone);
+        if (user == null) {
+            throw new RuntimeException("手机号未注册");
+        }
+        String encodePassword = DigestUtil.md5Hex(password + user.getSalt());
+        if (!encodePassword.equals(user.getPassword())) {
+            throw new RuntimeException("密码错误");
+        }
+        UserVO userVO = new UserVO().setUserId(user.getId());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(userVO);
+        String token = JwtUtil.createToken(json);
+        Cookie cookie = new Cookie("sign", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 7);
+        response.addCookie(cookie);
+        session.setAttribute("user", json);
         return token;
     }
 
@@ -156,7 +187,10 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        String token = JwtUtil.createToken(id);
+        UserVO userVO = new UserVO().setUserId(id);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(userVO);
+        String token = JwtUtil.createToken(json);
         return token;
     }
 }

@@ -1,6 +1,8 @@
 package top.yuhanpeng.musiccard.console.controller;
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,15 +24,15 @@ import top.yuhanpeng.musiccard.module.service.UserService;
 public class UserController {
     @Resource
     private UserService userService;
-
     @RequestMapping("/user/login")
     public LoginVO login(@RequestParam(value = "phone") String phone,
-                         @RequestParam(value = "password") String password) {
+                         @RequestParam(value = "password") String password,
+                         HttpSession session,
+                         HttpServletResponse response) {
         String res = "";
         try {
-            res = userService.login(phone, password);
+            res = userService.adminLogin(phone, password, session, response);
         } catch (Exception e) {
-            res = "登录失败";
             log.error("登录失败", e);
         }
         return new LoginVO().setSign(res);
