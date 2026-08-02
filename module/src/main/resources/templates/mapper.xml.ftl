@@ -1,76 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<#assign obj = entity?uncap_first>
-<mapper namespace="${package.Mapper}.${entity}Mapper">
-    <select id="getAll${entity}"
-            resultType="${package.Entity}.${entity}">
-        select *
-        from ${table.name}
-        where is_deleted = 0
-        <if test="keyword!=null and keyword!=''">
-            and music_name like concat('%', <#noparse>#{keyword}</#noparse>, '%')
-        </if>
-        order by id
-        limit <#noparse>#{offSet}</#noparse>, <#noparse>#{pageSize}</#noparse>
-    </select>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-    <insert id="insert"
-            useGeneratedKeys="true"
-            keyProperty="id">
-        insert into ${table.name}
-        <trim prefix="("
-              suffix=")"
-              suffixOverrides=",">
+<mapper namespace="${package.Mapper}.${entity}Mapper">
+
+    <!-- 插入数据 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="${package.Entity}.${entity}">
+        INSERT INTO ${table.name}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
             <#list table.fields as field>
-                <#if !field.keyFlag>
-                    <if test="${obj}.${field.propertyName}!=null<#if field.propertyType?ends_with('String')> and ${obj}.${field.propertyName}!=''</#if>">
-                        ${field.columnName},
+            <#-- 所有字段都可插入，空值判断 -->
+                <#if field.columnType?contains("char") || field.columnType?contains("varchar")>
+                    <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+                        ${field.columnName}<#if field_has_next>,</#if>
+                    </if>
+                <#else>
+                    <if test="${field.propertyName} != null">
+                        ${field.columnName}<#if field_has_next>,</#if>
                     </if>
                 </#if>
             </#list>
         </trim>
-        <trim prefix="values("
-              suffix=")"
-              suffixOverrides=",">
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
             <#list table.fields as field>
-                <#if !field.keyFlag>
-                    <if test="${obj}.${field.propertyName}!=null<#if field.propertyType?ends_with('String')> and ${obj}.${field.propertyName}!=''</#if>">
-                        <#noparse>#{</#noparse>${obj}.${field.propertyName}<#noparse>}</#noparse>,
+                <#if field.columnType?contains("char") || field.columnType?contains("varchar")>
+                    <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+                        <#noparse>#{</#noparse>${field.propertyName}<#noparse>}</#noparse><#if field_has_next>,</#if>
+                    </if>
+                <#else>
+                    <if test="${field.propertyName} != null">
+                        <#noparse>#{</#noparse>${field.propertyName}<#noparse>}</#noparse><#if field_has_next>,</#if>
                     </if>
                 </#if>
             </#list>
         </trim>
     </insert>
 
-    <update id="update">
-        update ${table.name}
+    <!-- 更新数据（根据主键） -->
+    <update id="update" parameterType="${package.Entity}.${entity}">
+        UPDATE ${table.name}
         <set>
             <#list table.fields as field>
-                <#if !field.keyFlag>
-                    <if test="${obj}.${field.propertyName}!=null<#if field.propertyType?ends_with('String')> and ${obj}.${field.propertyName}!=''</#if>">
-                        ${field.columnName}=<#noparse>#{</#noparse>${obj}.${field.propertyName}<#noparse>}</#noparse>,
-                    </if>
+            <#-- 排除主键字段 -->
+                <#if !(field.keyFlag?? && field.keyFlag == true)>
+                    <#if field.columnType?contains("char") || field.columnType?contains("varchar")>
+                        <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+                            ${field.columnName} = <#noparse>#{</#noparse>${field.propertyName}<#noparse>}</#noparse>,
+                        </if>
+                    <#else>
+                        <if test="${field.propertyName} != null">
+                            ${field.columnName} = <#noparse>#{</#noparse>${field.propertyName}<#noparse>}</#noparse>,
+                        </if>
+                    </#if>
                 </#if>
             </#list>
         </set>
-        where id=<#noparse>#{</#noparse>${obj}.id<#noparse>}</#noparse>
+        WHERE
+        <#list table.fields as field>
+            <#if field.keyFlag?? && field.keyFlag == true>
+                ${field.columnName} = <#noparse>#{</#noparse>${field.propertyName}<#noparse>}</#noparse>
+            </#if>
+        </#list>
     </update>
 
-    <update id="delete">
-        update ${table.name}
-        set is_deleted = 1,
-            update_time = <#noparse>#{time}</#noparse>
-        where id = <#noparse>#{id}</#noparse>
-          and is_deleted = 0
-    </update>
-
-    <select id="countTotal"
-            resultType="java.lang.Long">
-        select count(*)
-        from ${table.name}
-        where is_deleted = 0
-        <if test="keyword!=null and keyword!=''">
-            and music_name like concat('%', <#noparse>#{keyword}</#noparse>, '%')
-        </if>
-    </select>
 </mapper>

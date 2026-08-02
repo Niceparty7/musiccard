@@ -1,32 +1,26 @@
 package ${package.Mapper};
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import ${package.Entity}.${entity};
-
+import org.apache.ibatis.annotations.*;
 import java.util.List;
 
-/**
- * ${table.comment!""}
- *
- * @author ${author}
- */
 @Mapper
 public interface ${entity}Mapper {
-    @Select("<#noparse>select * from ${table.name} where id = #{id} and is_deleted = 0</#noparse>")
+
+    @Select("SELECT * FROM ${table.name} WHERE id = <#noparse>#{id}</#noparse> AND is_deleted = 0")
     ${entity} getById(@Param("id") Long id);
 
-    @Select("<#noparse>select * from ${table.name} where id = #{id}</#noparse>")
+    @Select("SELECT * FROM ${table.name} WHERE id = <#noparse>#{id}</#noparse>")
     ${entity} extractById(@Param("id") Long id);
 
-    List<${entity}> getAll${entity}(@Param("offset") Integer offset,@Param("pageSize") Integer pageSize,@Param("keyword") String keyword);
+    int update(${entity} entity);
 
-    Integer update(@Param("${entity?uncap_first}") ${entity} ${entity?uncap_first});
+    int insert(${entity} entity);
 
-    Long insert(@Param("${entity?uncap_first}") ${entity} ${entity?uncap_first});
+    @Update("UPDATE ${table.name} SET is_deleted = 1, update_time = <#noparse>#{time}</#noparse> WHERE id = <#noparse>#{id}</#noparse>")
+    int delete(@Param("id") Long id, @Param("time") int time);
 
-    Integer delete(@Param("time") Integer time,@Param("id") Long id);
+    @Select("SELECT * FROM ${table.name} WHERE is_deleted = 0")
+    List<${entity}> getAll();
 
-    Long countTotal(@Param("keyword") String keyword);
 }
