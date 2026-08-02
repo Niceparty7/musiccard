@@ -1,0 +1,24 @@
+package com.beat.mall.console.domain.music;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.util.List;
+
+/**
+ * 音乐详情
+ */
+@Data
+@Accessors(chain = true)
+public class MusicInfoVO {
+    private List<String> coverImages;
+    private String musicName;
+    private String singerName;
+    private String albumTitle;
+    private String releaseDate;
+    private String musicDesc;
+    private String createTime;
+    private String updateTime;
+    private String typeName;
+    private String typeImage;
+}

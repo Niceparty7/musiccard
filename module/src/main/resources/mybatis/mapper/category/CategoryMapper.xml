@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beat.mall.module.category.mapper.CategoryMapper">
+    <insert id="insert"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into category
+        <trim prefix="("
+              suffix=")"
+              suffixOverrides=",">
+            <if test="category.typeName!=null and category.typeName!=''">
+                type_name,
+            </if>
+            <if test="category.typeImage!=null and category.typeImage!=''">
+                type_image,
+            </if>
+            <if test="category.typeDesc!=null and category.typeDesc!=''">
+                type_desc,
+            </if>
+            <if test="category.createTime!=null">
+                create_time,
+            </if>
+            <if test="category.updateTime!=null">
+                update_time,
+            </if>
+            <if test="category.isDeleted!=null">
+                is_deleted,
+            </if>
+        </trim>
+        <trim prefix="values("
+              suffix=")"
+              suffixOverrides=",">
+            <if test="category.typeName!=null and category.typeName!=''">
+                #{category.typeName},
+            </if>
+            <if test="category.typeImage!=null and category.typeImage!=''">
+                #{category.typeImage},
+            </if>
+            <if test="category.typeDesc!=null and category.typeDesc!=''">
+                #{category.typeDesc},
+            </if>
+            <if test="category.createTime!=null">
+                #{category.createTime},
+            </if>
+            <if test="category.updateTime!=null">
+                #{category.updateTime},
+            </if>
+            <if test="category.isDeleted!=null">
+                #{category.isDeleted},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update">
+        update category
+        <set>
+            <if test="category.typeName!=null and category.typeName!=''">
+                type_name=#{category.typeName},
+            </if>
+            <if test="category.typeImage!=null and category.typeImage!=''">
+                type_image=#{category.typeImage},
+            </if>
+            <if test="category.typeDesc!=null and category.typeDesc!=''">
+                type_desc=#{category.typeDesc},
+            </if>
+            <if test="category.isDeleted!=null">
+                is_deleted=#{category.isDeleted},
+            </if>
+            update_time=#{category.updateTime}
+        </set>
+        where id=#{category.id}
+    </update>
+
+    <update id="delete">
+        update category
+        set is_deleted = 1,
+            update_time = #{time}
+        where id = #{id}
+          and is_deleted = 0
+    </update>
+</mapper>

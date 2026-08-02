@@ -1,0 +1,130 @@
+package com.beat.mall.console.controller.category;
+
+import com.beat.mall.console.domain.category.CategoryInfoVO;
+import com.beat.mall.console.domain.category.CategoryListFeedVO;
+import com.beat.mall.console.domain.category.CategoryListVO;
+import com.beat.mall.module.category.entity.Category;
+import com.beat.mall.module.category.service.CategoryService;
+import com.beat.mall.module.music.service.MusicService;
+import com.beat.mall.utils.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>
+ * 音乐类型表 前端控制器
+ * </p>
+ *
+ * @author YHP
+ * @since 2026-07-12
+ */
+@Slf4j
+@RestController
+public class CategoryController {
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private MusicService musicService;
+
+    @RequestMapping("/category/list")
+    public Response getCategoryList() {
+        List<Category> categories = categoryService.getAllCategory();
+        List<CategoryListVO> list = new ArrayList<>();
+        for (Category category : categories) {
+            CategoryListVO categoryListVO = new CategoryListVO()
+                    .setTypeName(category.getTypeName())
+                    .setTypeImage(category.getTypeImage());
+            list.add(categoryListVO);
+        }
+        CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO()
+                .setList(list);
+        return new Response<>(1001, categoryListFeedVO);
+    }
+
+    @RequestMapping("/category/info")
+    public Response getCategoryInfoById(@RequestParam(value = "id") Long id) {
+        Category category = null;
+        try {
+            category = categoryService.getById(id);
+        } catch (Exception e) {
+            log.error("category cannot be null", e);
+        }
+        if (category == null) {
+            log.info("id不存在");
+            return null;
+        }
+        CategoryInfoVO categoryInfoVO = new CategoryInfoVO()
+                .setTypeName(category.getTypeName())
+                .setTypeImage(category.getTypeImage())
+                .setTypeDesc(category.getTypeDesc());
+        return new Response<>(1001, categoryInfoVO);
+    }
+
+    @RequestMapping("/category/create")
+    public Response categoryCreate(@RequestParam(value = "typeName", required = false) String typeName,
+                                   @RequestParam(value = "typeImage", required = false) String typeImage,
+                                   @RequestParam(value = "typeDesc", defaultValue = "暂无描述") String typeDesc) {
+        Long id = null;
+        String res = "";
+        typeName = typeName == null ? typeName : typeName.trim();
+        typeImage = typeImage == null ? typeImage : typeImage.trim();
+        try {
+            id = categoryService.edit(null, typeName, typeImage, typeDesc);
+        } catch (Exception e) {
+            res = "typeName typeImage 等字段不能为空";
+            log.error("typeName and typeImage cannot be null", e);
+        }
+        if (id != null) {
+            res = "成功";
+        } else {
+            res = "失败 " + res;
+        }
+        return new Response<>(1001, res);
+    }
+
+    @RequestMapping("/category/update")
+    public Response categoryUpdate(@RequestParam(value = "id") Long id,
+                                   @RequestParam(value = "typeName", required = false) String typeName,
+                                   @RequestParam(value = "typeImage", required = false) String typeImage,
+                                   @RequestParam(value = "typeDesc", required = false) String typeDesc) {
+        String res = "成功";
+        typeName = typeName == null ? typeName : typeName.trim();
+        typeImage = typeImage == null ? typeImage : typeImage.trim();
+        try {
+            categoryService.edit(id, typeName, typeImage, typeDesc);
+        } catch (Exception e) {
+            res = "typeName typeImage 等字段不能为空";
+            log.error("typeName and typeImage cannot be null", e);
+        }
+        return new Response<>(1001, res);
+    }
+
+    @RequestMapping("/category/delete")
+    public Response categoryDelete(@RequestParam(value = "id") Long id) {
+        Long countMusicNum = musicService.getByTypeId(id);
+        if (countMusicNum > 0) {
+            log.error("删除失败，该分类下仍有音乐，无法删除");
+            return new Response<>(1001, "删除失败，该分类下仍有音乐，无法删除");
+        }
+        Integer affectedRows = 0;
+        String res = "";
+        try {
+            affectedRows = categoryService.delete(id);
+        } catch (Exception e) {
+            res = "无法找到该id";
+            log.error("cannot find the id", e);
+        }
+        if (affectedRows != 0) {
+            res = "成功";
+        } else {
+            res = "失败 " + res;
+        }
+        return new Response<>(1001, res);
+    }
+}

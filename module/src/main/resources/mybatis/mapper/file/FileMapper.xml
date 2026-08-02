@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.beat.mall.module.file.mapper.FileMapper">
+    <insert id="insert"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into file
+        <trim prefix="("
+              suffix=")"
+              suffixOverrides=",">
+            <if test="file.type!=null">
+                type,
+            </if>
+            <if test="file.url!=null and file.url!=''">
+                url,
+            </if>
+            <if test="file.createTime!=null">
+                create_time,
+            </if>
+            <if test="file.isDeleted!=null">
+                is_deleted,
+            </if>
+            update_time
+        </trim>
+        <trim prefix="values("
+              suffix=")"
+              suffixOverrides=",">
+            <if test="file.type!=null">
+                #{file.type,typeHandler=com.beat.mall.module.file.handler.FileTypeHandler},
+            </if>
+            <if test="file.url!=null and file.url!=''">
+                #{file.url},
+            </if>
+            <if test="file.createTime!=null">
+                #{file.createTime},
+            </if>
+            <if test="file.isDeleted!=null">
+                #{file.isDeleted},
+            </if>
+            #{file.updateTime}
+        </trim>
+    </insert>
+</mapper>
