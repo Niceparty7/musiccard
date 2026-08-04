@@ -4,16 +4,21 @@ package com.beat.mall.module.music.service;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
+import com.beat.mall.module.category.entity.Category;
+import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.domain.MusicExcelDTO;
 import com.beat.mall.module.music.domain.MusicListDTO;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.listener.MusicExcelListener;
 import com.beat.mall.module.music.mapper.MusicMapper;
-import com.beat.mall.module.category.entity.Category;
-import com.beat.mall.module.category.service.CategoryService;
+import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
+import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
+import com.beat.mall.module.tag.entity.Tag;
+import com.beat.mall.module.tag.service.TagService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -32,6 +37,10 @@ public class MusicService {
     private MusicMapper musicMapper;
     @Resource
     private CategoryService categoryService;
+    @Resource
+    private TagService tagService;
+    @Resource
+    private MusicTagRelationService musicTagRelationService;
 
     public Music getById(Long id) throws Exception {
         if (id == null) {
@@ -77,7 +86,8 @@ public class MusicService {
         return musicMapper.countTotal(keyword);
     }
 
-    public Long create(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
+    @Transactional(rollbackFor = Exception.class)
+    public Long create(String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId, String tags)
             throws Exception {
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         Music music = new Music()
@@ -101,11 +111,45 @@ public class MusicService {
             throw new RuntimeException("singerName cannot be null!");
         }
         musicMapper.insert(music);
-        Long resId = music.getId();
-        return resId;
+        Long musicId = music.getId();
+        if (tags != null && !tags.isEmpty()) {
+            String[] tagstrs = tags.split("\\$");
+            Long tagId = null;
+            //关联标签
+            for (String tag : tagstrs) {
+                Tag extractTag = tagService.extractByTagName(tag);
+                if (extractTag != null && extractTag.getIsDeleted() == 1) {
+                    tagId = extractTag.getId();
+                    Tag tmpTag = extractTag.setIsDeleted(0);
+                    tagService.update(tmpTag);
+                } else if (extractTag == null) {
+                    tagId = tagService.insert(tag, null);
+                } else {
+                    tagId = extractTag.getId();
+                }
+                MusicTagRelation extractRelation = musicTagRelationService.extractByMusicIdAndTagId(musicId, tagId);
+                if (extractRelation != null && extractRelation.getIsDeleted() == 1) {
+                    MusicTagRelation tmpRelation = extractRelation.
+                            setUpdateTime(timeStamp).
+                            setIsDeleted(0);
+                    musicTagRelationService.update(tmpRelation);
+                }
+                if (extractRelation == null) {
+                    MusicTagRelation musicTagRelation = new MusicTagRelation()
+                            .setMusicId(musicId)
+                            .setTagId(tagId)
+                            .setCreateTime(timeStamp)
+                            .setUpdateTime(timeStamp)
+                            .setIsDeleted(0);
+                    musicTagRelationService.insert(musicTagRelation);
+                }
+            }
+        }
+        return musicId;
     }
 
-    public Long update(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
+    @Transactional(rollbackFor = Exception.class)
+    public Long update(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId, String tags)
             throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
@@ -126,10 +170,43 @@ public class MusicService {
             throw new RuntimeException("cannot find the id");
         }
         Long affectedRows = (long) musicMapper.update(music);
+        if (tags != null && !tags.isEmpty()) {
+            String[] tagstrs = tags.split("\\$");
+            Long tagId = null;
+            //关联标签
+            for (String tag : tagstrs) {
+                Tag extractTag = tagService.extractByTagName(tag);
+                if (extractTag != null && extractTag.getIsDeleted() == 1) {
+                    tagId = extractTag.getId();
+                    Tag tmpTag = extractTag.setIsDeleted(0);
+                    tagService.update(tmpTag);
+                } else if (extractTag == null) {
+                    tagId = tagService.insert(tag, null);
+                } else {
+                    tagId = extractTag.getId();
+                }
+                MusicTagRelation extractRelation = musicTagRelationService.extractByMusicIdAndTagId(id, tagId);
+                if (extractRelation != null && extractRelation.getIsDeleted() == 1) {
+                    MusicTagRelation tmpRelation = extractRelation.
+                            setUpdateTime(timeStamp).
+                            setIsDeleted(0);
+                    musicTagRelationService.update(tmpRelation);
+                }
+                if (extractRelation == null) {
+                    MusicTagRelation musicTagRelation = new MusicTagRelation()
+                            .setMusicId(id)
+                            .setTagId(tagId)
+                            .setCreateTime(timeStamp)
+                            .setUpdateTime(timeStamp)
+                            .setIsDeleted(0);
+                    musicTagRelationService.insert(musicTagRelation);
+                }
+            }
+        }
         return affectedRows;
     }
 
-    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId)
+    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId, String tags)
             throws Exception {
         Long res;
         if (typeId != null) {
@@ -139,12 +216,12 @@ public class MusicService {
             }
         }
         if (id != null) {
-            res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
+            res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
             if (res == 0) {
                 throw new RuntimeException("update fail!");
             }
         } else {
-            res = create(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
+            res = create(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
             if (res == null) {
                 throw new RuntimeException("create fail!");
             }
@@ -152,6 +229,7 @@ public class MusicService {
         return res;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Integer delete(Long id) throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
@@ -164,6 +242,7 @@ public class MusicService {
         return musicMapper.getByTypeId(typeId);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void export(OutputStream outputStream) throws Exception {
         List<Music> list = musicMapper.getAllMusicList();
         List<MusicExcelDTO> excelList = list.stream()
@@ -186,6 +265,7 @@ public class MusicService {
                 .doWrite(excelList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void upload(InputStream inputStream) throws Exception {
         EasyExcel.read(inputStream, MusicExcelDTO.class, new MusicExcelListener(musicMapper)).sheet().doRead();
     }

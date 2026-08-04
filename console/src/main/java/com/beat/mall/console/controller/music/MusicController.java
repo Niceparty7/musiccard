@@ -8,6 +8,7 @@ import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.domain.MusicListDTO;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.service.MusicService;
+import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.utils.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,8 @@ public class MusicController {
     private MusicService musicService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private MusicTagRelationService musicTagRelationService;
 
     @RequestMapping("/music/info")
     public Response getMusicInfoById(@RequestParam(value = "id") Long id) {
@@ -62,6 +65,7 @@ public class MusicController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = simpleDateFormat.format(createTimeStamp);
         String updateTime = simpleDateFormat.format(updateTimeStamp);
+        List<String> tags = musicTagRelationService.getTagsByMusicId(id);
         MusicInfoVO musicInfoVO = new MusicInfoVO()
                 .setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
@@ -72,7 +76,8 @@ public class MusicController {
                 .setCreateTime(createTime)
                 .setUpdateTime(updateTime)
                 .setTypeName(category.getTypeName())
-                .setTypeImage(category.getTypeImage());
+                .setTypeImage(category.getTypeImage())
+                .setTags(tags);
         log.info(musicInfoVO.toString());
         return new Response<>(1001, musicInfoVO);
     }
@@ -111,13 +116,14 @@ public class MusicController {
                                 @RequestParam(value = "musicDesc", required = false) String musicDesc,
                                 @RequestParam(value = "albumTitle", required = false) String albumTitle,
                                 @RequestParam(value = "releaseDate", required = false) String releaseDate,
-                                @RequestParam(value = "typeId", required = false) Integer typeId) {
+                                @RequestParam(value = "typeId", required = false) Integer typeId,
+                                @RequestParam(value = "tags", required = false) String tags) {
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
         String res = "";
         try {
-            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId);
+            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId, tags);
         } catch (Exception e) {
             log.error("coverImages, musicName, singerName cannot be null!");
             res = "coverImages, musicName, singerName等字段为空或typeId不存在";
@@ -139,14 +145,15 @@ public class MusicController {
                                 @RequestParam(value = "musicDesc", required = false) String musicDesc,
                                 @RequestParam(value = "albumTitle", required = false) String albumTitle,
                                 @RequestParam(value = "releaseDate", required = false) String releaseDate,
-                                @RequestParam(value = "typeId", required = false) Integer typeId) {
+                                @RequestParam(value = "typeId", required = false) Integer typeId,
+                                @RequestParam(value = "tags", required = false) String tags) {
         musicName = musicName == null ? musicName : musicName.trim();
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         String res = "成功";
         try {
-            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId);
+            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
         } catch (Exception e) {
             log.error("cannot find the id");
             res = "更新失败，id不存在或typeId不存在";

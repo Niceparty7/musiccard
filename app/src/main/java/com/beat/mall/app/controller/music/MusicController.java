@@ -8,6 +8,7 @@ import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.service.MusicService;
+import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.utils.ImageUtils;
 import com.beat.mall.utils.Response;
 import com.beat.mall.utils.SignUtil;
@@ -31,6 +32,8 @@ import java.util.List;
 @Slf4j
 @RestController
 public class MusicController {
+    @Autowired
+    MusicTagRelationService musicTagRelationService;
     @Autowired
     private MusicService musicService;
     @Autowired
@@ -70,6 +73,7 @@ public class MusicController {
             return new Response(3052);
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
+        List<String> tags = musicTagRelationService.getTagsByMusicId(id);
         MusicInfoVO musicInfoVO = new MusicInfoVO()
                 .setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
@@ -78,7 +82,8 @@ public class MusicController {
                 .setReleaseDate(music.getReleaseDate())
                 .setMusicDesc(music.getMusicDesc())
                 .setTypeName(category.getTypeName())
-                .setTypeImage(category.getTypeImage());
+                .setTypeImage(category.getTypeImage())
+                .setTags(tags);
         log.info(musicInfoVO.toString());
         return new Response(1001, musicInfoVO);
     }

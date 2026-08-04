@@ -22,10 +22,10 @@ public class CodeGenerator {
         String consoleJava = projectPath + "/console/src/main/java"; // console模块的java源代码目录
 
         // 使用 FastAutoGenerator 快速配置代码生成器
-        FastAutoGenerator.create("jdbc:mysql://localhost:3306/mall?serverTimezone=GMT%2B8",
-                        "root", "root123456") // 配置数据源，也就是要连接的数据库（根据自己项目实际情况修改）
+        FastAutoGenerator.create("jdbc:mysql://localhost:3306/musiccard?serverTimezone=GMT%2B8",
+                        "root", "123456") // 配置数据源，也就是要连接的数据库（根据自己项目实际情况修改）
                 .globalConfig(builder -> {
-                    builder.author("Your Name") // 设置作者
+                    builder.author("yhp") // 设置作者
                             .outputDir(moduleJava) // 输出目录
                             .disableOpenDir(); // 禁止自动打开输出目录
                 }).packageConfig(builder -> {
@@ -37,7 +37,7 @@ public class CodeGenerator {
                             .pathInfo(Collections.singletonMap(OutputFile.xml,
                                     moduleResources + "/mybatis/mapper")); // 设置 Mapper XML文件路径
                 }).strategyConfig(builder -> {
-                    builder.addInclude("file") // 设置：根据表（category）生成代码
+                    builder.addInclude("music_tag_relation") // 设置：根据表（category）生成代码
                             // Entity 类生成策略
                             .entityBuilder().enableLombok() // 启用 Lombok
                             .enableTableFieldAnnotation() // 启用字段注解

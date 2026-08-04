@@ -21,4 +21,5 @@ public class MusicInfoVO {
     private String updateTime;
     private String typeName;
     private String typeImage;
+    private List<String> tags;
 }
