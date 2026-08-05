@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,16 +58,19 @@ public class MusicTagRelationService {
 
     public List<String> getTagsByMusicId(Long musicId) {
         List<Long> list = musicTagRelationMapper.getTagsByMusicId(musicId);
-        List<String> tagIds = new ArrayList<>();
+        List<String> tagNames = new ArrayList<>();
         for (Long i : list) {
             String tagName = tagMapper.getById(i).getTagName();
-            tagIds.add(tagName);
+            tagNames.add(tagName);
         }
-        return tagIds;
+        return tagNames;
     }
 
-    public List<Long> getMusicsByTagId(Long tagId) {
-        List<Long> list = musicTagRelationMapper.getMusicsByTagId(tagId);
-        return list;
+    public List<Long> getMusicIdsByTagIds(List<Long> tagIds) {
+        if (tagIds == null || tagIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        String ids = tagIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+        return musicTagRelationMapper.getMusicIdsByTagIds(ids);
     }
 }

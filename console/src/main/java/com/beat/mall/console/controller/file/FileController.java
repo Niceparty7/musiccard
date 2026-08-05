@@ -1,6 +1,9 @@
 package com.beat.mall.console.controller.file;
 
+import com.beat.mall.console.annotations.VerifiedUser;
 import com.beat.mall.module.file.service.FileService;
+import com.beat.mall.module.user.entity.User;
+import com.beat.mall.utils.BaseUtil;
 import com.beat.mall.utils.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +19,11 @@ public class FileController {
     private FileService fileService;
 
     @RequestMapping("/upload")
-    public Response upload(@RequestParam("file") MultipartFile file) {
+    public Response upload(@VerifiedUser User loginUser, @RequestParam("file") MultipartFile file) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         String res = null;
         try {
             res = fileService.uploadAndSave(file);

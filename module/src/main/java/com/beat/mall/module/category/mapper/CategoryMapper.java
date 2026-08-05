@@ -31,4 +31,7 @@ public interface CategoryMapper {
 
     @Select("select id from category where parent_id=#{id}")
     List<Long> getChildrenById(@Param("id") Long id);
+
+    @Select("select * from category where is_deleted=0 and type_name like concat('%',#{keyword},'%')")
+    List<Category> getCategoryByKeyword(@Param("keyword") String keyword);
 }

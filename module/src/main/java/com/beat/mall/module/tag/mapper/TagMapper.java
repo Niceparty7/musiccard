@@ -29,4 +29,7 @@ public interface TagMapper {
 
     @Select("SELECT * FROM tag WHERE tag_name = #{tagName} ")
     Tag extractByTagName(@Param("tagName") String tagName);
+
+    @Select("select id from tag where is_deleted=0 and tag_name like concat('%',#{keyword},'%')")
+    List<Long> getTagIdsByKeyword(@Param("keyword") String keyword);
 }

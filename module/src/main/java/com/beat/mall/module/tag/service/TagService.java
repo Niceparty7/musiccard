@@ -73,4 +73,8 @@ public class TagService {
     public List<Tag> getAll() {
         return mapper.getAll();
     }
+
+    public List<Long> getTagIdsByKeyword(String keyword) {
+        return mapper.getTagIdsByKeyword(keyword);
+    }
 }

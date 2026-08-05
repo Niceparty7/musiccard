@@ -109,4 +109,7 @@ public class CategoryService {
     public List<Long> getChildrenById(Long id) {
         return categoryMapper.getChildrenById(id);
     }
+    public List<Category> getCategoryByKeyword(String keyword){
+        return categoryMapper.getCategoryByKeyword(keyword);
+    }
 }

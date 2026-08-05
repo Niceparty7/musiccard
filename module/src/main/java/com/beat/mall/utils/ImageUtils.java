@@ -24,7 +24,10 @@ public class ImageUtils {
             try {
                 bufferedImage = ImageIO.read(new URL(url));
             } catch (IOException e) {
-                throw new RuntimeException("acquiring image falied", e);
+                throw new RuntimeException("读取图片失败", e);
+            }
+            if (bufferedImage == null) {
+                return 0F;   // 不是图片或下载失败，直接返回默认值
             }
             Integer width = bufferedImage.getWidth();
             Integer height = bufferedImage.getHeight();

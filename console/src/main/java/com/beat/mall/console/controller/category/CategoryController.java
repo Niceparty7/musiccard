@@ -1,5 +1,6 @@
 package com.beat.mall.console.controller.category;
 
+import com.beat.mall.console.annotations.VerifiedUser;
 import com.beat.mall.console.domain.category.CategoryChildrenListVO;
 import com.beat.mall.console.domain.category.CategoryInfoVO;
 import com.beat.mall.console.domain.category.CategoryListFeedVO;
@@ -7,6 +8,8 @@ import com.beat.mall.console.domain.category.CategoryListVO;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.service.MusicService;
+import com.beat.mall.module.user.entity.User;
+import com.beat.mall.utils.BaseUtil;
 import com.beat.mall.utils.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,11 @@ public class CategoryController {
     private MusicService musicService;
 
     @RequestMapping("/category/list")
-    public Response getCategoryList() {
+    public Response getCategoryList(@VerifiedUser User loginUser) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         List<Category> categories = categoryService.getAllCategory();
         List<CategoryListVO> list = new ArrayList<>();
         for (Category category : categories) {
@@ -67,7 +74,11 @@ public class CategoryController {
     }
 
     @RequestMapping("/category/info")
-    public Response getCategoryInfoById(@RequestParam(value = "id") Long id) {
+    public Response getCategoryInfoById(@VerifiedUser User loginUser, @RequestParam(value = "id") Long id) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         Category category = null;
         try {
             category = categoryService.getById(id);
@@ -104,10 +115,15 @@ public class CategoryController {
     }
 
     @RequestMapping("/category/create")
-    public Response categoryCreate(@RequestParam(value = "typeName", required = false) String typeName,
+    public Response categoryCreate(@VerifiedUser User loginUser,
+                                   @RequestParam(value = "typeName", required = false) String typeName,
                                    @RequestParam(value = "typeImage", required = false) String typeImage,
                                    @RequestParam(value = "typeDesc", defaultValue = "暂无描述") String typeDesc,
                                    @RequestParam(value = "parentId", required = false) Long parentId) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         Long id = null;
         String res = "";
         typeName = typeName == null ? typeName : typeName.trim();
@@ -127,11 +143,16 @@ public class CategoryController {
     }
 
     @RequestMapping("/category/update")
-    public Response categoryUpdate(@RequestParam(value = "id") Long id,
+    public Response categoryUpdate(@VerifiedUser User loginUser,
+                                   @RequestParam(value = "id") Long id,
                                    @RequestParam(value = "typeName", required = false) String typeName,
                                    @RequestParam(value = "typeImage", required = false) String typeImage,
                                    @RequestParam(value = "typeDesc", required = false) String typeDesc,
                                    @RequestParam(value = "parentId", required = false) Long parentId) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         String res = "成功";
         typeName = typeName == null ? typeName : typeName.trim();
         typeImage = typeImage == null ? typeImage : typeImage.trim();
@@ -145,7 +166,11 @@ public class CategoryController {
     }
 
     @RequestMapping("/category/delete")
-    public Response categoryDelete(@RequestParam(value = "id") Long id) {
+    public Response categoryDelete(@VerifiedUser User loginUser, @RequestParam(value = "id") Long id) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         Long countMusicNum = musicService.getByTypeId(id);
         if (countMusicNum > 0) {
             log.error("删除失败，该分类下仍有音乐，无法删除");

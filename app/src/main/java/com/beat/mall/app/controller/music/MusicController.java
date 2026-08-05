@@ -27,7 +27,11 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -96,14 +100,28 @@ public class MusicController {
         keyword = keyword == null ? keyword : keyword.trim();
         List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
-        Category category = null;
-        for (Music music : list) {
+
+        Set<Long> typeIds = list.stream()
+                .map(Music::getTypeId)
+                .filter(tid -> tid != null)
+                .map(Integer::longValue)
+                .collect(Collectors.toSet());
+        Map<Long, Category> categoryMap = new HashMap<>();
+        for (Long tid : typeIds) {
             try {
-                category = categoryService.getById((long) music.getTypeId());
+                Category c = categoryService.getById(tid);
+                categoryMap.put(tid, c);
             } catch (Exception e) {
                 log.error("category cannot be null", e);
             }
-            //该分类不存在，不展示当前音乐
+        }
+
+        for (Music music : list) {
+            Integer typeId = music.getTypeId();
+            if (typeId == null) {
+                continue;
+            }
+            Category category = categoryMap.get((long) typeId);
             if (category == null) {
                 continue;
             }

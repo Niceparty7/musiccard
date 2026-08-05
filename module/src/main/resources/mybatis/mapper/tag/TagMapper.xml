@@ -9,45 +9,39 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.beat.mall.module.tag.entity.Tag">
         INSERT INTO tag
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                    <if test="id != null">
-                        id,
-                    </if>
-                    <if test="tagName != null">
-                        tag_name,
-                    </if>
-                    <if test="createTime != null">
-                        create_time,
-                    </if>
-                    <if test="updateTime != null">
-                        update_time,
-                    </if>
-                    <if test="isDeleted != null">
-                        is_deleted,
-                    </if>
-                    <if test="tagDesc != null">
-                        tag_desc
-                    </if>
+            <if test="tagName != null">
+                tag_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="tagDesc != null">
+                tag_desc
+            </if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                    <if test="id != null">
-                        #{id},
-                    </if>
-                    <if test="tagName != null">
-                        #{tagName},
-                    </if>
-                    <if test="createTime != null">
-                        #{createTime},
-                    </if>
-                    <if test="updateTime != null">
-                        #{updateTime},
-                    </if>
-                    <if test="isDeleted != null">
-                        #{isDeleted},
-                    </if>
-                    <if test="tagDesc != null">
-                        #{tagDesc}
-                    </if>
+            <if test="tagName != null">
+                #{tagName},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted},
+            </if>
+            <if test="tagDesc != null">
+                #{tagDesc}
+            </if>
         </trim>
     </insert>
 

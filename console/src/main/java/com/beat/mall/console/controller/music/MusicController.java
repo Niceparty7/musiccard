@@ -1,14 +1,16 @@
 package com.beat.mall.console.controller.music;
 
+import com.beat.mall.console.annotations.VerifiedUser;
 import com.beat.mall.console.domain.music.MusicInfoVO;
 import com.beat.mall.console.domain.music.MusicListFeedVO;
 import com.beat.mall.console.domain.music.MusicListVO;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
-import com.beat.mall.module.music.domain.MusicListDTO;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
+import com.beat.mall.module.user.entity.User;
+import com.beat.mall.utils.BaseUtil;
 import com.beat.mall.utils.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,11 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -38,7 +44,11 @@ public class MusicController {
     private MusicTagRelationService musicTagRelationService;
 
     @RequestMapping("/music/info")
-    public Response getMusicInfoById(@RequestParam(value = "id") Long id) {
+    public Response getMusicInfoById(@VerifiedUser User loginUser, @RequestParam(value = "id") Long id) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         Music music = null;
         Boolean res = true;
         try {
@@ -83,22 +93,47 @@ public class MusicController {
     }
 
     @RequestMapping("/music/list")
-    public Response getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                 @RequestParam(value = "keyword", required = false) String keyword) {
+    public Response getMusicList(@VerifiedUser User loginUser,
+                                 @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                 @RequestParam(value = "musicName", required = false) String musicName,
+                                 @RequestParam(value = "typeName", required = false) String typeName,
+                                 @RequestParam(value = "tagName", required = false) String tagName) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
-        keyword = keyword == null ? keyword : keyword.trim();
-        Long total = musicService.countTotal(keyword);
-        List<MusicListDTO> list = musicService.getAllMusicListDTO(page, pageSize, keyword);
-        for (MusicListDTO musicListDTO : list) {
-            String[] coverImages = musicListDTO.getCoverImages().split("\\$");
+        musicName = musicName == null ? musicName : musicName.trim();
+        typeName = typeName == null ? typeName : typeName.trim();
+        tagName = tagName == null ? tagName : tagName.trim();
+        Long total = musicService.countTotal(musicName, typeName, tagName);
+        List<Music> list = musicService.getAllMusicList2(page, pageSize, musicName, typeName, tagName);
+
+        Set<Long> typeIds = list.stream()
+                .map(Music::getTypeId)
+                .filter(tid -> tid != null)
+                .map(Integer::longValue)
+                .collect(Collectors.toSet());
+        Map<Long, String> typeNameMap = new HashMap<>();
+        for (Long tid : typeIds) {
+            try {
+                typeNameMap.put(tid, categoryService.getById(tid).getTypeName());
+            } catch (Exception e) {
+                log.error("category cannot be null", e);
+            }
+        }
+
+        for (Music music : list) {
+            String[] coverImages = music.getCoverImages().split("\\$");
+            Integer tid = music.getTypeId();
             MusicListVO musicListVO = new MusicListVO()
-                    .setId(musicListDTO.getId())
+                    .setId(music.getId())
                     .setWallImage(coverImages[0])
-                    .setMusicName(musicListDTO.getMusicName())
-                    .setSingerName(musicListDTO.getSingerName())
-                    .setMusicDesc(musicListDTO.getMusicDesc())
-                    .setTypeName(musicListDTO.getTypeName());
+                    .setMusicName(music.getMusicName())
+                    .setSingerName(music.getSingerName())
+                    .setMusicDesc(music.getMusicDesc())
+                    .setTypeName(tid != null ? typeNameMap.get((long) tid) : null);
             musicCardList.add(musicListVO);
         }
         MusicListFeedVO musicListFeedVO = new MusicListFeedVO()
@@ -110,7 +145,8 @@ public class MusicController {
     }
 
     @RequestMapping("/music/create")
-    public Response musicCreate(@RequestParam(value = "coverImages", required = false) String coverImages,
+    public Response musicCreate(@VerifiedUser User loginUser,
+                                @RequestParam(value = "coverImages", required = false) String coverImages,
                                 @RequestParam(value = "musicName", required = false) String musicName,
                                 @RequestParam(value = "singerName", required = false) String singerName,
                                 @RequestParam(value = "musicDesc", required = false) String musicDesc,
@@ -118,6 +154,10 @@ public class MusicController {
                                 @RequestParam(value = "releaseDate", required = false) String releaseDate,
                                 @RequestParam(value = "typeId", required = false) Integer typeId,
                                 @RequestParam(value = "tags", required = false) String tags) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         Long id = null;
@@ -138,7 +178,8 @@ public class MusicController {
     }
 
     @RequestMapping("/music/update")
-    public Response musicUpdate(@RequestParam(value = "id") Long id,
+    public Response musicUpdate(@VerifiedUser User loginUser,
+                                @RequestParam(value = "id") Long id,
                                 @RequestParam(value = "coverImages", required = false) String coverImages,
                                 @RequestParam(value = "musicName", required = false) String musicName,
                                 @RequestParam(value = "singerName", required = false) String singerName,
@@ -147,6 +188,10 @@ public class MusicController {
                                 @RequestParam(value = "releaseDate", required = false) String releaseDate,
                                 @RequestParam(value = "typeId", required = false) Integer typeId,
                                 @RequestParam(value = "tags", required = false) String tags) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         musicName = musicName == null ? musicName : musicName.trim();
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
@@ -163,7 +208,11 @@ public class MusicController {
     }
 
     @RequestMapping("/music/delete")
-    public Response musicDelete(@RequestParam(value = "id", required = false) Long id) {
+    public Response musicDelete(@VerifiedUser User loginUser, @RequestParam(value = "id", required = false) Long id) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         Integer affectedRows = 0;
         String res = "";
         try {
@@ -182,7 +231,11 @@ public class MusicController {
     }
 
     @RequestMapping("/music/download")
-    public Response download(HttpServletResponse response) throws IOException {
+    public Response download(@VerifiedUser User loginUser, HttpServletResponse response) throws IOException {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("音乐列表", "UTF-8").replaceAll("\\+", "%20");
@@ -198,7 +251,11 @@ public class MusicController {
     }
 
     @RequestMapping("/music/upload")
-    public Response upload(MultipartFile file) throws IOException {
+    public Response upload(@VerifiedUser User loginUser, MultipartFile file) throws IOException {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         String res = "成功";
         try {
             musicService.upload(file.getInputStream());
@@ -210,7 +267,11 @@ public class MusicController {
     }
 
     @RequestMapping("/music/downloadzip")
-    public Response downloadzip(HttpServletResponse response) throws IOException {
+    public Response downloadzip(@VerifiedUser User loginUser, HttpServletResponse response) throws IOException {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         response.setContentType("application/zip");
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=music.zip");
@@ -221,13 +282,18 @@ public class MusicController {
         } catch (Exception e) {
             res = "批量下载失败";
             log.error("批量下载失败", e);
+            return new Response<>(4004, "批量下载失败");
         }
         Files.copy(zip.toPath(), response.getOutputStream());
         return new Response<>(1001, res);
     }
 
     @RequestMapping("/music/uploadzip")
-    public Response uploadZip(MultipartFile file) throws Exception {
+    public Response uploadZip(@VerifiedUser User loginUser, MultipartFile file) throws Exception {
+        if (BaseUtil.isEmpty(loginUser)) {
+            log.warn("User not logged in.");
+            return new Response(1002);
+        }
         String res = "批量上传成功";
         try {
             musicService.uploadZip(file);

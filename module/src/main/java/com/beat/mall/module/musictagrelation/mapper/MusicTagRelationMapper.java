@@ -32,4 +32,7 @@ public interface MusicTagRelationMapper {
 
     @Select("select distinct music_id from music_tag_relation where tag_id=#{tagId} and is_deleted=0")
     List<Long> getMusicsByTagId(@Param("tagId") Long tagId);
+
+    @Select("select distinct music_id from music_tag_relation where tag_id in (${tagIds}) and is_deleted=0")
+    List<Long> getMusicIdsByTagIds(@Param("tagIds") String tagIds);
 }

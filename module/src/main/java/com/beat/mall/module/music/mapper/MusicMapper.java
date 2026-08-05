@@ -1,6 +1,5 @@
 package com.beat.mall.module.music.mapper;
 
-import com.beat.mall.module.music.domain.MusicListDTO;
 import com.beat.mall.module.music.entity.Music;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,9 +18,11 @@ public interface MusicMapper {
     @Select("select * from music where is_deleted=0")
     List<Music> getAllMusicList();
 
-    List<Music> getAllMusic(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword, @Param("subquery") String subquery);
+    List<Music> getAllMusic(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize,
+                            @Param("keyword") String keyword, @Param("subquery") String subquery, @Param("subquery2") String subquery2);
 
-    List<MusicListDTO> getAllMusicListDTO(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("keyword") String keyword);
+    List<Music> getAllMusicList2(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("musicName") String musicName,
+                                          @Param("subquery") String subquery, @Param("subquery2") String subquery2);
 
     Integer update(@Param("music") Music music);
 
@@ -29,13 +30,10 @@ public interface MusicMapper {
 
     Integer delete(@Param("time") Integer time, @Param("id") Long id);
 
-    Long countTotal(@Param("keyword") String keyword);
+    Long countTotal(@Param("musicName") String musicName, @Param("subquery") String subquery, @Param("subquery2") String subquery2);
 
     @Select("select count(*) from music where type_id=#{typeId} and is_deleted=0")
     Long getByTypeId(@Param("typeId") Long typeId);
-
-    @Select("select id from category where is_deleted=0 and type_name like concat('%',#{keyword},'%')")
-    List<Long> getIds(@Param("keyword") String keyword);
 
     Integer insertBatch(@Param("list") List<Music> list);
 

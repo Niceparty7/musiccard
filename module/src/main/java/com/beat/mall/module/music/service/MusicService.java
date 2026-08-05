@@ -7,7 +7,6 @@ import com.alibaba.excel.EasyExcel;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.domain.MusicExcelDTO;
-import com.beat.mall.module.music.domain.MusicListDTO;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.listener.MusicExcelListener;
 import com.beat.mall.module.music.mapper.MusicMapper;
@@ -25,7 +24,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -65,25 +66,91 @@ public class MusicService {
     }
 
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
-        List<Long> ids = musicMapper.getIds(keyword);
+        String subquery = "";
+        String subquery2 = "";
+        if (keyword != null && !keyword.isEmpty()) {
+            List<Category> categoryList = categoryService.getCategoryByKeyword(keyword);
+            List<Long> ids = new ArrayList<>();
+            List<Long> parentIds = new ArrayList<>();
+            Set<Long> idSet = new HashSet<>();
+            for (Category category : categoryList) {
+                ids.add(category.getId());
+                parentIds.add(category.getParentId());
+                idSet.addAll(categoryService.getChildrenById(category.getId()));
+            }
+            idSet.addAll(ids);
+            idSet.addAll(parentIds);
+            List<Long> allIds = new ArrayList<>(idSet);
+            subquery = getSubqueryByIds(allIds);
+            List<Long> tagIds = tagService.getTagIdsByKeyword(keyword);
+            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
+            subquery2 = getSubqueryByIds(allMusicIds);
+        }
+        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery, subquery2);
+    }
+
+    private String getSubqueryByIds(List<Long> list) {
         StringBuffer stringBuffer = new StringBuffer("");
-        for (int i = 0; i < ids.size(); i++) {
-            if (i == ids.size() - 1) {
-                stringBuffer.append(ids.get(i) + "");
+        for (int i = 0; i < list.size(); i++) {
+            if (i == list.size() - 1) {
+                stringBuffer.append(list.get(i) + "");
                 break;
             }
-            stringBuffer.append(ids.get(i) + "").append(",");
+            stringBuffer.append(list.get(i) + "").append(",");
         }
-        String subquery = stringBuffer.toString();
-        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery);
+        return stringBuffer.toString();
     }
 
-    public List<MusicListDTO> getAllMusicListDTO(Integer page, Integer pageSize, String keyword) {
-        return musicMapper.getAllMusicListDTO((page - 1) * pageSize, pageSize, keyword);
+    public List<Music> getAllMusicList2(Integer page, Integer pageSize, String musicName, String typeName, String tagName) {
+        String subquery = "";
+        String subquery2 = "";
+        if (typeName != null && !typeName.isEmpty()) {
+            List<Category> categoryList = categoryService.getCategoryByKeyword(typeName);
+            List<Long> ids = new ArrayList<>();
+            List<Long> parentIds = new ArrayList<>();
+            Set<Long> idSet = new HashSet<>();
+            for (Category category : categoryList) {
+                ids.add(category.getId());
+                parentIds.add(category.getParentId());
+                idSet.addAll(categoryService.getChildrenById(category.getId()));
+            }
+            idSet.addAll(ids);
+            idSet.addAll(parentIds);
+            List<Long> allIds = new ArrayList<>(idSet);
+            subquery = getSubqueryByIds(allIds);
+        }
+        if (tagName != null && !tagName.isEmpty()) {
+            List<Long> tagIds = tagService.getTagIdsByKeyword(tagName);
+            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
+            subquery2 = getSubqueryByIds(allMusicIds);
+        }
+        return musicMapper.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, subquery, subquery2);
     }
 
-    public Long countTotal(String keyword) {
-        return musicMapper.countTotal(keyword);
+    public Long countTotal(String musicName, String typeName, String tagName) {
+        String subquery = "";
+        String subquery2 = "";
+        if (typeName != null && !typeName.isEmpty()) {
+            List<Category> categoryList = categoryService.getCategoryByKeyword(typeName);
+            List<Long> ids = new ArrayList<>();
+            List<Long> parentIds = new ArrayList<>();
+            Set<Long> idSet = new HashSet<>();
+            for (Category category : categoryList) {
+                ids.add(category.getId());
+                parentIds.add(category.getParentId());
+                idSet.addAll(categoryService.getChildrenById(category.getId()));
+            }
+            idSet.addAll(ids);
+            idSet.addAll(parentIds);
+            List<Long> allIds = new ArrayList<>(idSet);
+            subquery = getSubqueryByIds(allIds);
+        }
+        if (tagName != null && !tagName.isEmpty()) {
+            List<Long> tagIds = tagService.getTagIdsByKeyword(tagName);
+            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
+            subquery2 = getSubqueryByIds(allMusicIds);
+        }
+        return musicMapper.countTotal(musicName, subquery, subquery2);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -206,6 +273,7 @@ public class MusicService {
         return affectedRows;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId, String tags)
             throws Exception {
         Long res;
