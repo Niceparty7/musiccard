@@ -13,4 +13,5 @@ public class Category {
     private Integer createTime;
     private Integer updateTime = (int) (System.currentTimeMillis() / 1000);
     private Integer isDeleted;
+    private Long parentId;
 }

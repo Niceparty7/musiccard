@@ -43,7 +43,7 @@ public class CategoryService {
         return categoryMapper.getAllCategory();
     }
 
-    public Long create(String typeName, String typeImage, String typeDesc) throws Exception {
+    public Long create(String typeName, String typeImage, String typeDesc, Long parentId) throws Exception {
         if (typeName == null) {
             throw new RuntimeException("typeName cannot be null!");
         }
@@ -57,12 +57,13 @@ public class CategoryService {
                 .setTypeDesc(typeDesc)
                 .setCreateTime(timeStamp)
                 .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
+                .setIsDeleted(0)
+                .setParentId(parentId);
         categoryMapper.insert(category);
         return category.getId();
     }
 
-    public Long update(Long id, String typeName, String typeImage, String typeDesc) throws Exception {
+    public Long update(Long id, String typeName, String typeImage, String typeDesc, Long parentId) throws Exception {
         if (id == null) {
             throw new RuntimeException("id cannot be null!");
         }
@@ -73,22 +74,23 @@ public class CategoryService {
                 .setTypeImage(typeImage)
                 .setTypeDesc(typeDesc)
                 .setUpdateTime(timeStamp)
-                .setIsDeleted(0);
+                .setIsDeleted(0)
+                .setParentId(parentId);
         if (extractById(id) == null) {
             throw new RuntimeException("cannot find the id");
         }
         return (long) categoryMapper.update(category);
     }
 
-    public Long edit(Long id, String typeName, String typeImage, String typeDesc) throws Exception {
+    public Long edit(Long id, String typeName, String typeImage, String typeDesc, Long parentId) throws Exception {
         Long res;
         if (id != null) {
-            res = update(id, typeName, typeImage, typeDesc);
+            res = update(id, typeName, typeImage, typeDesc, parentId);
             if (res == 0) {
                 throw new RuntimeException("update fail!");
             }
         } else {
-            res = create(typeName, typeImage, typeDesc);
+            res = create(typeName, typeImage, typeDesc, parentId);
             if (res == null) {
                 throw new RuntimeException("create fail!");
             }
@@ -102,5 +104,9 @@ public class CategoryService {
         }
         int timeStamp = (int) (System.currentTimeMillis() / 1000);
         return categoryMapper.delete(timeStamp, id);
+    }
+
+    public List<Long> getChildrenById(Long id) {
+        return categoryMapper.getChildrenById(id);
     }
 }

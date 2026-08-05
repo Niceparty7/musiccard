@@ -3,13 +3,9 @@ package com.beat.mall.console.domain.category;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 @Data
 @Accessors(chain = true)
-public class CategoryInfoVO {
+public class CategoryChildrenListVO {
     private String typeName;
     private String typeImage;
-    private String typeDesc;
-    private List<CategoryChildrenListVO> children;
 }

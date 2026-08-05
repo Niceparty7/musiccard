@@ -1,5 +1,6 @@
 package com.beat.mall.app.controller.category;
 
+import com.beat.mall.app.domain.category.CategoryChildrenListVO;
 import com.beat.mall.app.domain.category.CategoryListFeedVO;
 import com.beat.mall.app.domain.category.CategoryListVO;
 import com.beat.mall.module.category.entity.Category;
@@ -33,9 +34,27 @@ public class CategoryController {
         List<Category> categories = categoryService.getAllCategory();
         List<CategoryListVO> list = new ArrayList<>();
         for (Category category : categories) {
+            List<Long> childrenIds = categoryService.getChildrenById(category.getId());
+            List<CategoryChildrenListVO> categoryChildrenListVOS = new ArrayList<>();
+            for (Long childId : childrenIds) {
+                Category child = null;
+                try {
+                    child = categoryService.getById(childId);
+                } catch (Exception e) {
+                    log.error("cannot find the current childId:{}", child, e);
+                }
+                //当前child未找到跳过
+                if (child == null) {
+                    continue;
+                }
+                categoryChildrenListVOS.add(new CategoryChildrenListVO()
+                        .setTypeName(child.getTypeName())
+                        .setTypeImage(child.getTypeImage()));
+            }
             CategoryListVO categoryListVO = new CategoryListVO()
                     .setTypeName(category.getTypeName())
-                    .setTypeImage(category.getTypeImage());
+                    .setTypeImage(category.getTypeImage())
+                    .setChildren(categoryChildrenListVOS);
             list.add(categoryListVO);
         }
         CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO()

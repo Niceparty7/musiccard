@@ -1,5 +1,6 @@
 package com.beat.mall.console.controller.category;
 
+import com.beat.mall.console.domain.category.CategoryChildrenListVO;
 import com.beat.mall.console.domain.category.CategoryInfoVO;
 import com.beat.mall.console.domain.category.CategoryListFeedVO;
 import com.beat.mall.console.domain.category.CategoryListVO;
@@ -37,9 +38,27 @@ public class CategoryController {
         List<Category> categories = categoryService.getAllCategory();
         List<CategoryListVO> list = new ArrayList<>();
         for (Category category : categories) {
+            List<Long> childrenIds = categoryService.getChildrenById(category.getId());
+            List<CategoryChildrenListVO> categoryChildrenListVOS = new ArrayList<>();
+            for (Long childId : childrenIds) {
+                Category child = null;
+                try {
+                    child = categoryService.getById(childId);
+                } catch (Exception e) {
+                    log.error("cannot find the current childId:{}", child, e);
+                }
+                //当前child未找到跳过
+                if (child == null) {
+                    continue;
+                }
+                categoryChildrenListVOS.add(new CategoryChildrenListVO()
+                        .setTypeName(child.getTypeName())
+                        .setTypeImage(child.getTypeImage()));
+            }
             CategoryListVO categoryListVO = new CategoryListVO()
                     .setTypeName(category.getTypeName())
-                    .setTypeImage(category.getTypeImage());
+                    .setTypeImage(category.getTypeImage())
+                    .setChildren(categoryChildrenListVOS);
             list.add(categoryListVO);
         }
         CategoryListFeedVO categoryListFeedVO = new CategoryListFeedVO()
@@ -57,25 +76,44 @@ public class CategoryController {
         }
         if (category == null) {
             log.info("id不存在");
-            return null;
+            return new Response<>(3052, "id不存在");
+        }
+        List<Long> childrenIds = categoryService.getChildrenById(id);
+        List<CategoryChildrenListVO> categoryChildrenListVOS = new ArrayList<>();
+        for (Long childId : childrenIds) {
+            Category child = null;
+            try {
+                child = categoryService.getById(childId);
+            } catch (Exception e) {
+                log.error("cannot find the current childId:{}", child, e);
+            }
+            //当前child未找到跳过
+            if (child == null) {
+                continue;
+            }
+            categoryChildrenListVOS.add(new CategoryChildrenListVO()
+                    .setTypeName(child.getTypeName())
+                    .setTypeImage(child.getTypeImage()));
         }
         CategoryInfoVO categoryInfoVO = new CategoryInfoVO()
                 .setTypeName(category.getTypeName())
                 .setTypeImage(category.getTypeImage())
-                .setTypeDesc(category.getTypeDesc());
+                .setTypeDesc(category.getTypeDesc())
+                .setChildren(categoryChildrenListVOS);
         return new Response<>(1001, categoryInfoVO);
     }
 
     @RequestMapping("/category/create")
     public Response categoryCreate(@RequestParam(value = "typeName", required = false) String typeName,
                                    @RequestParam(value = "typeImage", required = false) String typeImage,
-                                   @RequestParam(value = "typeDesc", defaultValue = "暂无描述") String typeDesc) {
+                                   @RequestParam(value = "typeDesc", defaultValue = "暂无描述") String typeDesc,
+                                   @RequestParam(value = "parentId", required = false) Long parentId) {
         Long id = null;
         String res = "";
         typeName = typeName == null ? typeName : typeName.trim();
         typeImage = typeImage == null ? typeImage : typeImage.trim();
         try {
-            id = categoryService.edit(null, typeName, typeImage, typeDesc);
+            id = categoryService.edit(null, typeName, typeImage, typeDesc, parentId);
         } catch (Exception e) {
             res = "typeName typeImage 等字段不能为空";
             log.error("typeName and typeImage cannot be null", e);
@@ -92,12 +130,13 @@ public class CategoryController {
     public Response categoryUpdate(@RequestParam(value = "id") Long id,
                                    @RequestParam(value = "typeName", required = false) String typeName,
                                    @RequestParam(value = "typeImage", required = false) String typeImage,
-                                   @RequestParam(value = "typeDesc", required = false) String typeDesc) {
+                                   @RequestParam(value = "typeDesc", required = false) String typeDesc,
+                                   @RequestParam(value = "parentId", required = false) Long parentId) {
         String res = "成功";
         typeName = typeName == null ? typeName : typeName.trim();
         typeImage = typeImage == null ? typeImage : typeImage.trim();
         try {
-            categoryService.edit(id, typeName, typeImage, typeDesc);
+            categoryService.edit(id, typeName, typeImage, typeDesc, parentId);
         } catch (Exception e) {
             res = "typeName typeImage 等字段不能为空";
             log.error("typeName and typeImage cannot be null", e);

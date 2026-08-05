@@ -26,6 +26,9 @@
             <if test="category.isDeleted!=null">
                 is_deleted,
             </if>
+            <if test="category.parentId!=null">
+                parent_id,
+            </if>
         </trim>
         <trim prefix="values("
               suffix=")"
@@ -48,6 +51,9 @@
             <if test="category.isDeleted!=null">
                 #{category.isDeleted},
             </if>
+            <if test="category.parentId!=null">
+                #{category.parentId},
+            </if>
         </trim>
     </insert>
 
@@ -66,6 +72,9 @@
             <if test="category.isDeleted!=null">
                 is_deleted=#{category.isDeleted},
             </if>
+            <if test="category.parentId!=null">
+                parent_id=#{category.parentId},
+            </if>
             update_time=#{category.updateTime}
         </set>
         where id=#{category.id}
@@ -73,7 +82,7 @@
 
     <update id="delete">
         update category
-        set is_deleted = 1,
+        set is_deleted  = 1,
             update_time = #{time}
         where id = #{id}
           and is_deleted = 0

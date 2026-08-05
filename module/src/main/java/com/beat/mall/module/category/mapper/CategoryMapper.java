@@ -28,4 +28,7 @@ public interface CategoryMapper {
     Long insert(@Param("category") Category category);
 
     Integer delete(@Param("time") Integer time, @Param("id") Long id);
+
+    @Select("select id from category where parent_id=#{id}")
+    List<Long> getChildrenById(@Param("id") Long id);
 }
