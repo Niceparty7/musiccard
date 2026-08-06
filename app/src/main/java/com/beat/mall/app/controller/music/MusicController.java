@@ -7,6 +7,7 @@ import com.beat.mall.app.domain.music.MusicListWallImageVO;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
+import com.beat.mall.module.music.service.MusicApiService;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.utils.ImageUtils;
@@ -25,12 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,6 +36,8 @@ public class MusicController {
     MusicTagRelationService musicTagRelationService;
     @Autowired
     private MusicService musicService;
+    @Autowired
+    private MusicApiService musicApiService;
     @Autowired
     private CategoryService categoryService;
 
@@ -98,7 +96,7 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = musicService.getAllMusic(page, pageSize, keyword);
+        List<Music> list = musicApiService.getAllMusic(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
 
         Set<Long> typeIds = list.stream()

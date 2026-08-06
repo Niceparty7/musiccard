@@ -7,6 +7,7 @@ import com.beat.mall.console.domain.music.MusicListVO;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
+import com.beat.mall.module.music.service.MusicApiService;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.module.user.entity.User;
@@ -25,12 +26,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,6 +38,8 @@ public class MusicController {
     private CategoryService categoryService;
     @Autowired
     private MusicTagRelationService musicTagRelationService;
+    @Autowired
+    private MusicApiService musicApiService;
 
     @RequestMapping("/music/info")
     public Response getMusicInfoById(@VerifiedUser User loginUser, @RequestParam(value = "id") Long id) {
@@ -107,8 +105,8 @@ public class MusicController {
         musicName = musicName == null ? musicName : musicName.trim();
         typeName = typeName == null ? typeName : typeName.trim();
         tagName = tagName == null ? tagName : tagName.trim();
-        Long total = musicService.countTotal(musicName, typeName, tagName);
-        List<Music> list = musicService.getAllMusicList2(page, pageSize, musicName, typeName, tagName);
+        Long total = musicApiService.countTotal(musicName, typeName, tagName);
+        List<Music> list = musicApiService.getAllMusicList2(page, pageSize, musicName, typeName, tagName);
 
         Set<Long> typeIds = list.stream()
                 .map(Music::getTypeId)
