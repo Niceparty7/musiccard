@@ -19,10 +19,10 @@ public interface MusicMapper {
     List<Music> getAllMusicList();
 
     List<Music> getAllMusic(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize,
-                            @Param("keyword") String keyword, @Param("subquery") String subquery, @Param("subquery2") String subquery2);
+                            @Param("keyword") String keyword);
 
     List<Music> getAllMusicList2(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("musicName") String musicName,
-                                          @Param("subquery") String subquery, @Param("subquery2") String subquery2);
+                                          @Param("typeName") String typeName, @Param("tagName") String tagName);
 
     Integer update(@Param("music") Music music);
 
@@ -30,7 +30,7 @@ public interface MusicMapper {
 
     Integer delete(@Param("time") Integer time, @Param("id") Long id);
 
-    Long countTotal(@Param("musicName") String musicName, @Param("subquery") String subquery, @Param("subquery2") String subquery2);
+    Long countTotal(@Param("musicName") String musicName, @Param("typeName") String typeName, @Param("tagName") String tagName);
 
     @Select("select count(*) from music where type_id=#{typeId} and is_deleted=0")
     Long getByTypeId(@Param("typeId") Long typeId);

@@ -3,55 +3,63 @@
 <mapper namespace="com.beat.mall.module.music.mapper.MusicMapper">
     <select id="getAllMusic"
             resultType="com.beat.mall.module.music.entity.Music">
-        select distinct * from music
-        <where>
-            is_deleted = 0
-            <if test="keyword != null and keyword != ''
-                  or subquery != null and subquery!=''
-                  or subquery2 != null and subquery2!='' ">
-                and
-                <trim prefix="(" suffix=")" prefixOverrides="or">
-                    <if test="keyword != null and keyword != ''">
-                        or music_name like concat('%',#{keyword},'%')
-                    </if>
-                    <if test="subquery != null and subquery != ''">
-                        or type_id in (${subquery})
-                    </if>
-                    <if test="subquery2 != null and subquery2 != ''">
-                        or id in (${subquery2})
-                    </if>
-                </trim>
-            </if>
-        </where>
-        order by id
+        select distinct m.* from music m
+        where m.is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            and (
+                m.music_name like concat('%', #{keyword}, '%')
+                or m.type_id in (
+                    select c.id from category c where c.is_deleted = 0 and c.type_name like concat('%', #{keyword}, '%')
+                    union
+                    select c2.id from category c2 where c2.is_deleted = 0
+                    and c2.parent_id in (select c3.id from category c3 where c3.is_deleted = 0 and c3.type_name like concat('%', #{keyword}, '%'))
+                    union
+                    select c4.id from category c4 where c4.is_deleted = 0
+                    and c4.id in (select c5.parent_id from category c5 where c5.is_deleted = 0 and c5.type_name like concat('%', #{keyword}, '%') and c5.parent_id != 0)
+                )
+                or m.id in (
+                    select distinct r.music_id from music_tag_relation r
+                    join tag t on r.tag_id = t.id
+                    where r.is_deleted = 0 and t.is_deleted = 0 and t.tag_name like concat('%', #{keyword}, '%')
+                )
+            )
+        </if>
+        order by m.id
         limit #{offSet}, #{pageSize}
-
     </select>
 
     <select id="getAllMusicList2"
             resultType="com.beat.mall.module.music.entity.Music">
-        select distinct *
-        from music
-        <where>
-            is_deleted = 0
-            <if test="musicName != null and musicName != ''
-                  or subquery != null and subquery!=''
-                  or subquery2 != null and subquery2!='' ">
-                and
-                <trim prefix="(" suffix=")" prefixOverrides="or">
+        select distinct m.* from music m
+        where m.is_deleted = 0
+        <if test="musicName != null and musicName != '' or typeName != null and typeName != '' or tagName != null and tagName != ''">
+            and (
+                <trim prefixOverrides="or">
                     <if test="musicName != null and musicName != ''">
-                        or music_name like concat('%',#{musicName},'%')
+                        or m.music_name like concat('%', #{musicName}, '%')
                     </if>
-                    <if test="subquery != null and subquery!='' ">
-                        or type_id in (${subquery})
+                    <if test="typeName != null and typeName != ''">
+                        or m.type_id in (
+                            select c.id from category c where c.is_deleted = 0 and c.type_name like concat('%', #{typeName}, '%')
+                            union
+                            select c2.id from category c2 where c2.is_deleted = 0
+                            and c2.parent_id in (select c3.id from category c3 where c3.is_deleted = 0 and c3.type_name like concat('%', #{typeName}, '%'))
+                            union
+                            select c4.id from category c4 where c4.is_deleted = 0
+                            and c4.id in (select c5.parent_id from category c5 where c5.is_deleted = 0 and c5.type_name like concat('%', #{typeName}, '%') and c5.parent_id != 0)
+                        )
                     </if>
-                    <if test="subquery2 != null and subquery2!='' ">
-                        or id in (${subquery2})
+                    <if test="tagName != null and tagName != ''">
+                        or m.id in (
+                            select distinct r.music_id from music_tag_relation r
+                            join tag t on r.tag_id = t.id
+                            where r.is_deleted = 0 and t.is_deleted = 0 and t.tag_name like concat('%', #{tagName}, '%')
+                        )
                     </if>
                 </trim>
-            </if>
-        </where>
-        order by id
+            )
+        </if>
+        order by m.id
         limit #{offSet}, #{pageSize}
     </select>
 
@@ -167,26 +175,35 @@
 
     <select id="countTotal"
             resultType="java.lang.Long">
-        select count(distinct id) from music
-        <where>
-            is_deleted = 0
-            <if test="musicName != null and musicName != ''
-                  or subquery != null and subquery!=''
-                  or subquery2 != null and subquery2!='' ">
-                and
-                <trim prefix="(" suffix=")" prefixOverrides="or">
+        select count(distinct m.id) from music m
+        where m.is_deleted = 0
+        <if test="musicName != null and musicName != '' or typeName != null and typeName != '' or tagName != null and tagName != ''">
+            and (
+                <trim prefixOverrides="or">
                     <if test="musicName != null and musicName != ''">
-                        or music_name like concat('%',#{musicName},'%')
+                        or m.music_name like concat('%', #{musicName}, '%')
                     </if>
-                    <if test="subquery != null and subquery!='' ">
-                        or type_id in (${subquery})
+                    <if test="typeName != null and typeName != ''">
+                        or m.type_id in (
+                            select c.id from category c where c.is_deleted = 0 and c.type_name like concat('%', #{typeName}, '%')
+                            union
+                            select c2.id from category c2 where c2.is_deleted = 0
+                            and c2.parent_id in (select c3.id from category c3 where c3.is_deleted = 0 and c3.type_name like concat('%', #{typeName}, '%'))
+                            union
+                            select c4.id from category c4 where c4.is_deleted = 0
+                            and c4.id in (select c5.parent_id from category c5 where c5.is_deleted = 0 and c5.type_name like concat('%', #{typeName}, '%') and c5.parent_id != 0)
+                        )
                     </if>
-                    <if test="subquery2 != null and subquery2!='' ">
-                        or id in (${subquery2})
+                    <if test="tagName != null and tagName != ''">
+                        or m.id in (
+                            select distinct r.music_id from music_tag_relation r
+                            join tag t on r.tag_id = t.id
+                            where r.is_deleted = 0 and t.is_deleted = 0 and t.tag_name like concat('%', #{tagName}, '%')
+                        )
                     </if>
                 </trim>
-            </if>
-        </where>
+            )
+        </if>
     </select>
 
     <insert id="insertBatch">

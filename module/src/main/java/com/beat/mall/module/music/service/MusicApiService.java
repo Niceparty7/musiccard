@@ -1,7 +1,5 @@
 package com.beat.mall.module.music.service;
 
-import com.beat.mall.module.category.entity.Category;
-import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.mapper.MusicMapper;
 import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
@@ -13,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,98 +19,20 @@ public class MusicApiService {
     @Resource
     private MusicMapper musicMapper;
     @Resource
-    private CategoryService categoryService;
-    @Resource
     private TagService tagService;
     @Resource
     private MusicTagRelationService musicTagRelationService;
 
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
-        String subquery = "";
-        String subquery2 = "";
-        if (keyword != null && !keyword.isEmpty()) {
-            List<Category> categoryList = categoryService.getCategoryByKeyword(keyword);
-            List<Long> ids = new ArrayList<>();
-            List<Long> parentIds = new ArrayList<>();
-            Set<Long> idSet = new HashSet<>();
-            for (Category category : categoryList) {
-                ids.add(category.getId());
-                parentIds.add(category.getParentId());
-                idSet.addAll(categoryService.getChildrenById(category.getId()));
-            }
-            idSet.addAll(ids);
-            idSet.addAll(parentIds);
-            List<Long> allIds = new ArrayList<>(idSet);
-            subquery = getSubqueryByIds(allIds);
-            List<Long> tagIds = tagService.getTagIdsByKeyword(keyword);
-            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
-            subquery2 = getSubqueryByIds(allMusicIds);
-        }
-        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery, subquery2);
-    }
-
-    private String getSubqueryByIds(List<Long> list) {
-        StringBuffer stringBuffer = new StringBuffer("");
-        for (int i = 0; i < list.size(); i++) {
-            if (i == list.size() - 1) {
-                stringBuffer.append(list.get(i) + "");
-                break;
-            }
-            stringBuffer.append(list.get(i) + "").append(",");
-        }
-        return stringBuffer.toString();
+        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword);
     }
 
     public List<Music> getAllMusicList2(Integer page, Integer pageSize, String musicName, String typeName, String tagName) {
-        String subquery = "";
-        String subquery2 = "";
-        if (typeName != null && !typeName.isEmpty()) {
-            List<Category> categoryList = categoryService.getCategoryByKeyword(typeName);
-            List<Long> ids = new ArrayList<>();
-            List<Long> parentIds = new ArrayList<>();
-            Set<Long> idSet = new HashSet<>();
-            for (Category category : categoryList) {
-                ids.add(category.getId());
-                parentIds.add(category.getParentId());
-                idSet.addAll(categoryService.getChildrenById(category.getId()));
-            }
-            idSet.addAll(ids);
-            idSet.addAll(parentIds);
-            List<Long> allIds = new ArrayList<>(idSet);
-            subquery = getSubqueryByIds(allIds);
-        }
-        if (tagName != null && !tagName.isEmpty()) {
-            List<Long> tagIds = tagService.getTagIdsByKeyword(tagName);
-            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
-            subquery2 = getSubqueryByIds(allMusicIds);
-        }
-        return musicMapper.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, subquery, subquery2);
+        return musicMapper.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, typeName, tagName);
     }
 
     public Long countTotal(String musicName, String typeName, String tagName) {
-        String subquery = "";
-        String subquery2 = "";
-        if (typeName != null && !typeName.isEmpty()) {
-            List<Category> categoryList = categoryService.getCategoryByKeyword(typeName);
-            List<Long> ids = new ArrayList<>();
-            List<Long> parentIds = new ArrayList<>();
-            Set<Long> idSet = new HashSet<>();
-            for (Category category : categoryList) {
-                ids.add(category.getId());
-                parentIds.add(category.getParentId());
-                idSet.addAll(categoryService.getChildrenById(category.getId()));
-            }
-            idSet.addAll(ids);
-            idSet.addAll(parentIds);
-            List<Long> allIds = new ArrayList<>(idSet);
-            subquery = getSubqueryByIds(allIds);
-        }
-        if (tagName != null && !tagName.isEmpty()) {
-            List<Long> tagIds = tagService.getTagIdsByKeyword(tagName);
-            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
-            subquery2 = getSubqueryByIds(allMusicIds);
-        }
-        return musicMapper.countTotal(musicName, subquery, subquery2);
+        return musicMapper.countTotal(musicName, typeName, tagName);
     }
 
     @Transactional(rollbackFor = Exception.class)
