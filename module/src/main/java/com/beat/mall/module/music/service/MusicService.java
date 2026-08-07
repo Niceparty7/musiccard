@@ -4,8 +4,6 @@ package com.beat.mall.module.music.service;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
-import com.beat.mall.module.category.entity.Category;
-import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.domain.MusicExcelDTO;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.listener.MusicExcelListener;
@@ -30,10 +28,6 @@ public class MusicService {
     private final Executor excelExecutor;
     @Resource
     private MusicMapper musicMapper;
-    @Resource
-    private CategoryService categoryService;
-    @Resource
-    private MusicApiService musicApiService;
 
     public Music getById(Long id) throws Exception {
         if (id == null) {
@@ -46,28 +40,28 @@ public class MusicService {
         return music;
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId, String tags)
-            throws Exception {
-        Long res;
-        if (typeId != null) {
-            Category category = categoryService.getById((long) typeId);
-            if (category == null) {
-                throw new RuntimeException("cannot find the typeId");
-            }
-        }
-        if (id != null) {
-            res = musicApiService.update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
-            if (res == 0) {
-                throw new RuntimeException("update fail!");
-            }
-        } else {
-            res = musicApiService.create(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
-            if (res == null) {
-                throw new RuntimeException("create fail!");
-            }
-        }
-        return res;
+    public List<Music> getAllMusic(Integer offSet, Integer pageSize, String keyword, String subquery, String subquery2) {
+        return musicMapper.getAllMusic(offSet, pageSize, keyword, subquery, subquery2);
+    }
+
+    public List<Music> getAllMusicList2(Integer offSet, Integer pageSize, String musicName, String subquery, String subquery2) {
+        return musicMapper.getAllMusicList2(offSet, pageSize, musicName, subquery, subquery2);
+    }
+
+    public Long countTotal(String musicName, String typeName, String tagName) {
+        return musicMapper.countTotal(musicName, typeName, tagName);
+    }
+
+    public Integer update(Music music) {
+        return musicMapper.update(music);
+    }
+
+    public Long insert(Music music) {
+        return musicMapper.insert(music);
+    }
+
+    public Music extractById(Long id) {
+        return musicMapper.extractById(id);
     }
 
     @Transactional(rollbackFor = Exception.class)

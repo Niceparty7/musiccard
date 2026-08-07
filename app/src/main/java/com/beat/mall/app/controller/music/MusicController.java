@@ -7,7 +7,7 @@ import com.beat.mall.app.domain.music.MusicListWallImageVO;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
-import com.beat.mall.module.music.service.MusicApiService;
+import com.beat.mall.module.music.service.BaseMusicService;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.utils.ImageUtils;
@@ -37,7 +37,7 @@ public class MusicController {
     @Autowired
     private MusicService musicService;
     @Autowired
-    private MusicApiService musicApiService;
+    private BaseMusicService baseMusicService;
     @Autowired
     private CategoryService categoryService;
 
@@ -75,7 +75,7 @@ public class MusicController {
             return new Response(3052);
         }
         List<String> coverImagesString = Arrays.stream(music.getCoverImages().split("\\$")).toList();
-        List<String> tags = musicTagRelationService.getTagsByMusicId(id);
+        List<String> tags = baseMusicService.getTagsByMusicId(id);
         MusicInfoVO musicInfoVO = new MusicInfoVO()
                 .setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
@@ -96,7 +96,7 @@ public class MusicController {
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
         keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = musicApiService.getAllMusic(page, pageSize, keyword);
+        List<Music> list = baseMusicService.getAllMusic(page, pageSize, keyword);
         Boolean isEnd = list.size() < pageSize;
 
         Set<Long> typeIds = list.stream()

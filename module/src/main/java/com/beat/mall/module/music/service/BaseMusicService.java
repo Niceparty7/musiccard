@@ -3,13 +3,13 @@ package com.beat.mall.module.music.service;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
-import com.beat.mall.module.music.mapper.MusicMapper;
 import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.module.tag.entity.Tag;
 import com.beat.mall.module.tag.service.TagService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +20,9 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class MusicApiService {
-    @Resource
-    private MusicMapper musicMapper;
+public class BaseMusicService {
+    @Autowired
+    private MusicService musicService;
     @Resource
     private CategoryService categoryService;
     @Resource
@@ -51,7 +51,7 @@ public class MusicApiService {
             List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
             subquery2 = getSubqueryByIds(allMusicIds);
         }
-        return musicMapper.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery, subquery2);
+        return musicService.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery, subquery2);
     }
 
     private String getSubqueryByIds(List<Long> list) {
@@ -89,7 +89,7 @@ public class MusicApiService {
             List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
             subquery2 = getSubqueryByIds(allMusicIds);
         }
-        return musicMapper.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, subquery, subquery2);
+        return musicService.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, subquery, subquery2);
     }
 
     public Long countTotal(String musicName, String typeName, String tagName) {
@@ -115,7 +115,31 @@ public class MusicApiService {
             List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
             subquery2 = getSubqueryByIds(allMusicIds);
         }
-        return musicMapper.countTotal(musicName, subquery, subquery2);
+        return musicService.countTotal(musicName, subquery, subquery2);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Long edit(Long id, String coverImages, String musicName, String singerName, String musicDesc, String albumTitle, String releaseDate, Integer typeId, String tags)
+            throws Exception {
+        Long res;
+        if (typeId != null) {
+            Category category = categoryService.getById((long) typeId);
+            if (category == null) {
+                throw new RuntimeException("cannot find the typeId");
+            }
+        }
+        if (id != null) {
+            res = update(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
+            if (res == 0) {
+                throw new RuntimeException("update fail!");
+            }
+        } else {
+            res = create(coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
+            if (res == null) {
+                throw new RuntimeException("create fail!");
+            }
+        }
+        return res;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -142,7 +166,7 @@ public class MusicApiService {
         if (singerName == null) {
             throw new RuntimeException("singerName cannot be null!");
         }
-        musicMapper.insert(music);
+        musicService.insert(music);
         Long musicId = music.getId();
         if (tags != null && !tags.isEmpty()) {
             String[] tagstrs = tags.split("\\$");
@@ -198,10 +222,10 @@ public class MusicApiService {
                 .setUpdateTime(timeStamp)
                 .setIsDeleted(0)
                 .setTypeId(typeId);
-        if (musicMapper.extractById(id) == null) {
+        if (musicService.extractById(id) == null) {
             throw new RuntimeException("cannot find the id");
         }
-        Long affectedRows = (long) musicMapper.update(music);
+        Long affectedRows = (long) musicService.update(music);
         if (tags != null && !tags.isEmpty()) {
             String[] tagstrs = tags.split("\\$");
             Long tagId = null;
@@ -236,5 +260,26 @@ public class MusicApiService {
             }
         }
         return affectedRows;
+    }
+
+    public List<String> getTagsByMusicId(Long musicId) {
+        List<Long> list = musicTagRelationService.getTagsByMusicId(musicId);
+        List<String> tagNames = new ArrayList<>();
+        for (Long i : list) {
+            String tagName = tagService.getById(i).getTagName();
+            tagNames.add(tagName);
+        }
+        return tagNames;
+    }
+
+    public int delete(Long id) throws Exception {
+        if (id == null) {
+            throw new RuntimeException("id cannot be null");
+        }
+        if (musicTagRelationService.getMusicsByTagId(id).size() != 0) {
+            throw new RuntimeException("该标签下有关联音乐，无法删除");
+        }
+
+        return tagService.delete(id);
     }
 }

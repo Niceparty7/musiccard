@@ -1,6 +1,5 @@
 package com.beat.mall.module.tag.service;
 
-import com.beat.mall.module.musictagrelation.mapper.MusicTagRelationMapper;
 import com.beat.mall.module.tag.entity.Tag;
 import com.beat.mall.module.tag.mapper.TagMapper;
 import jakarta.annotation.Resource;
@@ -15,8 +14,6 @@ public class TagService {
 
     @Resource
     private TagMapper mapper;
-    @Resource
-    private MusicTagRelationMapper musicTagRelationMapper;
 
     public Tag getById(Long id) {
         Tag entity = mapper.getById(id);
@@ -59,16 +56,6 @@ public class TagService {
         return tag.getId();
     }
 
-    public int delete(Long id) throws Exception {
-        if (id == null) {
-            throw new RuntimeException("id cannot be null");
-        }
-        if (musicTagRelationMapper.getMusicsByTagId(id).size() != 0) {
-            throw new RuntimeException("该标签下有关联音乐，无法删除");
-        }
-        int time = (int) (System.currentTimeMillis() / 1000);
-        return mapper.delete(id, time);
-    }
 
     public List<Tag> getAll() {
         return mapper.getAll();
@@ -76,5 +63,10 @@ public class TagService {
 
     public List<Long> getTagIdsByKeyword(String keyword) {
         return mapper.getTagIdsByKeyword(keyword);
+    }
+
+    public Integer delete(Long id) {
+        int time = (int) (System.currentTimeMillis() / 1000);
+        return mapper.delete(id, time);
     }
 }

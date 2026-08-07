@@ -7,7 +7,7 @@ import com.beat.mall.console.domain.music.MusicListVO;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
-import com.beat.mall.module.music.service.MusicApiService;
+import com.beat.mall.module.music.service.BaseMusicService;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.module.user.entity.User;
@@ -39,7 +39,7 @@ public class MusicController {
     @Autowired
     private MusicTagRelationService musicTagRelationService;
     @Autowired
-    private MusicApiService musicApiService;
+    private BaseMusicService baseMusicService;
 
     @RequestMapping("/music/info")
     public Response getMusicInfoById(@VerifiedUser User loginUser, @RequestParam(value = "id") Long id) {
@@ -73,7 +73,7 @@ public class MusicController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = simpleDateFormat.format(createTimeStamp);
         String updateTime = simpleDateFormat.format(updateTimeStamp);
-        List<String> tags = musicTagRelationService.getTagsByMusicId(id);
+        List<String> tags = baseMusicService.getTagsByMusicId(id);
         MusicInfoVO musicInfoVO = new MusicInfoVO()
                 .setCoverImages(coverImagesString)
                 .setMusicName(music.getMusicName())
@@ -105,8 +105,8 @@ public class MusicController {
         musicName = musicName == null ? musicName : musicName.trim();
         typeName = typeName == null ? typeName : typeName.trim();
         tagName = tagName == null ? tagName : tagName.trim();
-        Long total = musicApiService.countTotal(musicName, typeName, tagName);
-        List<Music> list = musicApiService.getAllMusicList2(page, pageSize, musicName, typeName, tagName);
+        Long total = baseMusicService.countTotal(musicName, typeName, tagName);
+        List<Music> list = baseMusicService.getAllMusicList2(page, pageSize, musicName, typeName, tagName);
 
         Set<Long> typeIds = list.stream()
                 .map(Music::getTypeId)
@@ -161,7 +161,7 @@ public class MusicController {
         Long id = null;
         String res = "";
         try {
-            id = musicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId, tags);
+            id = baseMusicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId, tags);
         } catch (Exception e) {
             log.error("coverImages, musicName, singerName cannot be null!");
             res = "coverImages, musicName, singerName等字段为空或typeId不存在";
@@ -196,7 +196,7 @@ public class MusicController {
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
         String res = "成功";
         try {
-            musicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
+            baseMusicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
         } catch (Exception e) {
             log.error("cannot find the id");
             res = "更新失败，id不存在或typeId不存在";

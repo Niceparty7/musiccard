@@ -129,17 +129,17 @@ public class TagController {
             return new Response<>(1002);
         }
         String res = "success";
-        Integer affectedRows=0;
+        Integer affectedRows = 0;
         try {
-          affectedRows=  tagService.delete(id);
+            affectedRows = tagService.delete(id);
         } catch (Exception e) {
             res = "fail";
             log.error("删除失败", e);
             return new Response<>(3052);
         }
-        if (affectedRows==0){
+        if (affectedRows == 0) {
             log.error("删除失败");
-            res="fail";
+            res = "fail";
             return new Response<>(3052);
         }
         return new Response<>(1001, res);
