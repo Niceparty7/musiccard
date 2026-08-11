@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -106,12 +107,14 @@ public class MusicService {
     }
 
     public File exportZip() throws Exception {
+        // 全部中间产物统一落在系统临时目录，与项目/JAR 完全隔离；调用方负责删除返回的 zip（含父临时目录）
+        File dir = Files.createTempDirectory("musiccard-export").toFile();
         List<CompletableFuture<File>> futures = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             int mod = i;
             CompletableFuture<File> future = CompletableFuture.supplyAsync(() -> {
                         List<Music> list = musicMapper.selectByMod(mod);
-                        File file = new File("music_" + mod + ".xlsx");
+                        File file = new File(dir, "music_" + mod + ".xlsx");
                         EasyExcel.write(file, MusicExcelDTO.class)
                                 .sheet("音乐数据")
                                 .doWrite(convert(list));
@@ -124,8 +127,8 @@ public class MusicService {
         List<File> files = futures.stream()
                 .map(CompletableFuture::join)
                 .toList();
-        File zipFile = new File("music.zip");
-        ZipUtil.zip(zipFile, true, files.toArray(new File[0]));
+        File zipFile = new File(dir, "music.zip");
+        ZipUtil.zip(zipFile, false, files.toArray(new File[0]));
         return zipFile;
     }
 
@@ -147,22 +150,35 @@ public class MusicService {
     }
 
     public void uploadZip(MultipartFile multipartFile) throws Exception {
-        File zip = File.createTempFile("music", ".zip");
-        multipartFile.transferTo(zip);
-        File dir = new File("temp/music");
-        ZipUtil.unzip(zip, dir);
-        List<File> files = FileUtil.loopFiles(dir, pathname -> pathname.getName().endsWith(".xlsx"));
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        for (File file : files) {
-            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-                        EasyExcel.read(file, MusicExcelDTO.class, new MusicExcelListener(musicMapper))
-                                .sheet()
-                                .doRead();
-                    },
-                    excelExecutor
-            );
-            futures.add(future);
+        // zip 与解压目录统一落在系统临时目录（java.io.tmpdir），与项目/JAR 完全隔离
+        File zip = null;
+        File dir = null;
+        try {
+            zip = File.createTempFile("music", ".zip");
+            dir = Files.createTempDirectory("musiccard-unzip").toFile();
+            multipartFile.transferTo(zip);
+            ZipUtil.unzip(zip, dir);
+            List<File> files = FileUtil.loopFiles(dir, pathname -> pathname.getName().endsWith(".xlsx"));
+            List<CompletableFuture<Void>> futures = new ArrayList<>();
+            for (File file : files) {
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                            EasyExcel.read(file, MusicExcelDTO.class, new MusicExcelListener(musicMapper))
+                                    .sheet()
+                                    .doRead();
+                        },
+                        excelExecutor
+                );
+                futures.add(future);
+            }
+            futures.forEach(CompletableFuture::join);
+        } finally {
+            // 无论成功失败，用后即删，避免临时文件堆积；判空防止创建阶段异常导致 NPE
+            if (dir != null) {
+                FileUtil.del(dir);
+            }
+            if (zip != null) {
+                FileUtil.del(zip);
+            }
         }
-        futures.forEach(CompletableFuture::join);
     }
 }

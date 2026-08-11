@@ -34,11 +34,15 @@ public class TagController {
             return new Response<>(1002);
         }
         Tag tag = null;
+        boolean success = true;
         try {
             tag = tagService.getById(id);
         } catch (Exception e) {
-            log.error("tag不存在", e);
-            return new Response<>(3052);
+            success = false;
+            log.error("tag不存在, id:{}", id, e);
+        }
+        if (!success || tag == null) {
+            return new Response<>(4008);
         }
         TagInfoVO tagInfoVO = new TagInfoVO()
                 .setTagName(tag.getTagName())
@@ -57,10 +61,15 @@ public class TagController {
         }
         List<TagListVO> tagListVOS = new ArrayList<>();
         List<Tag> tags = null;
+        boolean success = true;
         try {
             tags = tagService.getAll();
         } catch (Exception e) {
+            success = false;
             log.error("获取标签列表失败", e);
+        }
+        if (!success || tags == null) {
+            return new Response<>(4005);
         }
         for (Tag tag : tags) {
             TagListVO tagListVO = new TagListVO().setTag(tag.getTagName());
@@ -80,15 +89,17 @@ public class TagController {
             return new Response<>(1002);
         }
         tagName = tagName == null ? tagName : tagName.trim();
-        String res = "success";
+        boolean success = true;
         try {
             tagService.insert(tagName, tagDesc);
         } catch (Exception e) {
-            res = "fail";
-            log.error("tagName cannot be null", e);
-            return new Response<>(3052);
+            success = false;
+            log.error("tagName cannot be null, tagName:{}", tagName, e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4005, "创建失败：tagName不能为空或标签已存在");
+        }
+        return new Response<>(1001, "success");
     }
 
     /**
@@ -104,19 +115,21 @@ public class TagController {
             return new Response<>(1002);
         }
         tagName = tagName == null ? tagName : tagName.trim();
-        String res = "success";
         Tag tag = new Tag()
                 .setId(id)
                 .setTagName(tagName)
                 .setTagDesc(tagDesc);
+        boolean success = true;
         try {
             tagService.update(tag);
         } catch (Exception e) {
-            res = "fail";
-            log.error("id cannot be find");
-            return new Response<>(3052);
+            success = false;
+            log.error("update tag fail, id:{}", id, e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4005, "更新失败：id不存在");
+        }
+        return new Response<>(1001, "success");
     }
 
     /**
@@ -128,20 +141,17 @@ public class TagController {
             log.warn("User not logged in.");
             return new Response<>(1002);
         }
-        String res = "success";
+        boolean success = true;
         Integer affectedRows = 0;
         try {
             affectedRows = tagService.delete(id);
         } catch (Exception e) {
-            res = "fail";
-            log.error("删除失败", e);
-            return new Response<>(3052);
+            success = false;
+            log.error("删除失败, id:{}", id, e);
         }
-        if (affectedRows == 0) {
-            log.error("删除失败");
-            res = "fail";
-            return new Response<>(3052);
+        if (!success || affectedRows == 0) {
+            return new Response<>(4005, "删除失败：id不存在");
         }
-        return new Response<>(1001, res);
+        return new Response<>(1001, "success");
     }
 }

@@ -13,6 +13,7 @@ import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.module.user.entity.User;
 import com.beat.mall.utils.BaseUtil;
 import com.beat.mall.utils.Response;
+import cn.hutool.core.io.FileUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class MusicController {
         try {
             music = musicService.getById(id);
         } catch (Exception e) {
-            log.error("cannot find the id!");
+            log.error("cannot find the id, id:{}", id, e);
             res = false;
         }
         if (!res) {
@@ -158,21 +159,19 @@ public class MusicController {
         }
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
+        boolean success = true;
         Long id = null;
-        String res = "";
         try {
             id = baseMusicService.edit(null, coverImages, musicName.trim(), singerName.trim(), musicDesc, albumTitle, releaseDate, typeId, tags);
         } catch (Exception e) {
-            log.error("coverImages, musicName, singerName cannot be null!");
-            res = "coverImages, musicName, singerName等字段为空或typeId不存在";
+            success = false;
+            log.error("create music fail, musicName:{}", musicName, e);
         }
-        if (id != null) {
-            res = "插入成功,id为" + id;
-        } else {
-            res = "失败 " + res;
+        if (!success) {
+            return new Response<>(4005, "创建失败：字段为空或typeId不存在");
         }
-        log.info(res);
-        return new Response<>(1001, res);
+        log.info("插入成功,id为{}", id);
+        return new Response<>(1001, "插入成功,id为" + id);
     }
 
     @RequestMapping("/music/update")
@@ -194,15 +193,18 @@ public class MusicController {
         singerName = singerName == null ? singerName : singerName.trim();
         albumTitle = albumTitle == null ? albumTitle : albumTitle.trim();
         releaseDate = releaseDate == null ? releaseDate : releaseDate.trim();
-        String res = "成功";
+        boolean success = true;
         try {
             baseMusicService.edit(id, coverImages, musicName, singerName, musicDesc, albumTitle, releaseDate, typeId, tags);
         } catch (Exception e) {
-            log.error("cannot find the id");
-            res = "更新失败，id不存在或typeId不存在";
+            success = false;
+            log.error("update music fail, id:{}", id, e);
         }
-        log.info(res);
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4005, "更新失败，id不存在或typeId不存在");
+        }
+        log.info("更新成功, id:{}", id);
+        return new Response<>(1001, "更新成功");
     }
 
     @RequestMapping("/music/delete")
@@ -211,21 +213,19 @@ public class MusicController {
             log.warn("User not logged in.");
             return new Response(1002);
         }
+        boolean success = true;
         Integer affectedRows = 0;
-        String res = "";
         try {
             affectedRows = musicService.delete(id);
         } catch (Exception e) {
-            log.error("cannot find the id");
-            res = "id为空";
+            success = false;
+            log.error("delete music fail, id:{}", id, e);
         }
-        if (affectedRows == 1) {
-            res = "成功";
-        } else {
-            res = "失败 " + res;
+        if (!success || affectedRows != 1) {
+            return new Response<>(4005, "删除失败，id为空或不存在");
         }
-        log.info(res);
-        return new Response<>(1001, res);
+        log.info("删除成功, id:{}", id);
+        return new Response<>(1001, "成功");
     }
 
     @RequestMapping("/music/download")
@@ -238,14 +238,17 @@ public class MusicController {
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("音乐列表", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        String res = "下载成功";
+        boolean success = true;
         try {
             musicService.export(response.getOutputStream());
         } catch (Exception e) {
-            res = "下载失败";
+            success = false;
             log.error("下载失败", e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4007);
+        }
+        return new Response<>(1001, "下载成功");
     }
 
     @RequestMapping("/music/upload")
@@ -254,14 +257,17 @@ public class MusicController {
             log.warn("User not logged in.");
             return new Response(1002);
         }
-        String res = "成功";
+        boolean success = true;
         try {
             musicService.upload(file.getInputStream());
         } catch (Exception e) {
-            res = "上传失败";
+            success = false;
             log.error("上传失败", e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4006);
+        }
+        return new Response<>(1001, "上传成功");
     }
 
     @RequestMapping("/music/downloadzip")
@@ -273,17 +279,24 @@ public class MusicController {
         response.setContentType("application/zip");
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=music.zip");
-        String res = "批量下载成功";
+        boolean success = true;
         File zip = null;
         try {
             zip = musicService.exportZip();
+            Files.copy(zip.toPath(), response.getOutputStream());
         } catch (Exception e) {
-            res = "批量下载失败";
+            success = false;
             log.error("批量下载失败", e);
-            return new Response<>(4004, "批量下载失败");
+        } finally {
+            // 下载完成后删除 zip 及其父临时目录（含 10 个 xlsx 中间产物）
+            if (zip != null) {
+                FileUtil.del(zip.getParentFile());
+            }
         }
-        Files.copy(zip.toPath(), response.getOutputStream());
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4007, "批量下载失败");
+        }
+        return new Response<>(1001, "批量下载成功");
     }
 
     @RequestMapping("/music/uploadzip")
@@ -292,13 +305,16 @@ public class MusicController {
             log.warn("User not logged in.");
             return new Response(1002);
         }
-        String res = "批量上传成功";
+        boolean success = true;
         try {
             musicService.uploadZip(file);
         } catch (Exception e) {
-            res = "批量上传失败";
+            success = false;
             log.error("批量上传失败", e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4006, "批量上传失败");
+        }
+        return new Response<>(1001, "批量上传成功");
     }
 }

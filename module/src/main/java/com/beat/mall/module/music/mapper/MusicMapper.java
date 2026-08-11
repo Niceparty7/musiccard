@@ -39,4 +39,8 @@ public interface MusicMapper {
 
     @Select("select * from music where id % 10 = #{mod}")
     List<Music> selectByMod(@Param("mod") Integer mod);
+
+    /** 统计当前全部未删除的音乐数量（每日定时统计使用） */
+    @Select("select count(*) from music where is_deleted = 0")
+    Long countAll();
 }

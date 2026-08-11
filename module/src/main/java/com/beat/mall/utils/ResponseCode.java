@@ -21,6 +21,17 @@ public class ResponseCode {
 
         statusMap.put(4003, "没有权限");
         statusMap.put(4004, "链接超时");
+        //business error
+        statusMap.put(4005, "操作失败");
+        statusMap.put(4006, "上传失败");
+        statusMap.put(4007, "下载失败");
+        statusMap.put(4008, "数据不存在");
+
+        //sms error
+        statusMap.put(5001, "短信同号当日已达上限");
+        statusMap.put(5002, "短信参数缺失或非法");
+        statusMap.put(5003, "短信发送失败");
+        statusMap.put(5004, "短信提交任务失败");
     }
 
     public static String getMsg(Integer code) {

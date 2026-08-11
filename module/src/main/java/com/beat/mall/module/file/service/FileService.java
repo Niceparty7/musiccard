@@ -56,7 +56,7 @@ public class FileService {
         try {
             url = upload(multipartFile);
         } catch (Exception e) {
-            throw new RuntimeException("upload failed");
+            throw new RuntimeException("upload failed", e);
         }
         Type type = determineType(multipartFile.getContentType());
         int timeStamp = (int) (System.currentTimeMillis() / 1000);

@@ -84,7 +84,7 @@ public class BaseUserService {
         try {
             update(user);
         } catch (Exception exception) {
-
+            log.warn("refresh user login context fail, userId:{}", id, exception);
         }
 
     }

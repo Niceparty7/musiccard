@@ -78,7 +78,7 @@ public class UserController {
         User user = baseUserService.extractByPhone(phone, "86");
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes()))
                 .getRequest();
-        Long newUserId;
+        Long newUserId = null;
         if (!BaseUtil.isEmpty(user)) {
             //如果用户被禁止登录
             if (user.getIsDeleted().equals(1) || user.getIsBan().equals(1)) {
@@ -92,13 +92,17 @@ public class UserController {
             if (!UserDefine.isGender(gender)) {
                 return new Response(2014);
             }
+            boolean registerSuccess = true;
             try {
                 newUserId = baseUserService.registerUser(name, phone, gender, avatar, password, country,
                         province, city, IpUtil.getIpAddress(request));
             } catch (Exception exception) {
-                return new Response(4004);
+                registerSuccess = false;
+                log.error("注册失败, phone:{}", phone, exception);
             }
-
+            if (!registerSuccess) {
+                return new Response(4005);
+            }
         }
         user = baseUserService.getById(newUserId);
 

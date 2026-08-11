@@ -13,6 +13,7 @@ import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.utils.ImageUtils;
 import com.beat.mall.utils.Response;
 import com.beat.mall.utils.SignUtil;
+import cn.hutool.core.io.FileUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,7 @@ public class MusicController {
         try {
             music = musicService.getById(id);
         } catch (Exception e) {
-            log.error("cannot find the id!");
+            log.error("cannot find the id, id:{}", id, e);
             res = false;
         }
         if (!res) {
@@ -116,12 +117,12 @@ public class MusicController {
 
         for (Music music : list) {
             Integer typeId = music.getTypeId();
-            if (typeId == null) {
-                continue;
+            Category category = null;
+            if (typeId != null) {
+                category = categoryMap.get((long) typeId);
             }
-            Category category = categoryMap.get((long) typeId);
             if (category == null) {
-                continue;
+                category = new Category().setTypeName("未知");
             }
             String[] coverImages = music.getCoverImages().split("\\$");
             String wallImageUrl = coverImages[0];
@@ -167,10 +168,15 @@ public class MusicController {
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("音乐列表", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        boolean success = true;
         try {
             musicService.export(response.getOutputStream());
         } catch (Exception e) {
+            success = false;
             log.error("下载失败", e);
+        }
+        if (!success) {
+            return new Response(4007);
         }
         return new Response(1001, "下载成功");
     }
@@ -188,14 +194,17 @@ public class MusicController {
             log.error("token解析失败，未登录");
             return new Response(1002);
         }
-        String res = "成功";
+        boolean success = true;
         try {
             musicService.upload(file.getInputStream());
         } catch (Exception e) {
-            res = "上传失败";
+            success = false;
             log.error("上传失败", e);
         }
-        return new Response(1001, res);
+        if (!success) {
+            return new Response(4006);
+        }
+        return new Response(1001, "上传成功");
     }
 
     @RequestMapping("/music/downloadzip")
@@ -214,17 +223,24 @@ public class MusicController {
         response.setContentType("application/zip");
         response.setCharacterEncoding("utf-8");
         response.setHeader("Content-Disposition", "attachment;filename=music.zip");
-        String res = "批量下载成功";
+        boolean success = true;
         File zip = null;
         try {
             zip = musicService.exportZip();
+            Files.copy(zip.toPath(), response.getOutputStream());
         } catch (Exception e) {
-            res = "批量下载失败";
+            success = false;
             log.error("批量下载失败", e);
-            return new Response(4004);
+        } finally {
+            // 下载完成后删除 zip 及其父临时目录（含 10 个 xlsx 中间产物）
+            if (zip != null) {
+                FileUtil.del(zip.getParentFile());
+            }
         }
-        Files.copy(zip.toPath(), response.getOutputStream());
-        return new Response(1001, res);
+        if (!success) {
+            return new Response(4007);
+        }
+        return new Response(1001, "批量下载成功");
     }
 
     @RequestMapping("/music/uploadzip")
@@ -240,14 +256,16 @@ public class MusicController {
             log.error("token解析失败，未登录");
             return new Response(1002);
         }
-        String res = "批量上传成功";
+        boolean success = true;
         try {
             musicService.uploadZip(file);
         } catch (Exception e) {
-            res = "批量上传失败";
+            success = false;
             log.error("批量上传失败", e);
-            return new Response(4004);
         }
-        return new Response(1001, res);
+        if (!success) {
+            return new Response(4006);
+        }
+        return new Response(1001, "批量上传成功");
     }
 }

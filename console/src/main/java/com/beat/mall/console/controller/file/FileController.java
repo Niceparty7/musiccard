@@ -24,13 +24,17 @@ public class FileController {
             log.warn("User not logged in.");
             return new Response(1002);
         }
-        String res = null;
+        boolean success = true;
+        String url = null;
         try {
-            res = fileService.uploadAndSave(file);
+            url = fileService.uploadAndSave(file);
         } catch (Exception e) {
-            res = "文件上传失败";
+            success = false;
             log.error("文件上传失败", e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4006);
+        }
+        return new Response<>(1001, url);
     }
 }

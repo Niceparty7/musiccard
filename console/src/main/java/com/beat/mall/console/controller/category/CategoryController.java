@@ -124,22 +124,20 @@ public class CategoryController {
             log.warn("User not logged in.");
             return new Response(1002);
         }
+        boolean success = true;
         Long id = null;
-        String res = "";
         typeName = typeName == null ? typeName : typeName.trim();
         typeImage = typeImage == null ? typeImage : typeImage.trim();
         try {
             id = categoryService.edit(null, typeName, typeImage, typeDesc, parentId);
         } catch (Exception e) {
-            res = "typeName typeImage 等字段不能为空";
-            log.error("typeName and typeImage cannot be null", e);
+            success = false;
+            log.error("create category fail, typeName:{}", typeName, e);
         }
-        if (id != null) {
-            res = "成功";
-        } else {
-            res = "失败 " + res;
+        if (!success || id == null) {
+            return new Response<>(4005, "创建失败：typeName、typeImage不能为空");
         }
-        return new Response<>(1001, res);
+        return new Response<>(1001, "成功");
     }
 
     @RequestMapping("/category/update")
@@ -153,16 +151,19 @@ public class CategoryController {
             log.warn("User not logged in.");
             return new Response(1002);
         }
-        String res = "成功";
+        boolean success = true;
         typeName = typeName == null ? typeName : typeName.trim();
         typeImage = typeImage == null ? typeImage : typeImage.trim();
         try {
             categoryService.edit(id, typeName, typeImage, typeDesc, parentId);
         } catch (Exception e) {
-            res = "typeName typeImage 等字段不能为空";
-            log.error("typeName and typeImage cannot be null", e);
+            success = false;
+            log.error("update category fail, id:{}", id, e);
         }
-        return new Response<>(1001, res);
+        if (!success) {
+            return new Response<>(4005, "更新失败：typeName、typeImage不能为空或id不存在");
+        }
+        return new Response<>(1001, "成功");
     }
 
     @RequestMapping("/category/delete")
@@ -173,22 +174,20 @@ public class CategoryController {
         }
         Long countMusicNum = musicService.getByTypeId(id);
         if (countMusicNum > 0) {
-            log.error("删除失败，该分类下仍有音乐，无法删除");
-            return new Response<>(1001, "删除失败，该分类下仍有音乐，无法删除");
+            log.warn("删除失败，该分类下仍有音乐，分类id:{}", id);
+            return new Response<>(4005, "删除失败，该分类下仍有音乐，无法删除");
         }
+        boolean success = true;
         Integer affectedRows = 0;
-        String res = "";
         try {
             affectedRows = categoryService.delete(id);
         } catch (Exception e) {
-            res = "无法找到该id";
-            log.error("cannot find the id", e);
+            success = false;
+            log.error("delete category fail, id:{}", id, e);
         }
-        if (affectedRows != 0) {
-            res = "成功";
-        } else {
-            res = "失败 " + res;
+        if (!success || affectedRows == 0) {
+            return new Response<>(4005, "删除失败：id不存在");
         }
-        return new Response<>(1001, res);
+        return new Response<>(1001, "成功");
     }
 }

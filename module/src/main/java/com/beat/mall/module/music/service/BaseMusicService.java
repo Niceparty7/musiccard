@@ -279,7 +279,6 @@ public class BaseMusicService {
         if (musicTagRelationService.getMusicsByTagId(id).size() != 0) {
             throw new RuntimeException("该标签下有关联音乐，无法删除");
         }
-
         return tagService.delete(id);
     }
 }
