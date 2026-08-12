@@ -54,12 +54,15 @@ public class MusicStatisticsService {
 
         Long count = musicService.countAll();
 
+        int nowEpochSecond = (int) (LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());
         MusicStatistics stat = new MusicStatistics()
                 .setYear(String.valueOf(yesterday.getYear()))
                 .setMonth(String.format("%02d", yesterday.getMonthValue()))
                 .setDay(String.format("%02d", yesterday.getDayOfMonth()))
                 .setMusicCount(count == null ? 0 : count.intValue())
-                .setCreateTime((int) (LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()));
+                .setCreateTime(nowEpochSecond)
+                .setUpdateTime(nowEpochSecond)
+                .setIsDeleted(0);
         musicStatisticsMapper.upsert(stat);
     }
 }

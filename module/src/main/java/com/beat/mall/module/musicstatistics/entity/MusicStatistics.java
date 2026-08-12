@@ -12,4 +12,6 @@ public class MusicStatistics {
     private String day;
     private Integer musicCount;
     private Integer createTime;
+    private Integer updateTime;
+    private Integer isDeleted;
 }

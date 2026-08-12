@@ -17,7 +17,7 @@ public class MusicStatisticsScheduler {
 
     private final MusicStatisticsService musicStatisticsService;
 
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?", scheduler = "taskScheduler")
     public void run() {
         try {
             musicStatisticsService.dailyStatistic();

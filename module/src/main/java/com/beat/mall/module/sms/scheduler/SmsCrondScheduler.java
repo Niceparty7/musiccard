@@ -1,6 +1,6 @@
 package com.beat.mall.module.sms.scheduler;
 
-import com.beat.mall.module.sms.domain.SmsSendResult;
+import com.beat.mall.module.sms.domain.SmsSendResultDTO;
 import com.beat.mall.module.sms.entity.SmsCrond;
 import com.beat.mall.module.sms.service.BaseSmsService;
 import com.beat.mall.module.sms.service.SmsCrondService;
@@ -49,7 +49,7 @@ public class SmsCrondScheduler {
     private void handleOne(SmsCrond crond) {
         // crond.content 存的是验证码；sms_log.content 记录整条短信内容
         String smsContent = baseSmsService.buildSmsContent(crond.getContent());
-        SmsSendResult r = baseSmsService.doSend(crond.getPhone(), crond.getContent());
+        SmsSendResultDTO r = baseSmsService.doSend(crond.getPhone(), crond.getContent());
         smsLogService.saveLog(crond.getPhone(), smsContent, r, BaseSmsService.SEND_TYPE_CROND);
         crond.setStatus((short) (r.isOk() ? 1 : 2));
         crond.setErrorMessage(r.getErrorMessage());

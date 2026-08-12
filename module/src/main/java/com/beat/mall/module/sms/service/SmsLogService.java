@@ -1,6 +1,6 @@
 package com.beat.mall.module.sms.service;
 
-import com.beat.mall.module.sms.domain.SmsSendResult;
+import com.beat.mall.module.sms.domain.SmsSendResultDTO;
 import com.beat.mall.module.sms.entity.SmsLog;
 import com.beat.mall.module.sms.mapper.SmsLogMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ public class SmsLogService {
 
     private final SmsLogMapper smsLogMapper;
 
-    public Long saveLog(String phone, String content, SmsSendResult result, int sendType) {
+    public Long saveLog(String phone, String content, SmsSendResultDTO result, int sendType) {
         int now = (int) (System.currentTimeMillis() / 1000);
         SmsLog log = new SmsLog()
                 .setPhone(phone)

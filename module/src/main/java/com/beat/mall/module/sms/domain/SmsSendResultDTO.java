@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class SmsSendResult {
+public class SmsSendResultDTO {
     private boolean ok;
     private String verifyCode;   // 后台生成的验证码（前端无需传入，发送后返回给调用方）
     private String bizId;
@@ -15,8 +15,8 @@ public class SmsSendResult {
     private String errorCode;
     private String errorMessage;
 
-    public static SmsSendResult fail(String errorCode, String errorMessage) {
-        return new SmsSendResult()
+    public static SmsSendResultDTO fail(String errorCode, String errorMessage) {
+        return new SmsSendResultDTO()
                 .setOk(false)
                 .setErrorCode(errorCode)
                 .setErrorMessage(errorMessage);

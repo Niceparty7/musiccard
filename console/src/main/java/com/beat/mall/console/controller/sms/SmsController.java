@@ -1,7 +1,7 @@
 package com.beat.mall.console.controller.sms;
 
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.module.sms.domain.SmsSendResult;
+import com.beat.mall.module.sms.domain.SmsSendResultDTO;
 import com.beat.mall.module.sms.service.BaseSmsService;
 import com.beat.mall.module.user.entity.User;
 import com.beat.mall.utils.BaseUtil;
@@ -33,7 +33,7 @@ public class SmsController {
             return new Response(5002);
         }
         boolean success = true;
-        SmsSendResult r = null;
+        SmsSendResultDTO r = null;
         try {
             r = baseSmsService.sendSync(phone);
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class SmsController {
             return new Response(5002);
         }
         boolean success = true;
-        List<SmsSendResult> results = null;
+        List<SmsSendResultDTO> results = null;
         try {
             List<String> phoneList = Arrays.asList(phones.split("[,;]"));
             if (phoneList.size() > 200) {
