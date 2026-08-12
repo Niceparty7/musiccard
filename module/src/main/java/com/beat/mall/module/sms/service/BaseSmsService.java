@@ -75,7 +75,7 @@ public class BaseSmsService {
      * 提交异步任务：仅写 sms_crond（status=0），不调用 PNVS SDK，不发送短信
      * crond.content 存验证码；真正发送由 SmsCrondScheduler 定时任务完成
      */
-    public Long submitAsyncTask(String phone) {
+    public Long submitAsyncTask(String phone) throws Exception {
         String code = randomCode6();
         if (!dailyLimitGuard.allowToday(phone)) {
             throw new RuntimeException("OVER_DAILY_LIMIT: " + phone);
@@ -114,8 +114,7 @@ public class BaseSmsService {
                         .setMessage(msg)
                         .setRequestId(resp.getBody().getRequestId());
             } else {
-                log.error("pnvs sms send fail, phone={}, respCode={}, message={}",
-                        phone, respCode, msg);
+                log.error("pnvs sms send fail, phone={}, respCode={}, message={}", phone, respCode, msg);
                 return SmsSendResult.fail(respCode, msg);
             }
         } catch (Exception e) {

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MusicStatisticsTask {
+public class MusicStatisticsScheduler {
 
     private final MusicStatisticsService musicStatisticsService;
 

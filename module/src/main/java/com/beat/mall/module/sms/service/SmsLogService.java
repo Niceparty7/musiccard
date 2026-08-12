@@ -29,4 +29,8 @@ public class SmsLogService {
                 .setUpdateTime(now);
         return smsLogMapper.insert(log);
     }
+
+    public Long countByPhoneToday(String phone, Integer start, Integer end) {
+        return smsLogMapper.countByPhoneToday(phone, start, end);
+    }
 }

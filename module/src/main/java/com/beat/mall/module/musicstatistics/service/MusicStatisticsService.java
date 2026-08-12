@@ -1,6 +1,6 @@
 package com.beat.mall.module.musicstatistics.service;
 
-import com.beat.mall.module.music.mapper.MusicMapper;
+import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musicstatistics.entity.MusicStatistics;
 import com.beat.mall.module.musicstatistics.mapper.MusicStatisticsMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class MusicStatisticsService {
 
     private final MusicStatisticsMapper musicStatisticsMapper;
-    private final MusicMapper musicMapper;
+    private final MusicService musicService;
 
     /**
      * 查询当年/当月/当日音乐数量（累计总量）
@@ -52,7 +52,7 @@ public class MusicStatisticsService {
         // 统计的是截至昨日 23:59:59 的全部音乐数量
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        Long count = musicMapper.countAll();
+        Long count = musicService.countAll();
 
         MusicStatistics stat = new MusicStatistics()
                 .setYear(String.valueOf(yesterday.getYear()))

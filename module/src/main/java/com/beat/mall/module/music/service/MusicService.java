@@ -181,4 +181,8 @@ public class MusicService {
             }
         }
     }
+
+    public Long countAll() {
+        return musicMapper.countAll();
+    }
 }
