@@ -1,5 +1,6 @@
 package com.beat.mall.console.controller.music;
 
+import cn.hutool.core.io.FileUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
 import com.beat.mall.console.domain.music.MusicInfoVO;
 import com.beat.mall.console.domain.music.MusicListFeedVO;
@@ -12,8 +13,8 @@ import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.module.user.entity.User;
 import com.beat.mall.utils.BaseUtil;
+import com.beat.mall.module.redis.util.RedisUtil;
 import com.beat.mall.utils.Response;
-import cn.hutool.core.io.FileUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class MusicController {
     private MusicTagRelationService musicTagRelationService;
     @Autowired
     private BaseMusicService baseMusicService;
+    @Autowired
+    private RedisUtil redisUtil;
+
 
     @RequestMapping("/music/info")
     public Response getMusicInfoById(@VerifiedUser User loginUser, @RequestParam(value = "id") Long id) {
@@ -170,6 +174,7 @@ public class MusicController {
         if (!success) {
             return new Response<>(4005, "创建失败：字段为空或typeId不存在");
         }
+        redisUtil.delByPrefix("app:music:list:");
         log.info("插入成功,id为{}", id);
         return new Response<>(1001, "插入成功,id为" + id);
     }
@@ -203,6 +208,8 @@ public class MusicController {
         if (!success) {
             return new Response<>(4005, "更新失败，id不存在或typeId不存在");
         }
+        redisUtil.delByPrefix("app:music:list:");
+
         log.info("更新成功, id:{}", id);
         return new Response<>(1001, "更新成功");
     }
@@ -224,6 +231,8 @@ public class MusicController {
         if (!success || affectedRows != 1) {
             return new Response<>(4005, "删除失败，id为空或不存在");
         }
+        redisUtil.delByPrefix("app:music:list:");
+
         log.info("删除成功, id:{}", id);
         return new Response<>(1001, "成功");
     }

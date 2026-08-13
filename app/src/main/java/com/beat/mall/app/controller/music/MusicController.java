@@ -1,5 +1,7 @@
 package com.beat.mall.app.controller.music;
 
+import cn.hutool.core.io.FileUtil;
+import com.alibaba.fastjson.JSON;
 import com.beat.mall.app.domain.music.MusicInfoVO;
 import com.beat.mall.app.domain.music.MusicListFeedVO;
 import com.beat.mall.app.domain.music.MusicListVO;
@@ -11,9 +13,9 @@ import com.beat.mall.module.music.service.BaseMusicService;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.utils.ImageUtils;
+import com.beat.mall.module.redis.util.RedisUtil;
 import com.beat.mall.utils.Response;
 import com.beat.mall.utils.SignUtil;
-import cn.hutool.core.io.FileUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 public class MusicController {
+    private static final String MUSIC_LIST_CACHE_PREFIX = "app:music:list:";
+    private static final int MUSIC_LIST_CACHE_TTL_SECONDS = 300;
     @Autowired
     MusicTagRelationService musicTagRelationService;
     @Autowired
@@ -41,6 +45,8 @@ public class MusicController {
     private BaseMusicService baseMusicService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @RequestMapping("/music/info")
     public Response getMusicInfoById(@RequestParam(value = "id") Long id, HttpServletRequest request) {
@@ -94,10 +100,22 @@ public class MusicController {
     @RequestMapping("/music/list")
     public Response getMusicList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                  @RequestParam(value = "keyword", required = false) String keyword) {
+        keyword = keyword == null ? "" : keyword.trim();
+        String cacheKey = MUSIC_LIST_CACHE_PREFIX + page + ":" + keyword;
+
+        // ===== 1. 读缓存：String 类型，整体 JSON =====
+        String cachedJson = redisUtil.get(cacheKey);
+        if (cachedJson != null) {
+            log.info("music/list cache hit, key:{}", cacheKey);
+            MusicListFeedVO cachedFeed = JSON.parseObject(cachedJson, MusicListFeedVO.class);
+            return new Response(1001, cachedFeed);
+        }
+
+        // ===== 2. 缓存未命中，回源 MySQL（原逻辑不变）=====
         List<MusicListVO> musicCardList = new ArrayList<>();
         Integer pageSize = 10;
-        keyword = keyword == null ? keyword : keyword.trim();
-        List<Music> list = baseMusicService.getAllMusic(page, pageSize, keyword);
+        String queryKeyword = keyword.isEmpty() ? null : keyword;
+        List<Music> list = baseMusicService.getAllMusic(page, pageSize, queryKeyword);
         Boolean isEnd = list.size() < pageSize;
 
         Set<Long> typeIds = list.stream()
@@ -148,8 +166,48 @@ public class MusicController {
                 .setList(musicCardList)
                 .setIsEnd(isEnd);
         log.info(musicListFeedVO.toString());
+
+        // ===== 3. 写回缓存，TTL 300s =====
+        redisUtil.setex(cacheKey, MUSIC_LIST_CACHE_TTL_SECONDS, JSON.toJSONString(musicListFeedVO));
         return new Response(1001, musicListFeedVO);
     }
+
+    /**
+     * List 类型实践演示：全量 RPUSH 为 Redis List，LRANGE 按索引切片分页
+     * 用于暴露 List 方案问题：分页索引漂移 / 无法按 keyword 过滤 / 元素级无 TTL / LREM 删除昂贵
+     */
+    @RequestMapping("/music/list/demo")
+    public Response getMusicListDemo(@RequestParam(value = "page", defaultValue = "1") Integer page) {
+        Integer pageSize = 10;
+        String cacheKey = "app:music:list:demo";
+
+        // 首次访问：回源全量构建 List（RPUSH）
+        if (redisUtil.llen(cacheKey) == 0) {
+            List<Music> all = baseMusicService.getAllMusic(1, 100000, null);
+            List<String> items = all.stream().map(m -> JSON.toJSONString(new MusicListVO()
+                            .setId(m.getId())
+                            .setMusicName(m.getMusicName())
+                            .setSingerName(m.getSingerName())
+                            .setMusicDesc(m.getMusicDesc())))
+                    .collect(Collectors.toList());
+            redisUtil.rpush(cacheKey, items.toArray(new String[0]));
+            redisUtil.expire(cacheKey, 300);
+        }
+
+        // LRANGE 按索引分页
+        long start = (long) (page - 1) * pageSize;
+        long end = (long) page * pageSize - 1;
+        List<String> pageJson = redisUtil.lrange(cacheKey, start, end);
+        List<MusicListVO> list = pageJson.stream()
+                .map(s -> JSON.parseObject(s, MusicListVO.class))
+                .collect(Collectors.toList());
+        boolean isEnd = (long) page * pageSize >= redisUtil.llen(cacheKey);
+
+        MusicListFeedVO feedVO = new MusicListFeedVO().setList(list).setIsEnd(isEnd);
+        log.info("music/list/demo page:{}, items:{}, isEnd:{}", page, list.size(), isEnd);
+        return new Response(1001, feedVO);
+    }
+
 
     @RequestMapping("/music/download")
     public Response download(HttpServletResponse response, HttpServletRequest request) throws IOException {
