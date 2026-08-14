@@ -2,6 +2,7 @@ package com.beat.mall.module.musicstatistics.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.music.service.MusicService;
 import com.beat.mall.module.musicstatistics.entity.MusicStatistics;
 import com.beat.mall.module.musicstatistics.mapper.MusicStatisticsMapper;
@@ -27,6 +28,7 @@ public class MusicStatisticsService {
     /**
      * 查询当年/当月/当日音乐数量（累计总量），优先读 Redis 缓存，未命中回源 MySQL 并写回
      */
+    @ReadOnly
     public Map<String, Object> getCurrentStatistics() {
         LocalDate now = LocalDate.now();
         String cacheKey = STATISTICS_CACHE_PREFIX + now;

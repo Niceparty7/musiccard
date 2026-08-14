@@ -1,5 +1,6 @@
 package com.beat.mall.module.musictagrelation.service;
 
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
 import com.beat.mall.module.musictagrelation.mapper.MusicTagRelationMapper;
 import jakarta.annotation.Resource;
@@ -48,10 +49,12 @@ public class MusicTagRelationService {
         return musicTagRelationMapper.delete(musicId, tagId, time);
     }
 
+    @ReadOnly
     public List<MusicTagRelation> getAll() {
         return musicTagRelationMapper.getAll();
     }
 
+    @ReadOnly
     public List<Long> getMusicIdsByTagIds(List<Long> tagIds) {
         if (tagIds == null || tagIds.isEmpty()) {
             return Collections.emptyList();
@@ -60,6 +63,7 @@ public class MusicTagRelationService {
         return musicTagRelationMapper.getMusicIdsByTagIds(ids);
     }
 
+    @ReadOnly
     public List<Long> getTagsByMusicId(Long musicId) {
         return musicTagRelationMapper.getTagsByMusicId(musicId);
     }

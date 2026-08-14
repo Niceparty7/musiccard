@@ -4,6 +4,7 @@ package com.beat.mall.module.music.service;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.music.domain.MusicExcelDTO;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.listener.MusicExcelListener;
@@ -41,14 +42,17 @@ public class MusicService {
         return music;
     }
 
+    @ReadOnly
     public List<Music> getAllMusic(Integer offSet, Integer pageSize, String keyword, String subquery, String subquery2) {
         return musicMapper.getAllMusic(offSet, pageSize, keyword, subquery, subquery2);
     }
 
+    @ReadOnly
     public List<Music> getAllMusicList2(Integer offSet, Integer pageSize, String musicName, String subquery, String subquery2) {
         return musicMapper.getAllMusicList2(offSet, pageSize, musicName, subquery, subquery2);
     }
 
+    @ReadOnly
     public Long countTotal(String musicName, String typeName, String tagName) {
         return musicMapper.countTotal(musicName, typeName, tagName);
     }
@@ -74,6 +78,7 @@ public class MusicService {
         return musicMapper.delete(timeStamp, id);
     }
 
+    @ReadOnly
     public Long getByTypeId(Long typeId) {
         return musicMapper.getByTypeId(typeId);
     }
@@ -182,6 +187,7 @@ public class MusicService {
         }
     }
 
+    @ReadOnly
     public Long countAll() {
         return musicMapper.countAll();
     }

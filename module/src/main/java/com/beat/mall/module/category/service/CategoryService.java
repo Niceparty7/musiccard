@@ -1,5 +1,6 @@
 package com.beat.mall.module.category.service;
 
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.mapper.CategoryMapper;
 import jakarta.annotation.Resource;
@@ -39,6 +40,7 @@ public class CategoryService {
         return category;
     }
 
+    @ReadOnly
     public List<Category> getAllCategory() {
         return categoryMapper.getAllCategory();
     }
@@ -106,9 +108,11 @@ public class CategoryService {
         return categoryMapper.delete(timeStamp, id);
     }
 
+    @ReadOnly
     public List<Long> getChildrenById(Long id) {
         return categoryMapper.getChildrenById(id);
     }
+    @ReadOnly
     public List<Category> getCategoryByKeyword(String keyword){
         return categoryMapper.getCategoryByKeyword(keyword);
     }

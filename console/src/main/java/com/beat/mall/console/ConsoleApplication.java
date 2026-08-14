@@ -9,9 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan("com.beat.mall.module")
 @EnableScheduling
 public class ConsoleApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ConsoleApplication.class, args);
     }
-
 }

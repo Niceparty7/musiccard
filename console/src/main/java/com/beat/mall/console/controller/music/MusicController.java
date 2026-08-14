@@ -10,10 +10,9 @@ import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
 import com.beat.mall.module.music.service.BaseMusicService;
 import com.beat.mall.module.music.service.MusicService;
-import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
+import com.beat.mall.module.redis.util.RedisUtil;
 import com.beat.mall.module.user.entity.User;
 import com.beat.mall.utils.BaseUtil;
-import com.beat.mall.module.redis.util.RedisUtil;
 import com.beat.mall.utils.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +37,6 @@ public class MusicController {
     private MusicService musicService;
     @Autowired
     private CategoryService categoryService;
-    @Autowired
-    private MusicTagRelationService musicTagRelationService;
     @Autowired
     private BaseMusicService baseMusicService;
     @Autowired
@@ -209,7 +206,6 @@ public class MusicController {
             return new Response<>(4005, "更新失败，id不存在或typeId不存在");
         }
         redisUtil.delByPrefix("app:music:list:");
-
         log.info("更新成功, id:{}", id);
         return new Response<>(1001, "更新成功");
     }
@@ -232,7 +228,6 @@ public class MusicController {
             return new Response<>(4005, "删除失败，id为空或不存在");
         }
         redisUtil.delByPrefix("app:music:list:");
-
         log.info("删除成功, id:{}", id);
         return new Response<>(1001, "成功");
     }

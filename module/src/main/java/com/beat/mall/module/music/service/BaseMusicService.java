@@ -1,5 +1,6 @@
 package com.beat.mall.module.music.service;
 
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.category.entity.Category;
 import com.beat.mall.module.category.service.CategoryService;
 import com.beat.mall.module.music.entity.Music;
@@ -30,6 +31,7 @@ public class BaseMusicService {
     @Resource
     private MusicTagRelationService musicTagRelationService;
 
+    @ReadOnly
     public List<Music> getAllMusic(Integer page, Integer pageSize, String keyword) {
         String subquery = "";
         String subquery2 = "";
@@ -66,6 +68,7 @@ public class BaseMusicService {
         return stringBuffer.toString();
     }
 
+    @ReadOnly
     public List<Music> getAllMusicList2(Integer page, Integer pageSize, String musicName, String typeName, String tagName) {
         String subquery = "";
         String subquery2 = "";
@@ -92,6 +95,7 @@ public class BaseMusicService {
         return musicService.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, subquery, subquery2);
     }
 
+    @ReadOnly
     public Long countTotal(String musicName, String typeName, String tagName) {
         String subquery = "";
         String subquery2 = "";
@@ -262,6 +266,7 @@ public class BaseMusicService {
         return affectedRows;
     }
 
+    @ReadOnly
     public List<String> getTagsByMusicId(Long musicId) {
         List<Long> list = musicTagRelationService.getTagsByMusicId(musicId);
         List<String> tagNames = new ArrayList<>();

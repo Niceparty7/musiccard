@@ -1,5 +1,6 @@
 package com.beat.mall.module.tag.service;
 
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.tag.entity.Tag;
 import com.beat.mall.module.tag.mapper.TagMapper;
 import jakarta.annotation.Resource;
@@ -57,10 +58,12 @@ public class TagService {
     }
 
 
+    @ReadOnly
     public List<Tag> getAll() {
         return mapper.getAll();
     }
 
+    @ReadOnly
     public List<Long> getTagIdsByKeyword(String keyword) {
         return mapper.getTagIdsByKeyword(keyword);
     }

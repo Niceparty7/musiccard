@@ -1,5 +1,6 @@
 package com.beat.mall.module.user.service;
 
+import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.user.entity.User;
 import com.beat.mall.module.user.mapper.UserMapper;
 import com.beat.mall.utils.BaseUtil;
@@ -245,15 +246,18 @@ public class BaseUserService {
         return mapper.getByUsername(username);
     }
 
+    @ReadOnly
     public List<User> getUsersForConsole(int page, int pageSize, String username, String phone) {
         int begin = (page - 1) * pageSize;
         return mapper.getUsersForConsole(begin, pageSize, "desc", username, phone);
     }
 
+    @ReadOnly
     public int getUsersTotalForConsole(String username, String phone) {
         return mapper.getUsersTotalForConsole(username, phone);
     }
 
+    @ReadOnly
     public String getUserIdsForSearch(String username) {
         if (BaseUtil.isEmpty(username)) {
             return "-1";
