@@ -1,6 +1,6 @@
 package com.beat.mall.console.controller;
 
-import com.beat.mall.utils.Response;
+import com.beat.mall.common.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.RequestMapping;

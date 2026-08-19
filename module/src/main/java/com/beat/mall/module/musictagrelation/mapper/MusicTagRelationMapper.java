@@ -1,6 +1,6 @@
 package com.beat.mall.module.musictagrelation.mapper;
 
-import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
+import com.beat.mall.common.entity.musictagrelation.MusicTagRelation;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

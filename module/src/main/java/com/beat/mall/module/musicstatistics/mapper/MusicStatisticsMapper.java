@@ -1,6 +1,6 @@
 package com.beat.mall.module.musicstatistics.mapper;
 
-import com.beat.mall.module.musicstatistics.entity.MusicStatistics;
+import com.beat.mall.common.entity.musicstatistics.MusicStatistics;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

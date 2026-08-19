@@ -1,7 +1,7 @@
 package com.beat.mall.module.tag.service;
 
 import com.beat.mall.module.annotation.ReadOnly;
-import com.beat.mall.module.tag.entity.Tag;
+import com.beat.mall.common.entity.tag.Tag;
 import com.beat.mall.module.tag.mapper.TagMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

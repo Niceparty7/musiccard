@@ -1,13 +1,14 @@
 package com.beat.mall.console;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication(scanBasePackages = "com.beat.mall")
-@MapperScan("com.beat.mall.module")
-@EnableScheduling
+@SpringBootApplication(scanBasePackages = {
+        "com.beat.mall.console",
+        "com.beat.mall.common"
+})
+@EnableFeignClients(basePackages = "com.beat.mall.console.feign")
 public class ConsoleApplication {
     public static void main(String[] args) {
         SpringApplication.run(ConsoleApplication.class, args);

@@ -5,7 +5,7 @@
     <insert id="insert"
             useGeneratedKeys="true"
             keyProperty="id"
-            parameterType="com.beat.mall.module.user.entity.User">
+            parameterType="com.beat.mall.common.entity.user.User">
         insert into user(
         <if test="user.countryCode != null and user.countryCode != ''">country_code,</if>
         <if test="user.phone != null and user.phone != ''">phone,</if>
@@ -62,7 +62,7 @@
     </insert>
 
     <update id="update"
-            parameterType="com.beat.mall.module.user.entity.User">
+            parameterType="com.beat.mall.common.entity.user.User">
         update user
         set id = #{user.id}
         <if test="user.countryCode != null and user.countryCode != ''">, country_code = #{user.countryCode}</if>
@@ -96,7 +96,7 @@
         where id = #{user.id}
     </update>
 
-    <select id="getUsersForConsole" resultType="com.beat.mall.module.user.entity.User">
+    <select id="getUsersForConsole" resultType="com.beat.mall.common.entity.user.User">
         select * from user where is_deleted = 0 and is_ban = 0 and (id > 50000 or id in (10001))
         <if test="username != null and username != ''">and `username` like concat('%',#{username},'%')</if>
         <if test="phone != null and phone != ''">and `phone` like concat('%',#{phone},'%')</if>

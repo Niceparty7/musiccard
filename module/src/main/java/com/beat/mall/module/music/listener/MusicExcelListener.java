@@ -3,7 +3,7 @@ package com.beat.mall.module.music.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.beat.mall.module.music.domain.MusicExcelDTO;
-import com.beat.mall.module.music.entity.Music;
+import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.module.music.mapper.MusicMapper;
 import lombok.extern.slf4j.Slf4j;
 

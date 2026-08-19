@@ -1,6 +1,6 @@
 package com.beat.mall.module.user.mapper;
 
-import com.beat.mall.module.user.entity.User;
+import com.beat.mall.common.entity.user.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

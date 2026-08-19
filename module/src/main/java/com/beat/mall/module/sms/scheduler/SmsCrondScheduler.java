@@ -1,7 +1,7 @@
 package com.beat.mall.module.sms.scheduler;
 
-import com.beat.mall.module.sms.domain.SmsSendResultDTO;
-import com.beat.mall.module.sms.entity.SmsCrond;
+import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.entity.sms.SmsCrond;
 import com.beat.mall.module.sms.service.BaseSmsService;
 import com.beat.mall.module.sms.service.SmsCrondService;
 import com.beat.mall.module.sms.service.SmsLogService;

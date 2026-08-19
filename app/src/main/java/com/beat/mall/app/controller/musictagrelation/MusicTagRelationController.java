@@ -1,35 +1,27 @@
 package com.beat.mall.app.controller.musictagrelation;
 
-import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
-import com.beat.mall.module.musictagrelation.service.MusicTagRelationService;
-import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.beat.mall.app.feign.AppMusicTagRelationFeign;
+import com.beat.mall.common.entity.musictagrelation.MusicTagRelation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/musicTagRelation")
+@RequiredArgsConstructor
 public class MusicTagRelationController {
+    private final AppMusicTagRelationFeign musicTagRelationFeign;
 
-    @Resource
-    private MusicTagRelationService service;
-
-    /**
-     * 详情接口
-     */
-    @RequestMapping("/info")
-    public MusicTagRelation getDetail(@RequestParam("musicId") Long musicId, @RequestParam("tagId") Long tagId) {
-        return service.getByMusicIdAndTagId(musicId, tagId);
+    @GetMapping("/musicTagRelation/info")
+    public MusicTagRelation getDetail(@RequestParam("musicId") Long musicId,
+                                      @RequestParam("tagId") Long tagId) {
+        return musicTagRelationFeign.getDetail(musicId, tagId);
     }
 
-    /**
-     * 列表接口
-     */
-    @RequestMapping("/list")
+    @GetMapping("/musicTagRelation/list")
     public List<MusicTagRelation> getAll() {
-        return service.getAll();
+        return musicTagRelationFeign.getAll();
     }
-
 }

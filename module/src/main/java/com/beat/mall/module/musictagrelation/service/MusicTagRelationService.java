@@ -1,7 +1,7 @@
 package com.beat.mall.module.musictagrelation.service;
 
 import com.beat.mall.module.annotation.ReadOnly;
-import com.beat.mall.module.musictagrelation.entity.MusicTagRelation;
+import com.beat.mall.common.entity.musictagrelation.MusicTagRelation;
 import com.beat.mall.module.musictagrelation.mapper.MusicTagRelationMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

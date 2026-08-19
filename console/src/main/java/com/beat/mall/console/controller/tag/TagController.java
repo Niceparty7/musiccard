@@ -1,157 +1,57 @@
 package com.beat.mall.console.controller.tag;
 
+import com.beat.mall.common.api.console.tag.TagInfoVO;
+import com.beat.mall.common.api.console.tag.TagListFeedVO;
+import com.beat.mall.common.entity.user.User;
+import com.beat.mall.common.response.Response;
+import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.domain.tag.TagInfoVO;
-import com.beat.mall.console.domain.tag.TagListFeedVO;
-import com.beat.mall.console.domain.tag.TagListVO;
-import com.beat.mall.module.tag.entity.Tag;
-import com.beat.mall.module.tag.service.TagService;
-import com.beat.mall.module.user.entity.User;
-import com.beat.mall.utils.BaseUtil;
-import com.beat.mall.utils.Response;
-import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.beat.mall.console.feign.ConsoleTagFeign;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/tag")
-@Slf4j
+@RequiredArgsConstructor
 public class TagController {
+    private final ConsoleTagFeign tagFeign;
 
-    @Resource
-    private TagService tagService;
-
-    /**
-     * 详情接口
-     */
-    @RequestMapping("/info")
-    public Response<TagInfoVO> getDetail(@VerifiedUser User loginUser, @RequestParam(name = "id") Long id) {
-        if (BaseUtil.isEmpty(loginUser)) {
-            log.warn("User not logged in.");
-            return new Response<>(1002);
-        }
-        Tag tag = null;
-        boolean success = true;
-        try {
-            tag = tagService.getById(id);
-        } catch (Exception e) {
-            success = false;
-            log.error("tag不存在, id:{}", id, e);
-        }
-        if (!success || tag == null) {
-            return new Response<>(4008);
-        }
-        TagInfoVO tagInfoVO = new TagInfoVO()
-                .setTagName(tag.getTagName())
-                .setTagDesc(tag.getTagDesc());
-        return new Response<>(1001, tagInfoVO);
+    @GetMapping("/tag/info")
+    public Response<TagInfoVO> getInfo(@VerifiedUser User loginUser,
+                                       @RequestParam Long id) {
+        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002) : tagFeign.getInfo(loginUser.getId(), id);
     }
 
-    /**
-     * 列表接口
-     */
-    @RequestMapping("/list")
-    public Response<TagListFeedVO> getAll(@VerifiedUser User loginUser) {
-        if (BaseUtil.isEmpty(loginUser)) {
-            log.warn("User not logged in.");
-            return new Response<>(1002);
-        }
-        List<TagListVO> tagListVOS = new ArrayList<>();
-        List<Tag> tags = null;
-        boolean success = true;
-        try {
-            tags = tagService.getAll();
-        } catch (Exception e) {
-            success = false;
-            log.error("获取标签列表失败", e);
-        }
-        if (!success || tags == null) {
-            return new Response<>(4005);
-        }
-        for (Tag tag : tags) {
-            TagListVO tagListVO = new TagListVO().setTag(tag.getTagName());
-            tagListVOS.add(tagListVO);
-        }
-        TagListFeedVO tagListFeedVO = new TagListFeedVO().setList(tagListVOS);
-        return new Response<>(1001, tagListFeedVO);
+    @GetMapping("/tag/list")
+    public Response<TagListFeedVO> getList(@VerifiedUser User loginUser) {
+        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002) : tagFeign.getList(loginUser.getId());
     }
 
-    /**
-     * 新增接口
-     */
-    @PostMapping("/create")
-    public Response<String> create(@VerifiedUser User loginUser, @RequestParam(name = "tagName") String tagName, @RequestParam(name = "tagDesc", required = false) String tagDesc) {
-        if (BaseUtil.isEmpty(loginUser)) {
-            log.warn("User not logged in.");
-            return new Response<>(1002);
-        }
-        tagName = tagName == null ? tagName : tagName.trim();
-        boolean success = true;
-        try {
-            tagService.insert(tagName, tagDesc);
-        } catch (Exception e) {
-            success = false;
-            log.error("tagName cannot be null, tagName:{}", tagName, e);
-        }
-        if (!success) {
-            return new Response<>(4005, "创建失败：tagName不能为空或标签已存在");
-        }
-        return new Response<>(1001, "success");
+    @PostMapping("/tag/create")
+    public Response<String> create(@VerifiedUser User loginUser,
+                                   @RequestParam String tagName,
+                                   @RequestParam(required = false) String tagDesc) {
+        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002)
+                : tagFeign.create(loginUser.getId(), tagName, tagDesc);
     }
 
-    /**
-     * 更新接口
-     */
-    @PutMapping("/update")
+    @PutMapping("/tag/update")
     public Response<String> update(@VerifiedUser User loginUser,
-                                   @RequestParam("id") Long id,
-                                   @RequestParam(name = "tagName") String tagName,
-                                   @RequestParam(name = "tagDesc", required = false) String tagDesc) {
-        if (BaseUtil.isEmpty(loginUser)) {
-            log.warn("User not logged in.");
-            return new Response<>(1002);
-        }
-        tagName = tagName == null ? tagName : tagName.trim();
-        Tag tag = new Tag()
-                .setId(id)
-                .setTagName(tagName)
-                .setTagDesc(tagDesc);
-        boolean success = true;
-        try {
-            tagService.update(tag);
-        } catch (Exception e) {
-            success = false;
-            log.error("update tag fail, id:{}", id, e);
-        }
-        if (!success) {
-            return new Response<>(4005, "更新失败：id不存在");
-        }
-        return new Response<>(1001, "success");
+                                   @RequestParam Long id,
+                                   @RequestParam String tagName,
+                                   @RequestParam(required = false) String tagDesc) {
+        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002)
+                : tagFeign.update(loginUser.getId(), id, tagName, tagDesc);
     }
 
-    /**
-     * 删除接口
-     */
-    @DeleteMapping("/delete")
-    public Response<String> delete(@VerifiedUser User loginUser, @RequestParam("id") Long id) {
-        if (BaseUtil.isEmpty(loginUser)) {
-            log.warn("User not logged in.");
-            return new Response<>(1002);
-        }
-        boolean success = true;
-        Integer affectedRows = 0;
-        try {
-            affectedRows = tagService.delete(id);
-        } catch (Exception e) {
-            success = false;
-            log.error("删除失败, id:{}", id, e);
-        }
-        if (!success || affectedRows == 0) {
-            return new Response<>(4005, "删除失败：id不存在");
-        }
-        return new Response<>(1001, "success");
+    @DeleteMapping("/tag/delete")
+    public Response<String> delete(@VerifiedUser User loginUser,
+                                   @RequestParam Long id) {
+        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002)
+                : tagFeign.delete(loginUser.getId(), id);
     }
 }

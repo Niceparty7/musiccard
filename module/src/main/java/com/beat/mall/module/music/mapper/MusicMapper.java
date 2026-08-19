@@ -1,6 +1,6 @@
 package com.beat.mall.module.music.mapper;
 
-import com.beat.mall.module.music.entity.Music;
+import com.beat.mall.common.entity.music.Music;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

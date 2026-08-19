@@ -1,6 +1,6 @@
 package com.beat.mall.module.sms.service;
 
-import com.beat.mall.module.sms.entity.SmsCrond;
+import com.beat.mall.common.entity.sms.SmsCrond;
 import com.beat.mall.module.sms.mapper.SmsCrondMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

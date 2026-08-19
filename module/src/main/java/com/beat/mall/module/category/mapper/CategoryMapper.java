@@ -1,6 +1,6 @@
 package com.beat.mall.module.category.mapper;
 
-import com.beat.mall.module.category.entity.Category;
+import com.beat.mall.common.entity.category.Category;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

@@ -6,7 +6,7 @@ import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
 import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.music.domain.MusicExcelDTO;
-import com.beat.mall.module.music.entity.Music;
+import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.module.music.listener.MusicExcelListener;
 import com.beat.mall.module.music.mapper.MusicMapper;
 import jakarta.annotation.Resource;

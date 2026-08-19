@@ -6,7 +6,7 @@
 <mapper namespace="com.beat.mall.module.musictagrelation.mapper.MusicTagRelationMapper">
 
     <!-- 插入数据 -->
-    <insert id="insert" parameterType="com.beat.mall.module.musictagrelation.entity.MusicTagRelation">
+    <insert id="insert" parameterType="com.beat.mall.common.entity.musictagrelation.MusicTagRelation">
         INSERT INTO music_tag_relation
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="musicId != null">
@@ -46,7 +46,7 @@
     </insert>
 
     <!-- 更新数据（根据联合主键） -->
-    <update id="update" parameterType="com.beat.mall.module.musictagrelation.entity.MusicTagRelation">
+    <update id="update" parameterType="com.beat.mall.common.entity.musictagrelation.MusicTagRelation">
         UPDATE music_tag_relation
         <set>
                         <if test="createTime != null">

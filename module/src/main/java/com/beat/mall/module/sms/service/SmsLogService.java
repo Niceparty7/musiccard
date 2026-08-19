@@ -1,7 +1,7 @@
 package com.beat.mall.module.sms.service;
 
-import com.beat.mall.module.sms.domain.SmsSendResultDTO;
-import com.beat.mall.module.sms.entity.SmsLog;
+import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.entity.sms.SmsLog;
 import com.beat.mall.module.sms.mapper.SmsLogMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.beat.mall.module.file.handler;
 
-import com.beat.mall.module.file.Type;
+import com.beat.mall.common.entity.file.Type;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedTypes;

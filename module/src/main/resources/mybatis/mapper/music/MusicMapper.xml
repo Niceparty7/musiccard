@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.beat.mall.module.music.mapper.MusicMapper">
     <select id="getAllMusic"
-            resultType="com.beat.mall.module.music.entity.Music">
+            resultType="com.beat.mall.common.entity.music.Music">
         select distinct * from music
         <where>
             is_deleted = 0
@@ -29,7 +29,7 @@
     </select>
 
     <select id="getAllMusicList2"
-            resultType="com.beat.mall.module.music.entity.Music">
+            resultType="com.beat.mall.common.entity.music.Music">
         select distinct *
         from music
         <where>

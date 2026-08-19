@@ -1,7 +1,7 @@
 package com.beat.mall.module.category.service;
 
 import com.beat.mall.module.annotation.ReadOnly;
-import com.beat.mall.module.category.entity.Category;
+import com.beat.mall.common.entity.category.Category;
 import com.beat.mall.module.category.mapper.CategoryMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

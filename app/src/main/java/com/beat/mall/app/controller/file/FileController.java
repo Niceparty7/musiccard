@@ -1,33 +1,20 @@
 package com.beat.mall.app.controller.file;
 
-import com.beat.mall.module.file.service.FileService;
-import com.beat.mall.utils.Response;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.beat.mall.app.feign.AppFileFeign;
+import com.beat.mall.common.response.Response;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@Slf4j
+@RequiredArgsConstructor
 public class FileController {
-    @Autowired
-    private FileService fileService;
+    private final AppFileFeign fileFeign;
 
-    @RequestMapping("/upload")
-    public Response upload(@RequestParam("file") MultipartFile file) {
-        boolean success = true;
-        String url = null;
-        try {
-            url = fileService.uploadAndSave(file);
-        } catch (Exception e) {
-            success = false;
-            log.error("文件上传失败", e);
-        }
-        if (!success) {
-            return new Response<>(4006);
-        }
-        return new Response<>(1001, url);
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public Response<String> upload(@RequestPart("file") MultipartFile file) {
+        return fileFeign.upload(file);
     }
 }

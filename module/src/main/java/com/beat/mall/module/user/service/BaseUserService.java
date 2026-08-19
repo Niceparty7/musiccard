@@ -1,12 +1,12 @@
 package com.beat.mall.module.user.service;
 
 import com.beat.mall.module.annotation.ReadOnly;
-import com.beat.mall.module.user.entity.User;
+import com.beat.mall.common.entity.user.User;
 import com.beat.mall.module.user.mapper.UserMapper;
-import com.beat.mall.utils.BaseUtil;
-import com.beat.mall.utils.DataUtil;
-import com.beat.mall.utils.ImageUtil;
-import com.beat.mall.utils.SignUtil;
+import com.beat.mall.common.utils.BaseUtil;
+import com.beat.mall.common.utils.DataUtil;
+import com.beat.mall.common.utils.ImageUtil;
+import com.beat.mall.common.utils.SignUtil;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

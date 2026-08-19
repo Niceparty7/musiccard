@@ -1,6 +1,6 @@
 package com.beat.mall.module.file.mapper;
 
-import com.beat.mall.module.file.entity.File;
+import com.beat.mall.common.entity.file.File;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;

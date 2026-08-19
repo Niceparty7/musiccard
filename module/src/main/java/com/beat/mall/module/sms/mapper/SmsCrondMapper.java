@@ -1,6 +1,6 @@
 package com.beat.mall.module.sms.mapper;
 
-import com.beat.mall.module.sms.entity.SmsCrond;
+import com.beat.mall.common.entity.sms.SmsCrond;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

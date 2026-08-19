@@ -1,16 +1,11 @@
 package com.beat.mall.app;
 
-import com.alibaba.fastjson.JSON;
 import com.beat.mall.app.annotations.VerifiedUser;
-import com.beat.mall.module.user.entity.User;
-import com.beat.mall.module.user.service.BaseUserService;
-import com.beat.mall.utils.BaseUtil;
-import com.beat.mall.utils.SignUtil;
-import com.beat.mall.utils.SpringUtil;
+import com.beat.mall.common.entity.user.User;
+import com.beat.mall.common.utils.BaseUtil;
+import com.beat.mall.common.utils.SignUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -20,8 +15,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Slf4j
 public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
-    @Autowired
-    private BaseUserService userService;
     private boolean isCheckAuthority;
 
     public UserAuthorityResolver(ApplicationArguments appArguments) {
@@ -51,35 +44,17 @@ public class UserAuthorityResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest request,
                                   WebDataBinderFactory factory) {
         if (isCheckAuthority) {
-            String isAppS = SpringUtil.getProperty("application.isapp");
-            boolean isApp = isAppS.equals("1") ? true : false;
             HttpServletRequest sRequest = (HttpServletRequest) request.getNativeRequest();
-            if (isApp) {
-                String signKey = SpringUtil.getProperty("application.sign.key");
-                String sign = sRequest.getParameter(signKey);
-                if (!BaseUtil.isEmpty(sign)) {
-                    Long userId = SignUtil.parseSign(sign);
-                    log.info("userId: {}, sign: {}", userId, sign);
-                    if (!BaseUtil.isEmpty(userId)) {
-                        return userService.getById(userId);
-                    }
-                }
-                return null;
-            } else {
-                HttpSession session = sRequest.getSession(false);
-                if (BaseUtil.isEmpty(session)) {
-                    return null;
-                }
-                String signKey = SpringUtil.getProperty("application.session.key");
-                Object value = session.getAttribute(signKey);
-                if (value == null) {
-                    return null;
-                }
-
-                String sValue = (String) value;
-                return JSON.parseObject(sValue, User.class);
+            String sign = sRequest.getHeader("sign");
+            if (BaseUtil.isEmpty(sign)) {
+                sign = sRequest.getParameter("sign");
             }
+            Long userId = SignUtil.parseSign(sign);
+            if (userId == null) {
+                return null;
+            }
+            return new User().setId(userId);
         }
-        return userService.getById(Long.valueOf(1));
+        return new User().setId(1L);
     }
 }

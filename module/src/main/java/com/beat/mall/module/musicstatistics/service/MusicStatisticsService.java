@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.beat.mall.module.annotation.ReadOnly;
 import com.beat.mall.module.music.service.MusicService;
-import com.beat.mall.module.musicstatistics.entity.MusicStatistics;
+import com.beat.mall.common.entity.musicstatistics.MusicStatistics;
 import com.beat.mall.module.musicstatistics.mapper.MusicStatisticsMapper;
 import com.beat.mall.module.redis.util.RedisUtil;
 import lombok.RequiredArgsConstructor;

@@ -6,7 +6,7 @@
 <mapper namespace="com.beat.mall.module.tag.mapper.TagMapper">
 
     <!-- 插入数据 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.beat.mall.module.tag.entity.Tag">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.beat.mall.common.entity.tag.Tag">
         INSERT INTO tag
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="tagName != null">
@@ -46,7 +46,7 @@
     </insert>
 
     <!-- 更新数据（根据主键） -->
-    <update id="update" parameterType="com.beat.mall.module.tag.entity.Tag">
+    <update id="update" parameterType="com.beat.mall.common.entity.tag.Tag">
         UPDATE tag
         <set>
                         <if test="tagName != null">
