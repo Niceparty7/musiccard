@@ -5,7 +5,7 @@ import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleSmsFeign;
+import com.beat.mall.console.feign.SmsFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/sms")
 public class SmsController {
-    private final ConsoleSmsFeign smsFeign;
+    private final SmsFeign smsFeign;
 
     @GetMapping("/send-sync")
     public Response<SmsSendResultDTO> sendSync(@VerifiedUser User loginUser,

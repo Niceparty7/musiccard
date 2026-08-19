@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
+@RestController("consoleSmsProviderController")
 @RequiredArgsConstructor
 @RequestMapping("/sms")
-public class ConsoleSmsProviderController {
+public class SmsProviderController {
     private final BaseSmsService baseSmsService;
     private final ProviderAuthService providerAuthService;
 

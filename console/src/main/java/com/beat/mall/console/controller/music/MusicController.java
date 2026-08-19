@@ -7,7 +7,7 @@ import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleMusicFeign;
+import com.beat.mall.console.feign.MusicFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 public class MusicController {
-    private final ConsoleMusicFeign musicFeign;
+    private final MusicFeign musicFeign;
 
     @GetMapping("/music/info")
     public Response<MusicInfoVO> getInfo(@VerifiedUser User loginUser,

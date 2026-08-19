@@ -4,7 +4,7 @@ import com.beat.mall.common.entity.musictagrelation.MusicTagRelation;
 import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleMusicTagRelationFeign;
+import com.beat.mall.console.feign.MusicTagRelationFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class MusicTagRelationController {
-    private final ConsoleMusicTagRelationFeign relationFeign;
+    private final MusicTagRelationFeign relationFeign;
 
     @GetMapping("/musicTagRelation/info")
     public MusicTagRelation getDetail(@VerifiedUser User loginUser,

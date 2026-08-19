@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("appUserProviderController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Client-Type=app")
-public class AppUserProviderController {
+public class UserProviderController {
     private final BaseUserService baseUserService;
     private final ProviderAuthService providerAuthService;
 

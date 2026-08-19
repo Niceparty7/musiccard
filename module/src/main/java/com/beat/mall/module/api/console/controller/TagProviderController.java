@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("consoleTagProviderController")
 @RequiredArgsConstructor
 @RequestMapping("/tag")
-public class ConsoleTagProviderController {
+public class TagProviderController {
     private final TagService tagService;
     private final ProviderAuthService providerAuthService;
 

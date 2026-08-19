@@ -1,6 +1,6 @@
 package com.beat.mall.app.controller.user;
 
-import com.beat.mall.app.feign.AppUserFeign;
+import com.beat.mall.app.feign.UserFeign;
 import com.beat.mall.common.api.app.user.UserLoginInfoVo;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    private final AppUserFeign userFeign;
+    private final UserFeign userFeign;
 
     @GetMapping("/user/login/app")
     public Response<UserLoginInfoVo> loginApp(@RequestParam("phone") String phone,

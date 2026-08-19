@@ -1,7 +1,7 @@
 package com.beat.mall.app.controller.sms;
 
 import com.beat.mall.app.annotations.VerifiedUser;
-import com.beat.mall.app.feign.AppSmsFeign;
+import com.beat.mall.app.feign.SmsFeign;
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
 import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/sms")
 public class SmsController {
-    private final AppSmsFeign smsFeign;
+    private final SmsFeign smsFeign;
 
     @GetMapping("/send-sync")
     public Response<SmsSendResultDTO> sendSync(@VerifiedUser User loginUser,

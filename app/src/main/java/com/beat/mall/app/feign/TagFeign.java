@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "module", contextId = "appTagFeign")
-public interface AppTagFeign {
+@FeignClient(name = "module", contextId = "tagFeign")
+public interface TagFeign {
     @GetMapping("/tag/info")
     Tag getDetail(@RequestParam("id") Long id);
 

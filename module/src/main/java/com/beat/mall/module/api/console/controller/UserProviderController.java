@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("consoleUserProviderController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Client-Type=console")
-public class ConsoleUserProviderController {
+public class UserProviderController {
     private final BaseUserService baseUserService;
 
     @RequestMapping("/user/login/web")

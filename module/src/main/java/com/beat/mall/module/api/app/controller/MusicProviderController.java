@@ -39,10 +39,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestController
+@RestController("appMusicProviderController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Client-Type=app")
-public class AppMusicProviderController {
+public class MusicProviderController {
     private static final String MUSIC_LIST_CACHE_PREFIX = "app:music:list:";
     private static final int MUSIC_LIST_CACHE_TTL_SECONDS = 300;
 

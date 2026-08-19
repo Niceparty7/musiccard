@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("consoleCategoryProviderController")
 @RequiredArgsConstructor
 @RequestMapping("/category")
-public class ConsoleCategoryProviderController {
+public class CategoryProviderController {
     private final CategoryService categoryService;
     private final MusicService musicService;
     private final ProviderAuthService providerAuthService;

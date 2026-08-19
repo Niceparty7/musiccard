@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(name = "module", contextId = "consoleMusicStatisticsFeign")
-public interface ConsoleMusicStatisticsFeign {
+@FeignClient(name = "module", contextId = "musicStatisticsFeign")
+public interface MusicStatisticsFeign {
     @GetMapping("/music/statistics")
     Response<Map<String, Object>> getStatistics(@RequestHeader("X-User-Id") Long userId);
 }

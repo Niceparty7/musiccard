@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@RestController("appTagProviderController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Client-Type=app")
-public class AppTagProviderController {
+public class TagProviderController {
     private final TagService service;
 
     @RequestMapping("/tag/info")

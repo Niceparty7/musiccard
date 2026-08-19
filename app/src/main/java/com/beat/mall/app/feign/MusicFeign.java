@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-@FeignClient(name = "module", contextId = "appMusicFeign")
-public interface AppMusicFeign {
+@FeignClient(name = "module", contextId = "musicFeign")
+public interface MusicFeign {
     @GetMapping("/music/info")
     Response<MusicInfoVO> getMusicInfo(@RequestParam("id") Long id,
                                         @RequestHeader("sign") String sign);

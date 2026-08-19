@@ -8,7 +8,7 @@ import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.common.utils.IpUtil;
 import com.beat.mall.common.utils.SpringUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleUserFeign;
+import com.beat.mall.console.feign.UserFeign;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    private final ConsoleUserFeign userFeign;
+    private final UserFeign userFeign;
 
     @GetMapping("/user/login/web")
     public Response<UserInfoVo> loginWeb(@VerifiedUser User loginUser,

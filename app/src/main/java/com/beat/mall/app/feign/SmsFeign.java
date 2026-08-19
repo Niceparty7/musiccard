@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "module", contextId = "appSmsFeign")
-public interface AppSmsFeign {
+@FeignClient(name = "module", contextId = "smsFeign")
+public interface SmsFeign {
     @GetMapping("/sms/send-sync")
     Response<SmsSendResultDTO> sendSync(@RequestParam("phone") String phone,
                                         @RequestHeader("sign") String sign);

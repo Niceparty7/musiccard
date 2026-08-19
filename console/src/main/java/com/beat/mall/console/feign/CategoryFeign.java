@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "module", contextId = "consoleCategoryFeign")
-public interface ConsoleCategoryFeign {
+@FeignClient(name = "module", contextId = "categoryFeign")
+public interface CategoryFeign {
     @GetMapping("/category/list")
     Response<CategoryListFeedVO> getList(@RequestHeader("X-User-Id") Long userId);
 

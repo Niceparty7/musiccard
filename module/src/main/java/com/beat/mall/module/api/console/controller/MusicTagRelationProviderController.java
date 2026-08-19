@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@RestController("consoleMusicTagRelationProviderController")
 @RequiredArgsConstructor
 @RequestMapping("/musicTagRelation")
-public class ConsoleMusicTagRelationProviderController {
+public class MusicTagRelationProviderController {
     private final MusicTagRelationService service;
     private final ProviderAuthService providerAuthService;
 

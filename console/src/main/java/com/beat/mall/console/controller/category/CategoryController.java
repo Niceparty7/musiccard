@@ -5,7 +5,7 @@ import com.beat.mall.common.api.console.category.CategoryListFeedVO;
 import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleCategoryFeign;
+import com.beat.mall.console.feign.CategoryFeign;
 import com.beat.mall.common.utils.BaseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class CategoryController {
-    private final ConsoleCategoryFeign categoryFeign;
+    private final CategoryFeign categoryFeign;
 
     @GetMapping("/category/list")
     public Response<CategoryListFeedVO> getList(@VerifiedUser User loginUser) {

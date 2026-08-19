@@ -2,7 +2,7 @@ package com.beat.mall.app.controller.music;
 
 import com.alibaba.fastjson.JSON;
 import com.beat.mall.app.annotations.VerifiedUser;
-import com.beat.mall.app.feign.AppMusicFeign;
+import com.beat.mall.app.feign.MusicFeign;
 import com.beat.mall.common.api.app.music.MusicInfoVO;
 import com.beat.mall.common.api.app.music.MusicListFeedVO;
 import com.beat.mall.common.entity.user.User;
@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 public class MusicController {
-    private final AppMusicFeign musicFeign;
+    private final MusicFeign musicFeign;
 
     @GetMapping("/music/info")
     public Response<MusicInfoVO> getMusicInfoById(

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "module", contextId = "consoleTagFeign")
-public interface ConsoleTagFeign {
+@FeignClient(name = "module", contextId = "tagFeign")
+public interface TagFeign {
     @GetMapping("/tag/info")
     Response<TagInfoVO> getInfo(@RequestHeader("X-User-Id") Long userId,
                                 @RequestParam("id") Long id);

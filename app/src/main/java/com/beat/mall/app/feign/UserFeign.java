@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "module", contextId = "appUserFeign")
-public interface AppUserFeign {
+@FeignClient(name = "module", contextId = "userFeign")
+public interface UserFeign {
     @GetMapping("/user/login/app")
     Response<UserLoginInfoVo> login(
             @RequestParam("phone") String phone,

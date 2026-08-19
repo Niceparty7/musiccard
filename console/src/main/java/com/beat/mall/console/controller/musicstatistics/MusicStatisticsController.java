@@ -4,7 +4,7 @@ import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleMusicStatisticsFeign;
+import com.beat.mall.console.feign.MusicStatisticsFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class MusicStatisticsController {
-    private final ConsoleMusicStatisticsFeign statisticsFeign;
+    private final MusicStatisticsFeign statisticsFeign;
 
     @GetMapping("/music/statistics")
     public Response<Map<String, Object>> getStatistics(@VerifiedUser User loginUser) {

@@ -5,8 +5,8 @@ import com.beat.mall.common.response.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@FeignClient(name = "module", contextId = "appCategoryFeign")
-public interface AppCategoryFeign {
+@FeignClient(name = "module", contextId = "categoryFeign")
+public interface CategoryFeign {
     @GetMapping("/category/list")
     Response<CategoryListFeedVO> getCategoryList();
 }

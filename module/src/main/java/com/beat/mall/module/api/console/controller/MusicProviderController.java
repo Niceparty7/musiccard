@@ -37,9 +37,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestController
+@RestController("consoleMusicProviderController")
 @RequiredArgsConstructor
-public class ConsoleMusicProviderController {
+public class MusicProviderController {
     private final MusicService musicService;
     private final CategoryService categoryService;
     private final BaseMusicService baseMusicService;

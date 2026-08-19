@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController
+@RestController("appCategoryProviderController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Client-Type=app")
-public class AppCategoryProviderController {
+public class CategoryProviderController {
     private final CategoryService categoryService;
 
     @RequestMapping("/category/list")

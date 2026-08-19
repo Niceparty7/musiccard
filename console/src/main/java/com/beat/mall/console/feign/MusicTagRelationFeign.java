@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "module", contextId = "consoleMusicTagRelationFeign")
-public interface ConsoleMusicTagRelationFeign {
+@FeignClient(name = "module", contextId = "musicTagRelationFeign")
+public interface MusicTagRelationFeign {
     @GetMapping("/musicTagRelation/info")
     MusicTagRelation getDetail(@RequestHeader("X-User-Id") Long userId,
                                @RequestParam("musicId") Long musicId,

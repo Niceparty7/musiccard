@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
-@RestController
+@RestController("consoleFileProviderController")
 @RequiredArgsConstructor
-public class ConsoleFileProviderController {
+public class FileProviderController {
     private final FileService fileService;
     private final ProviderAuthService providerAuthService;
 

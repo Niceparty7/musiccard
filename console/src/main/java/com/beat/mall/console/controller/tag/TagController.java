@@ -6,7 +6,7 @@ import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.console.annotations.VerifiedUser;
-import com.beat.mall.console.feign.ConsoleTagFeign;
+import com.beat.mall.console.feign.TagFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class TagController {
-    private final ConsoleTagFeign tagFeign;
+    private final TagFeign tagFeign;
 
     @GetMapping("/tag/info")
     public Response<TagInfoVO> getInfo(@VerifiedUser User loginUser,
