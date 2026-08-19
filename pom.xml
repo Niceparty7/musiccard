@@ -20,9 +20,8 @@
     <modules>
         <module>common</module>
         <module>eureka</module>
-        <module>app</module>
-        <module>console</module>
-        <module>module</module>
+        <module>music</module>
+        <module>user</module>
     </modules>
 
     <dependencyManagement>
