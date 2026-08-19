@@ -42,4 +42,3 @@ public class UserController {
         return BaseUtil.isEmpty(sign) ? request.getParameter("sign") : sign;
     }
 }
-
