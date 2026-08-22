@@ -7,10 +7,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SmsCrond {
     private Long id;
+    private String messageId;
     private String phone;
     private String content;
     private Short status;
     private Short retryCount;
+    private Short publishStatus;
+    private Integer nextRetryTime;
     private String errorMessage;
     private Integer sendTime;
     private Integer createTime;

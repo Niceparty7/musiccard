@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface SmsLogMapper {
 
-    @Insert("INSERT INTO sms_log(phone,content,result,biz_id,request_id,error_code,error_message,send_type,status,send_time,create_time,update_time,is_deleted) " +
-            "VALUES(#{phone},#{content},#{result},#{bizId},#{requestId},#{errorCode},#{errorMessage},#{sendType},#{status},#{sendTime},#{createTime},#{updateTime},0)")
+    @Insert("INSERT INTO sms_log(task_id,phone,content,result,biz_id,request_id,error_code,error_message,send_type,status,attempt_count,send_time,create_time,update_time,is_deleted) " +
+            "VALUES(#{taskId},#{phone},#{content},#{result},#{bizId},#{requestId},#{errorCode},#{errorMessage},#{sendType},#{status},#{attemptCount},#{sendTime},#{createTime},#{updateTime},0)")
     Long insert(SmsLog log);
 
     @Select("SELECT COUNT(*) FROM sms_log WHERE phone=#{phone} AND send_time BETWEEN #{start} AND #{end} AND is_deleted=0")

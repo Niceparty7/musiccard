@@ -1,23 +1,19 @@
 package com.beat.mall.music.module.sms.scheduler;
 
-import com.beat.mall.common.api.sms.SmsSendResultDTO;
 import com.beat.mall.common.entity.sms.SmsCrond;
-import com.beat.mall.music.module.sms.service.BaseSmsService;
+import com.beat.mall.music.module.sms.task.SmsTaskDispatchService;
 import com.beat.mall.music.module.sms.service.SmsCrondService;
-import com.beat.mall.music.module.sms.service.SmsLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 定时任务：扫描 sms_crond 表中 status=0 的待发送任务，真正调用阿里云 PNVS 发送短信，
- * 发送完成后更新任务状态：1-发送成功，2-发送失败。
- * 这是"异步发送"需求的真正发送环节：接口只负责创建任务，此定时任务负责执行发送。
+ * 短信任务发布器：扫描数据库中的待发布任务并投递到Kafka，不直接调用短信服务商。
  */
 @Component
 @RequiredArgsConstructor
@@ -25,37 +21,46 @@ import java.util.concurrent.Executor;
 public class SmsCrondScheduler {
 
     private final SmsCrondService smsCrondService;
-    private final BaseSmsService baseSmsService;
-    private final SmsLogService smsLogService;
-    private final Executor smsExecutor;
+    private final SmsTaskDispatchService smsTaskDispatchService;
 
-    @Scheduled(fixedDelay = 30_000, initialDelay = 5_000)
-    public void scanAndSend() {
+    private final Set<Long> inFlightTasks = ConcurrentHashMap.newKeySet();
+
+    @Scheduled(fixedDelayString = "${app.sms.kafka.publish-interval-ms:5000}", initialDelay = 5000)
+    public void publishPendingTasks() {
         try {
-            List<SmsCrond> pending = smsCrondService.selectPending(100);
-            if (pending.isEmpty()) {
-                return;
+            List<SmsCrond> pending = smsCrondService.selectPendingPublish(100);
+            for (SmsCrond task : pending) {
+                publishOne(task);
             }
-            log.info("scan pending sms crond count = {}", pending.size());
-            List<CompletableFuture<Void>> fs = pending.stream()
-                    .map(t -> CompletableFuture.runAsync(() -> handleOne(t), smsExecutor))
-                    .toList();
-            CompletableFuture.allOf(fs.toArray(new CompletableFuture[0])).join();
         } catch (Exception e) {
-            log.error("sms crond scan error", e);
+            log.error("sms kafka publish scan error", e);
         }
     }
 
-    private void handleOne(SmsCrond crond) {
-        // crond.content 存的是验证码；sms_log.content 记录整条短信内容
-        String smsContent = baseSmsService.buildSmsContent(crond.getContent());
-        SmsSendResultDTO r = baseSmsService.doSend(crond.getPhone(), crond.getContent());
-        smsLogService.saveLog(crond.getPhone(), smsContent, r, BaseSmsService.SEND_TYPE_CROND);
-        crond.setStatus((short) (r.isOk() ? 1 : 2));
-        crond.setErrorMessage(r.getErrorMessage());
-        crond.setSendTime((int) (System.currentTimeMillis() / 1000));
-        crond.setUpdateTime(crond.getSendTime());
-        crond.setRetryCount((short) (crond.getRetryCount() + 1));
-        smsCrondService.update(crond);
+    private void publishOne(SmsCrond task) {
+        if (task.getId() == null || !inFlightTasks.add(task.getId())) {
+            return;
+        }
+        smsTaskDispatchService.dispatch(task).whenComplete((result, error) -> {
+            int now = (int) (System.currentTimeMillis() / 1000);
+            try {
+                if (error == null) {
+                    smsCrondService.markPublishSuccess(task.getId(), now);
+                    log.info("sms task published to kafka, taskId={}, messageId={}",
+                            task.getId(), task.getMessageId());
+                } else {
+                    smsCrondService.markPublishFailed(task.getId(), errorMessage(error),
+                            now + 60, now);
+                    log.error("sms task publish to kafka failed, taskId={}", task.getId(), error);
+                }
+            } finally {
+                inFlightTasks.remove(task.getId());
+            }
+        });
+    }
+
+    private String errorMessage(Throwable error) {
+        String message = error.getMessage();
+        return message == null ? error.getClass().getSimpleName() : message;
     }
 }

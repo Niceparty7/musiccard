@@ -15,6 +15,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -83,8 +84,10 @@ public class BaseSmsService {
         }
         int now = (int) (System.currentTimeMillis() / 1000);
         SmsCrond crond = new SmsCrond()
+                .setMessageId("sms-" + UUID.randomUUID().toString().replace("-", ""))
                 .setPhone(phone).setContent(code)
                 .setStatus((short) 0).setRetryCount((short) 0)
+                .setPublishStatus((short) 0).setNextRetryTime(null)
                 .setCreateTime(now).setUpdateTime(now).setIsDeleted(0);
         smsCrondService.insert(crond);
         return crond.getId();

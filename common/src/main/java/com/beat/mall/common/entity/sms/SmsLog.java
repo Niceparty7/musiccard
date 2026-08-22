@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SmsLog {
     private Long id;
+    private Long taskId;
     private String phone;
     private String content;
     private String result;
@@ -16,6 +17,7 @@ public class SmsLog {
     private String errorMessage;
     private Integer sendType;
     private Integer status;
+    private Short attemptCount;
     private Integer sendTime;
     private Integer createTime;
     private Integer updateTime;
