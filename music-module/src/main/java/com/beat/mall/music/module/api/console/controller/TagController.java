@@ -5,7 +5,7 @@ import com.beat.mall.common.api.console.tag.TagListFeedVO;
 import com.beat.mall.common.api.console.tag.TagListVO;
 import com.beat.mall.common.entity.tag.Tag;
 import com.beat.mall.common.response.Response;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.tag.service.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController("consoleTagProviderController")
+@RestController("consoleTagController")
 @RequiredArgsConstructor
 @RequestMapping(value = "/tag", headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class TagProviderController {
+public class TagController {
     private final TagService tagService;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService providerAuthService;
 
     @RequestMapping(value = "/info", headers = "X-Client-Type=console")
     public Response<TagInfoVO> getDetail(

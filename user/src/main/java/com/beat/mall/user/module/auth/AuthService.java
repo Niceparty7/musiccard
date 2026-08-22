@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 
 @Service
 @RequiredArgsConstructor
-public class ProviderAuthService {
+public class AuthService {
     private final BaseUserService userService;
 
     @Value("${microservice.internal-token}")

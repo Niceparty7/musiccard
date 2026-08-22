@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("appMusicTagRelationProviderController")
+@RestController("appMusicTagRelationController")
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=app", "X-Internal-Token"})
-public class MusicTagRelationProviderController {
+public class MusicTagRelationController {
     private final MusicTagRelationService service;
 
     @RequestMapping("/musicTagRelation/info")

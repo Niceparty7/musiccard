@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
-@RestController("appFileProviderController")
+@RestController("appFileController")
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=app", "X-Internal-Token"})
-public class FileProviderController {
+public class FileController {
     private final FileService fileService;
 
     @RequestMapping("/upload")

@@ -1,8 +1,8 @@
-package com.beat.mall.music.module.api.console.controller;
+package com.beat.mall.music.module.api.app.controller;
 
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
 import com.beat.mall.common.response.Response;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.sms.service.BaseSmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,29 +13,29 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
-@RestController("consoleSmsProviderController")
+@RestController("appSmsController")
 @RequiredArgsConstructor
-@RequestMapping(value = "/sms", headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class SmsProviderController {
+@RequestMapping(value = "/sms", headers = {"X-Client-Type=app", "X-Internal-Token"})
+public class SmsController {
     private final BaseSmsService baseSmsService;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService authService;
 
-    @RequestMapping(value = "/send-sync", headers = "X-Client-Type=console")
+    @RequestMapping(value = "/send-sync", headers = "X-Client-Type=app")
     public Response<SmsSendResultDTO> sendSync(
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestParam String phone) {
-        providerAuthService.requireUser(userId);
+            @RequestParam String phone,
+            @RequestHeader(value = "sign", required = false) String sign) {
+        authService.requireSign(sign);
         if (phone == null || phone.isBlank()) {
             return new Response<>(5002);
         }
         return new Response<>(1001, baseSmsService.sendSync(phone));
     }
 
-    @RequestMapping(value = "/send-batch", headers = "X-Client-Type=console")
+    @RequestMapping(value = "/send-batch", headers = "X-Client-Type=app")
     public Response<List<SmsSendResultDTO>> sendBatch(
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestParam String phones) {
-        providerAuthService.requireUser(userId);
+            @RequestParam String phones,
+            @RequestHeader(value = "sign", required = false) String sign) {
+        authService.requireSign(sign);
         if (phones == null || phones.isBlank()) {
             return new Response<>(5002);
         }
@@ -46,11 +46,11 @@ public class SmsProviderController {
         return new Response<>(1001, baseSmsService.sendBatch(phoneList));
     }
 
-    @RequestMapping(value = "/send-async", headers = "X-Client-Type=console")
+    @RequestMapping(value = "/send-async", headers = "X-Client-Type=app")
     public Response<String> sendAsync(
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestParam String phone) throws Exception {
-        providerAuthService.requireUser(userId);
+            @RequestParam String phone,
+            @RequestHeader(value = "sign", required = false) String sign) throws Exception {
+        authService.requireSign(sign);
         if (phone == null || phone.isBlank()) {
             return new Response<>(5002);
         }

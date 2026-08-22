@@ -12,12 +12,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 @Service
-public class ProviderAuthService {
+public class AuthService {
     private final AppUserValidationFeign appUserValidationFeign;
     private final ConsoleUserValidationFeign consoleUserValidationFeign;
 
-    public ProviderAuthService(@Lazy AppUserValidationFeign appUserValidationFeign,
-                               @Lazy ConsoleUserValidationFeign consoleUserValidationFeign) {
+    public AuthService(@Lazy AppUserValidationFeign appUserValidationFeign,
+                       @Lazy ConsoleUserValidationFeign consoleUserValidationFeign) {
         this.appUserValidationFeign = appUserValidationFeign;
         this.consoleUserValidationFeign = consoleUserValidationFeign;
     }

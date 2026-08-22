@@ -1,7 +1,7 @@
 package com.beat.mall.music.module.api.console.controller;
 
 import com.beat.mall.common.response.Response;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.musicstatistics.service.MusicStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-@RestController("consoleMusicStatisticsProviderController")
+@RestController("consoleMusicStatisticsController")
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class MusicStatisticsProviderController {
+public class MusicStatisticsController {
     private final MusicStatisticsService musicStatisticsService;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService providerAuthService;
 
     @RequestMapping(value = "/music/statistics", headers = "X-Client-Type=console")
     public Response<Map<String, Object>> getStatistics(

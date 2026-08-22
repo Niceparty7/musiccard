@@ -6,7 +6,7 @@ import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
 import com.beat.mall.common.utils.SignUtil;
-import com.beat.mall.user.module.auth.ProviderAuthService;
+import com.beat.mall.user.module.auth.AuthService;
 import com.beat.mall.user.module.user.service.BaseUserService;
 import com.beat.mall.user.module.user.service.UserDefine;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("appUserProviderController")
+@RestController("moduleAppUserController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Internal-Token")
-public class UserProviderController {
+public class UserController {
     private final BaseUserService baseUserService;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService authService;
 
     @GetMapping(value = "/user/validate", headers = "X-Client-Type=app")
     public Response<Void> validate(@RequestParam("userId") Long userId) {
@@ -34,7 +34,7 @@ public class UserProviderController {
             @RequestParam String password,
             @RequestHeader(value = "sign", required = false) String sign,
             @RequestHeader(value = "X-Forwarded-For", required = false) String clientIp) {
-        if (providerAuthService.hasValidSign(sign)) {
+        if (authService.hasValidSign(sign)) {
             return new Response<>(4004);
         }
         if (!baseUserService.login(phone, password)) {
@@ -58,7 +58,7 @@ public class UserProviderController {
             @RequestParam(required = false) String city,
             @RequestHeader(value = "sign", required = false) String sign,
             @RequestHeader(value = "X-Forwarded-For", required = false) String clientIp) {
-        if (providerAuthService.hasValidSign(sign)) {
+        if (authService.hasValidSign(sign)) {
             return new Response<>(4004);
         }
         User user = baseUserService.extractByPhone(phone, "86");

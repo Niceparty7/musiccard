@@ -1,7 +1,7 @@
 package com.beat.mall.music.module.api.console.controller;
 
 import com.beat.mall.common.entity.musictagrelation.MusicTagRelation;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.musictagrelation.service.MusicTagRelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("consoleMusicTagRelationProviderController")
+@RestController("consoleMusicTagRelationController")
 @RequiredArgsConstructor
 @RequestMapping(value = "/musicTagRelation", headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class MusicTagRelationProviderController {
+public class MusicTagRelationController {
     private final MusicTagRelationService service;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService providerAuthService;
 
     @RequestMapping(value = "/info", headers = "X-Client-Type=console")
     public MusicTagRelation getDetail(@RequestHeader("X-User-Id") Long userId,

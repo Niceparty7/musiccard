@@ -10,7 +10,7 @@ import com.beat.mall.common.entity.category.Category;
 import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.ImageUtils;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.category.service.CategoryService;
 import com.beat.mall.music.module.music.service.BaseMusicService;
 import com.beat.mall.music.module.music.service.MusicService;
@@ -39,10 +39,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestController("appMusicProviderController")
+@RestController("appMusicController")
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=app", "X-Internal-Token"})
-public class MusicProviderController {
+public class MusicController {
     private static final String MUSIC_LIST_CACHE_PREFIX = "app:music:list:";
     private static final int MUSIC_LIST_CACHE_TTL_SECONDS = 300;
 
@@ -50,13 +50,13 @@ public class MusicProviderController {
     private final BaseMusicService baseMusicService;
     private final CategoryService categoryService;
     private final RedisUtil redisUtil;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService authService;
 
     @RequestMapping("/music/info")
     public Response<MusicInfoVO> getMusicInfoById(
             @RequestParam("id") Long id,
             @RequestHeader(value = "sign", required = false) String sign) throws Exception {
-        providerAuthService.requireSign(sign);
+        authService.requireSign(sign);
         Music music = musicService.getById(id);
         Category category = categoryService.getById((long) music.getTypeId());
         if (category == null) {
@@ -161,7 +161,7 @@ public class MusicProviderController {
     @RequestMapping("/music/download")
     public ResponseEntity<byte[]> download(
             @RequestHeader(value = "sign", required = false) String sign) throws Exception {
-        providerAuthService.requireSign(sign);
+        authService.requireSign(sign);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         musicService.export(outputStream);
         return ResponseEntity.ok()
@@ -174,7 +174,7 @@ public class MusicProviderController {
     public Response<String> upload(
             @RequestPart("file") MultipartFile file,
             @RequestHeader(value = "sign", required = false) String sign) throws Exception {
-        providerAuthService.requireSign(sign);
+        authService.requireSign(sign);
         musicService.upload(file.getInputStream());
         return new Response<>(1001, "上传成功");
     }
@@ -182,7 +182,7 @@ public class MusicProviderController {
     @RequestMapping("/music/downloadzip")
     public ResponseEntity<byte[]> downloadZip(
             @RequestHeader(value = "sign", required = false) String sign) throws Exception {
-        providerAuthService.requireSign(sign);
+        authService.requireSign(sign);
         File zip = musicService.exportZip();
         try {
             return ResponseEntity.ok()
@@ -198,7 +198,7 @@ public class MusicProviderController {
     public Response<String> uploadZip(
             @RequestPart("file") MultipartFile file,
             @RequestHeader(value = "sign", required = false) String sign) throws Exception {
-        providerAuthService.requireSign(sign);
+        authService.requireSign(sign);
         musicService.uploadZip(file);
         return new Response<>(1001, "批量上传成功");
     }

@@ -1,7 +1,7 @@
-package com.beat.mall.music.module.config;
+package com.beat.mall.user.module.config;
 
 import com.beat.mall.common.api.ClientHeaders;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.user.module.auth.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +12,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
-public class ProviderRequestAuthConfig implements WebMvcConfigurer {
-    private final ProviderAuthService providerAuthService;
+public class RequestAuthConfig implements WebMvcConfigurer {
+    private final AuthService authService;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -24,7 +24,7 @@ public class ProviderRequestAuthConfig implements WebMvcConfigurer {
                                      Object handler) {
                 String internalToken = request.getHeader(ClientHeaders.INTERNAL_TOKEN);
                 if (internalToken != null) {
-                    providerAuthService.checkInternalToken(internalToken);
+                    authService.checkInternalToken(internalToken);
                 }
                 return true;
             }

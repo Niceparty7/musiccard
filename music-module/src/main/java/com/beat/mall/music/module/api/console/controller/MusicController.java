@@ -7,7 +7,7 @@ import com.beat.mall.common.api.console.music.MusicListVO;
 import com.beat.mall.common.entity.category.Category;
 import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.common.response.Response;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.category.service.CategoryService;
 import com.beat.mall.music.module.music.service.BaseMusicService;
 import com.beat.mall.music.module.music.service.MusicService;
@@ -37,15 +37,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestController("consoleMusicProviderController")
+@RestController("consoleMusicController")
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class MusicProviderController {
+public class MusicController {
     private final MusicService musicService;
     private final CategoryService categoryService;
     private final BaseMusicService baseMusicService;
     private final RedisUtil redisUtil;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService providerAuthService;
 
     @RequestMapping(value = "/music/info", headers = "X-Client-Type=console")
     public Response<MusicInfoVO> getMusicInfo(

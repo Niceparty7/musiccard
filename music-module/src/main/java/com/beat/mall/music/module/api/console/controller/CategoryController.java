@@ -6,7 +6,7 @@ import com.beat.mall.common.api.console.category.CategoryListFeedVO;
 import com.beat.mall.common.api.console.category.CategoryListVO;
 import com.beat.mall.common.entity.category.Category;
 import com.beat.mall.common.response.Response;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.category.service.CategoryService;
 import com.beat.mall.music.module.music.service.MusicService;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController("consoleCategoryProviderController")
+@RestController("consoleCategoryController")
 @RequiredArgsConstructor
 @RequestMapping(value = "/category", headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class CategoryProviderController {
+public class CategoryController {
     private final CategoryService categoryService;
     private final MusicService musicService;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService providerAuthService;
 
     @RequestMapping(value = "/list", headers = "X-Client-Type=console")
     public Response<CategoryListFeedVO> getCategoryList(@RequestHeader("X-User-Id") Long userId) {

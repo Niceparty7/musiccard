@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("consoleUserProviderController")
+@RestController("moduleConsoleUserController")
 @RequiredArgsConstructor
 @RequestMapping(headers = "X-Internal-Token")
-public class UserProviderController {
+public class UserController {
     private final BaseUserService baseUserService;
 
     @GetMapping(value = "/user/validate", headers = "X-Client-Type=console")

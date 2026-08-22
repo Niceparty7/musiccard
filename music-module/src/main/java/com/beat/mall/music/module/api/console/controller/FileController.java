@@ -1,7 +1,7 @@
 package com.beat.mall.music.module.api.console.controller;
 
 import com.beat.mall.common.response.Response;
-import com.beat.mall.music.module.auth.ProviderAuthService;
+import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
-@RestController("consoleFileProviderController")
+@RestController("consoleFileController")
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=console", "X-Internal-Token"})
-public class FileProviderController {
+public class FileController {
     private final FileService fileService;
-    private final ProviderAuthService providerAuthService;
+    private final AuthService providerAuthService;
 
     @RequestMapping(value = "/upload", headers = "X-Client-Type=console")
     public Response<String> upload(
