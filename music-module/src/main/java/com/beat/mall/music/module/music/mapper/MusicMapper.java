@@ -15,6 +15,11 @@ public interface MusicMapper {
     @Select("select * from music where id=#{id}")
     Music extractById(@Param("id") Long id);
 
+    List<Music> getMusicByCursor(
+            @Param("offset") Long offset, @Param("limit") Integer limit, @Param("keyword") String keyword,
+            @Param("subquery") String subquery, @Param("subquery2") String subquery2
+    );
+
     @Select("select * from music where is_deleted=0")
     List<Music> getAllMusicList();
 
@@ -22,7 +27,7 @@ public interface MusicMapper {
                             @Param("keyword") String keyword, @Param("subquery") String subquery, @Param("subquery2") String subquery2);
 
     List<Music> getAllMusicList2(@Param("offSet") Integer offSet, @Param("pageSize") Integer pageSize, @Param("musicName") String musicName,
-                                          @Param("subquery") String subquery, @Param("subquery2") String subquery2);
+                                 @Param("subquery") String subquery, @Param("subquery2") String subquery2);
 
     Integer update(@Param("music") Music music);
 
@@ -40,7 +45,9 @@ public interface MusicMapper {
     @Select("select * from music where id % 10 = #{mod}")
     List<Music> selectByMod(@Param("mod") Integer mod);
 
-    /** 统计当前全部未删除的音乐数量（每日定时统计使用） */
+    /**
+     * 统计当前全部未删除的音乐数量（每日定时统计使用）
+     */
     @Select("select count(*) from music where is_deleted = 0")
     Long countAll();
 }

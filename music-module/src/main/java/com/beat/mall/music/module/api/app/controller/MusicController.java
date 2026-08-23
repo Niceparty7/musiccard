@@ -32,8 +32,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping(headers = {"X-Client-Type=app", "X-Internal-Token"})
 public class MusicController {
-    private static final String MUSIC_LIST_CACHE_PREFIX = "app:music:list:";
+    private static final String MUSIC_LIST_CACHE_PREFIX = "app:music:list:cursor:v2:";
     private static final int MUSIC_LIST_CACHE_TTL_SECONDS = 300;
+    private static final int MUSIC_LIST_PAGE_SIZE = 10;
 
     private final MusicService musicService;
     private final BaseMusicService baseMusicService;
@@ -79,7 +80,7 @@ public class MusicController {
             } else {
                 searchWpDTO = new MusicSearchWpDTO()
                         .setKeyword(keyword == null ? "" : keyword.trim())
-                        .setPage(1);
+                        .setOffset(null);
             }
         } catch (Exception exception) {
             log.warn("Invalid music search wp", exception);
@@ -88,17 +89,18 @@ public class MusicController {
         if (!wpValid) {
             return new Response<>(4009);
         }
-        Integer page = searchWpDTO.getPage();
+        Long offset = searchWpDTO.getOffset();
         keyword = searchWpDTO.getKeyword() == null ? "" : searchWpDTO.getKeyword().trim();
-        String cacheKey = MUSIC_LIST_CACHE_PREFIX + page + ":" + keyword;
+        String cacheOffset = offset == null ? "start" : offset.toString();
+        String cacheKey = MUSIC_LIST_CACHE_PREFIX + cacheOffset + ":" + keyword;
         String cachedJson = redisUtil.get(cacheKey);
         MusicListFeedVO feed;
         if (cachedJson != null) {
             feed = JSON.parseObject(cachedJson, MusicListFeedVO.class);
         } else {
-            Integer pageSize = 10;
-            List<Music> musicList = baseMusicService.getAllMusic(
-                    page, pageSize, keyword.isEmpty() ? null : keyword);
+            List<Music> queryList = baseMusicService.getMusicByCursor(offset, MUSIC_LIST_PAGE_SIZE + 1, keyword.isEmpty() ? null : keyword);
+            Boolean isEnd = queryList.size() <= MUSIC_LIST_PAGE_SIZE;
+            List<Music> musicList = isEnd ? queryList : queryList.subList(0, MUSIC_LIST_PAGE_SIZE);
             Set<Long> typeIds = musicList.stream()
                     .map(Music::getTypeId)
                     .filter(typeId -> typeId != null)
@@ -137,21 +139,23 @@ public class MusicController {
             }
             feed = new MusicListFeedVO()
                     .setList(result)
-                    .setIsEnd(musicList.size() < pageSize)
+                    .setIsEnd(isEnd)
                     .setWp(null);
             redisUtil.setex(cacheKey, MUSIC_LIST_CACHE_TTL_SECONDS, JSON.toJSONString(feed));
         }
+        List<MusicListVO> list = feed.getList();
         // 每次响应都重新生成本次“下一页”的 wp
-        if (Boolean.TRUE.equals(feed.getIsEnd())) {
+        if (Boolean.TRUE.equals(feed.getIsEnd()) || list == null || list.isEmpty()) {
             feed.setWp(null);
         } else {
             boolean encodeSuccess = true;
             String nextWp = null;
             try {
+                Long nextOffset = list.get(list.size() - 1).getId();
                 nextWp = musicSearchWpService.encode(
                         new MusicSearchWpDTO()
                                 .setKeyword(keyword)
-                                .setPage(page + 1)
+                                .setOffset(nextOffset)
                 );
             } catch (Exception exception) {
                 log.error("Generate music search wp failed", exception);
@@ -236,6 +240,3 @@ public class MusicController {
         return new Response<>(1001, "批量上传成功");
     }
 }
-
-
-

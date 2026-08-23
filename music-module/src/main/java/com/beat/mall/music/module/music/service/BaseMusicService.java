@@ -56,6 +56,31 @@ public class BaseMusicService {
         return musicService.getAllMusic((page - 1) * pageSize, pageSize, keyword, subquery, subquery2);
     }
 
+    @ReadOnly
+    public List<Music> getMusicByCursor(Long offset, Integer limit, String keyword) {
+        String subquery = "";
+        String subquery2 = "";
+        if (keyword != null && !keyword.isEmpty()) {
+            List<Category> categoryList = categoryService.getCategoryByKeyword(keyword);
+            List<Long> ids = new ArrayList<>();
+            List<Long> parentIds = new ArrayList<>();
+            Set<Long> idSet = new HashSet<>();
+            for (Category category : categoryList) {
+                ids.add(category.getId());
+                parentIds.add(category.getParentId());
+                idSet.addAll(categoryService.getChildrenById(category.getId()));
+            }
+            idSet.addAll(ids);
+            idSet.addAll(parentIds);
+            List<Long> allIds = new ArrayList<>(idSet);
+            subquery = getSubqueryByIds(allIds);
+            List<Long> tagIds = tagService.getTagIdsByKeyword(keyword);
+            List<Long> allMusicIds = musicTagRelationService.getMusicIdsByTagIds(tagIds);
+            subquery2 = getSubqueryByIds(allMusicIds);
+        }
+        return musicService.getMusicByCursor(offset, limit, keyword, subquery, subquery2);
+    }
+
     private String getSubqueryByIds(List<Long> list) {
         StringBuffer stringBuffer = new StringBuffer("");
         for (int i = 0; i < list.size(); i++) {

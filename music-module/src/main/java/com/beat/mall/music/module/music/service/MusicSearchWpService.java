@@ -36,8 +36,8 @@ public class MusicSearchWpService {
         if (wpDTO == null) {
             throw new Exception("wp对象不能为空");
         }
-        if (wpDTO.getPage() == null || wpDTO.getPage() < 1) {
-            throw new Exception("wp页码不合法");
+        if (wpDTO.getOffset() == null || wpDTO.getOffset() <= 0) {
+            throw new Exception("wp偏移量不合法");
         }
     }
 }

@@ -7,5 +7,5 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MusicSearchWpDTO {
     private String keyword;
-    private Integer page;
+    private Long offset;
 }

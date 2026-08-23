@@ -4,9 +4,9 @@ package com.beat.mall.music.module.music.service;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
+import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.music.module.annotation.ReadOnly;
 import com.beat.mall.music.module.music.domain.MusicExcelDTO;
-import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.music.module.music.listener.MusicExcelListener;
 import com.beat.mall.music.module.music.mapper.MusicMapper;
 import jakarta.annotation.Resource;
@@ -50,6 +50,11 @@ public class MusicService {
     @ReadOnly
     public List<Music> getAllMusicList2(Integer offSet, Integer pageSize, String musicName, String subquery, String subquery2) {
         return musicMapper.getAllMusicList2(offSet, pageSize, musicName, subquery, subquery2);
+    }
+
+    @ReadOnly
+    public List<Music> getMusicByCursor(Long offset, Integer limit, String keyword, String subquery, String subquery2) {
+        return musicMapper.getMusicByCursor(offset, limit, keyword, subquery, subquery2);
     }
 
     @ReadOnly
