@@ -1,29 +1,24 @@
 package com.beat.mall.music.app.feign;
 
-import com.beat.mall.music.app.config.AppFeignConfiguration;
-
 import com.beat.mall.common.api.app.music.MusicInfoVO;
 import com.beat.mall.common.api.app.music.MusicListFeedVO;
 import com.beat.mall.common.response.Response;
+import com.beat.mall.music.app.config.AppFeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @FeignClient(name = "music-module", contextId = "appMusicFeign", configuration = AppFeignConfiguration.class)
 public interface MusicFeign {
     @GetMapping("/music/info")
     Response<MusicInfoVO> getMusicInfo(@RequestParam("id") Long id,
-                                        @RequestHeader("sign") String sign);
+                                       @RequestHeader("sign") String sign);
 
     @GetMapping("/music/list")
     Response<MusicListFeedVO> getMusicList(
-            @RequestParam("page") Integer page,
-            @RequestParam(value = "keyword", required = false) String keyword);
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "wp", required = false) String wp);
 
     @GetMapping("/music/list/demo")
     Response<MusicListFeedVO> getMusicListDemo(@RequestParam("page") Integer page);

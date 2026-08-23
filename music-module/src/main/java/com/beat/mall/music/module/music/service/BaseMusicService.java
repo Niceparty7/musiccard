@@ -1,12 +1,12 @@
 package com.beat.mall.music.module.music.service;
 
-import com.beat.mall.music.module.annotation.ReadOnly;
 import com.beat.mall.common.entity.category.Category;
-import com.beat.mall.music.module.category.service.CategoryService;
 import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.common.entity.musictagrelation.MusicTagRelation;
-import com.beat.mall.music.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.common.entity.tag.Tag;
+import com.beat.mall.music.module.annotation.ReadOnly;
+import com.beat.mall.music.module.category.service.CategoryService;
+import com.beat.mall.music.module.musictagrelation.service.MusicTagRelationService;
 import com.beat.mall.music.module.tag.service.TagService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;

@@ -19,6 +19,7 @@ public final class ResponseCode {
         STATUS_MAP.put(4006, "上传失败");
         STATUS_MAP.put(4007, "下载失败");
         STATUS_MAP.put(4008, "数据不存在");
+        STATUS_MAP.put(4009, "WP参数不合法");
         STATUS_MAP.put(5001, "短信同号当日已达上限");
         STATUS_MAP.put(5002, "短信参数缺失或非法");
         STATUS_MAP.put(5003, "短信发送失败");

@@ -10,4 +10,5 @@ import java.util.List;
 public class MusicListFeedVO {
     private List<MusicListVO> list;
     private Boolean isEnd;
+    private String wp;
 }

@@ -2,10 +2,7 @@ package com.beat.mall.music.module.api.app.controller;
 
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
-import com.beat.mall.common.api.app.music.MusicInfoVO;
-import com.beat.mall.common.api.app.music.MusicListFeedVO;
-import com.beat.mall.common.api.app.music.MusicListVO;
-import com.beat.mall.common.api.app.music.MusicListWallImageVO;
+import com.beat.mall.common.api.app.music.*;
 import com.beat.mall.common.entity.category.Category;
 import com.beat.mall.common.entity.music.Music;
 import com.beat.mall.common.response.Response;
@@ -13,6 +10,7 @@ import com.beat.mall.common.utils.ImageUtils;
 import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.category.service.CategoryService;
 import com.beat.mall.music.module.music.service.BaseMusicService;
+import com.beat.mall.music.module.music.service.MusicSearchWpService;
 import com.beat.mall.music.module.music.service.MusicService;
 import com.beat.mall.music.module.redis.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,22 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,6 +37,7 @@ public class MusicController {
 
     private final MusicService musicService;
     private final BaseMusicService baseMusicService;
+    private final MusicSearchWpService musicSearchWpService;
     private final CategoryService categoryService;
     private final RedisUtil redisUtil;
     private final AuthService authService;
@@ -76,59 +66,102 @@ public class MusicController {
     }
 
     @RequestMapping("/music/list")
-    public Response<MusicListFeedVO> getMusicList(
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "keyword", required = false) String keyword) {
-        keyword = keyword == null ? "" : keyword.trim();
+    public Response<MusicListFeedVO> getMusicList(@RequestParam(value = "keyword", required = false) String keyword,
+                                                  @RequestParam(value = "wp", required = false) String wp) {
+        MusicSearchWpDTO searchWpDTO = null;
+        boolean wpValid = true;
+        try {
+            if (wp != null && keyword != null) {
+                throw new Exception("wp与keyword不能同时传递");
+            }
+            if (wp != null) {
+                searchWpDTO = musicSearchWpService.decode(wp);
+            } else {
+                searchWpDTO = new MusicSearchWpDTO()
+                        .setKeyword(keyword == null ? "" : keyword.trim())
+                        .setPage(1);
+            }
+        } catch (Exception exception) {
+            log.warn("Invalid music search wp", exception);
+            wpValid = false;
+        }
+        if (!wpValid) {
+            return new Response<>(4009);
+        }
+        Integer page = searchWpDTO.getPage();
+        keyword = searchWpDTO.getKeyword() == null ? "" : searchWpDTO.getKeyword().trim();
         String cacheKey = MUSIC_LIST_CACHE_PREFIX + page + ":" + keyword;
         String cachedJson = redisUtil.get(cacheKey);
+        MusicListFeedVO feed;
         if (cachedJson != null) {
-            return new Response<>(1001, JSON.parseObject(cachedJson, MusicListFeedVO.class));
-        }
+            feed = JSON.parseObject(cachedJson, MusicListFeedVO.class);
+        } else {
+            Integer pageSize = 10;
+            List<Music> musicList = baseMusicService.getAllMusic(
+                    page, pageSize, keyword.isEmpty() ? null : keyword);
+            Set<Long> typeIds = musicList.stream()
+                    .map(Music::getTypeId)
+                    .filter(typeId -> typeId != null)
+                    .map(Integer::longValue)
+                    .collect(Collectors.toSet());
+            Map<Long, Category> categoryMap = new HashMap<>();
+            for (Long typeId : typeIds) {
+                try {
+                    categoryMap.put(typeId, categoryService.getById(typeId));
+                } catch (Exception exception) {
+                    log.warn("Cannot load category: {}", typeId, exception);
+                }
+            }
 
-        int pageSize = 10;
-        List<Music> musicList = baseMusicService.getAllMusic(
-                page, pageSize, keyword.isEmpty() ? null : keyword);
-        Set<Long> typeIds = musicList.stream()
-                .map(Music::getTypeId)
-                .filter(typeId -> typeId != null)
-                .map(Integer::longValue)
-                .collect(Collectors.toSet());
-        Map<Long, Category> categoryMap = new HashMap<>();
-        for (Long typeId : typeIds) {
-            try {
-                categoryMap.put(typeId, categoryService.getById(typeId));
-            } catch (Exception exception) {
-                log.warn("Cannot load category: {}", typeId, exception);
+            List<MusicListVO> result = new ArrayList<>();
+            for (Music music : musicList) {
+                Category category = music.getTypeId() == null
+                        ? null : categoryMap.get(music.getTypeId().longValue());
+                if (category == null) {
+                    category = new Category().setTypeName("未知");
+                }
+                String wallImage = music.getCoverImages().split("\\$")[0];
+                Float ar;
+                try {
+                    ar = ImageUtils.getWallImageAR(wallImage);
+                } catch (Exception exception) {
+                    ar = 0F;
+                }
+                result.add(new MusicListVO()
+                        .setId(music.getId())
+                        .setWallImage(new MusicListWallImageVO().setUrl(wallImage).setAr(ar))
+                        .setMusicName(music.getMusicName())
+                        .setSingerName(music.getSingerName())
+                        .setMusicDesc(music.getMusicDesc())
+                        .setTypeName(category.getTypeName()));
             }
+            feed = new MusicListFeedVO()
+                    .setList(result)
+                    .setIsEnd(musicList.size() < pageSize)
+                    .setWp(null);
+            redisUtil.setex(cacheKey, MUSIC_LIST_CACHE_TTL_SECONDS, JSON.toJSONString(feed));
         }
-
-        List<MusicListVO> result = new ArrayList<>();
-        for (Music music : musicList) {
-            Category category = music.getTypeId() == null
-                    ? null : categoryMap.get(music.getTypeId().longValue());
-            if (category == null) {
-                category = new Category().setTypeName("未知");
-            }
-            String wallImage = music.getCoverImages().split("\\$")[0];
-            Float ar;
+        // 每次响应都重新生成本次“下一页”的 wp
+        if (Boolean.TRUE.equals(feed.getIsEnd())) {
+            feed.setWp(null);
+        } else {
+            boolean encodeSuccess = true;
+            String nextWp = null;
             try {
-                ar = ImageUtils.getWallImageAR(wallImage);
+                nextWp = musicSearchWpService.encode(
+                        new MusicSearchWpDTO()
+                                .setKeyword(keyword)
+                                .setPage(page + 1)
+                );
             } catch (Exception exception) {
-                ar = 0F;
+                log.error("Generate music search wp failed", exception);
+                encodeSuccess = false;
             }
-            result.add(new MusicListVO()
-                    .setId(music.getId())
-                    .setWallImage(new MusicListWallImageVO().setUrl(wallImage).setAr(ar))
-                    .setMusicName(music.getMusicName())
-                    .setSingerName(music.getSingerName())
-                    .setMusicDesc(music.getMusicDesc())
-                    .setTypeName(category.getTypeName()));
+            if (!encodeSuccess) {
+                return new Response<>(4005);
+            }
+            feed.setWp(nextWp);
         }
-        MusicListFeedVO feed = new MusicListFeedVO()
-                .setList(result)
-                .setIsEnd(musicList.size() < pageSize);
-        redisUtil.setex(cacheKey, MUSIC_LIST_CACHE_TTL_SECONDS, JSON.toJSONString(feed));
         return new Response<>(1001, feed);
     }
 
