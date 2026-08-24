@@ -46,16 +46,6 @@ public class SmsController {
         return new Response<>(1001, baseSmsService.sendBatch(phoneList));
     }
 
-    @RequestMapping(value = "/send-async", headers = "X-Client-Type=console")
-    public Response<String> sendAsync(
-            @RequestHeader("X-User-Id") Long userId,
-            @RequestParam String phone) throws Exception {
-        providerAuthService.requireUser(userId);
-        if (phone == null || phone.isBlank()) {
-            return new Response<>(5002);
-        }
-        return new Response<>(1001, "taskId:" + baseSmsService.submitAsyncTask(phone));
-    }
 }
 
 

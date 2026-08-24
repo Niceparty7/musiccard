@@ -13,14 +13,9 @@ public class SmsLogService {
     private final SmsLogMapper smsLogMapper;
 
     public Long saveLog(String phone, String content, SmsSendResultDTO result, int sendType) {
-        return saveLog(null, phone, content, result, sendType, 1);
-    }
-
-    public Long saveLog(Long taskId, String phone, String content, SmsSendResultDTO result,
-                        int sendType, int attemptCount) {
         int now = (int) (System.currentTimeMillis() / 1000);
         SmsLog log = new SmsLog()
-                .setTaskId(taskId)
+                .setTaskId(null)
                 .setPhone(phone)
                 .setContent(content)
                 .setResult(result.isOk() ? "OK" : "FAIL")
@@ -30,14 +25,10 @@ public class SmsLogService {
                 .setErrorMessage(result.getErrorMessage())
                 .setSendType(sendType)
                 .setStatus(result.isOk() ? 1 : 2)
-                .setAttemptCount((short) attemptCount)
+                .setAttemptCount((short) 1)
                 .setSendTime(now)
                 .setCreateTime(now)
                 .setUpdateTime(now);
         return smsLogMapper.insert(log);
-    }
-
-    public Long countByPhoneToday(String phone, Integer start, Integer end) {
-        return smsLogMapper.countByPhoneToday(phone, start, end);
     }
 }

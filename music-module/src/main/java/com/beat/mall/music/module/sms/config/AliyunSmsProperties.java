@@ -11,6 +11,7 @@ public class AliyunSmsProperties {
     private String accessKeyId;
     private String accessKeySecret;
     private String signName = "恒创联众";
-    private Integer dailyLimitPerPhone = 1000;
+    private Integer minuteLimitPerPhone = 3;
+    private Integer forbidSeconds = 3600;
 }
 

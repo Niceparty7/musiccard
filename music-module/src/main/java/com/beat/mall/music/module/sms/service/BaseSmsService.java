@@ -5,17 +5,13 @@ import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeRequest;
 import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeResponse;
 import com.beat.mall.music.module.sms.config.AliyunSmsProperties;
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
-import com.beat.mall.common.entity.sms.SmsCrond;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -26,12 +22,12 @@ public class BaseSmsService {
 
     public static final int SEND_TYPE_SYNC = 1;
     public static final int SEND_TYPE_BATCH = 2;
-    public static final int SEND_TYPE_CROND = 3;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final AsyncClient pnvsClient;
     private final AliyunSmsProperties props;
     private final SmsLogService smsLogService;
-    private final SmsCrondService smsCrondService;
+    private final SmsSendGuardService smsSendGuardService;
     private final Executor smsExecutor;
 
     /**
@@ -39,58 +35,36 @@ public class BaseSmsService {
      * 验证码由后台生成，无需前端传入
      */
     public SmsSendResultDTO sendSync(String phone) {
+        if (!smsSendGuardService.tryAcquire(phone)) {
+            return SmsSendResultDTO.fail("SMS_FORBIDDEN", "短信请求过于频繁，请一小时后重试");
+        }
         String code = randomCode6();
         String smsContent = buildSmsContent(code);
-        if (!allowToday(phone)) {
-            SmsSendResultDTO r = SmsSendResultDTO.fail("OVER_DAILY_LIMIT", "同号当日已达上限");
-            smsLogService.saveLog(phone, smsContent, r, SEND_TYPE_SYNC);
-            return r;
-        }
-        SmsSendResultDTO r = doSend(phone, code);
-        smsLogService.saveLog(phone, smsContent, r, SEND_TYPE_SYNC);
-        return r;
+        SmsSendResultDTO result = doSend(phone, code);
+        smsLogService.saveLog(phone, smsContent, result, SEND_TYPE_SYNC);
+        return result;
     }
 
     /**
      * 多线程批量发送：每个手机号生成独立验证码，并发下发
      */
     public List<SmsSendResultDTO> sendBatch(List<String> phones) {
-        List<CompletableFuture<SmsSendResultDTO>> fs = new ArrayList<>();
+        List<CompletableFuture<SmsSendResultDTO>> futures = new ArrayList<>();
         for (String phone : phones) {
-            String code = randomCode6();
-            String smsContent = buildSmsContent(code);
-            if (!allowToday(phone)) {
-                fs.add(CompletableFuture.completedFuture(
-                        SmsSendResultDTO.fail("OVER_DAILY_LIMIT", phone + " 当日已达上限")));
+            if (!smsSendGuardService.tryAcquire(phone)) {
+                futures.add(CompletableFuture.completedFuture(
+                        SmsSendResultDTO.fail("SMS_FORBIDDEN", phone + " 短信请求过于频繁，请一小时后重试")));
                 continue;
             }
-            fs.add(CompletableFuture.supplyAsync(() -> {
-                SmsSendResultDTO r = doSend(phone, code);
-                smsLogService.saveLog(phone, smsContent, r, SEND_TYPE_BATCH);
-                return r;
+            String code = randomCode6();
+            String smsContent = buildSmsContent(code);
+            futures.add(CompletableFuture.supplyAsync(() -> {
+                SmsSendResultDTO result = doSend(phone, code);
+                smsLogService.saveLog(phone, smsContent, result, SEND_TYPE_BATCH);
+                return result;
             }, smsExecutor));
         }
-        return fs.stream().map(CompletableFuture::join).toList();
-    }
-
-    /**
-     * 提交异步任务：仅写 sms_crond（status=0），不调用 PNVS SDK，不发送短信
-     * crond.content 存验证码；真正发送由 SmsCrondScheduler 定时任务完成
-     */
-    public Long submitAsyncTask(String phone) throws Exception {
-        String code = randomCode6();
-        if (!allowToday(phone)) {
-            throw new RuntimeException("OVER_DAILY_LIMIT: " + phone);
-        }
-        int now = (int) (System.currentTimeMillis() / 1000);
-        SmsCrond crond = new SmsCrond()
-                .setMessageId("sms-" + UUID.randomUUID().toString().replace("-", ""))
-                .setPhone(phone).setContent(code)
-                .setStatus((short) 0).setRetryCount((short) 0)
-                .setPublishStatus((short) 0).setNextRetryTime(null)
-                .setCreateTime(now).setUpdateTime(now).setIsDeleted(0);
-        smsCrondService.insert(crond);
-        return crond.getId();
+        return futures.stream().map(CompletableFuture::join).toList();
     }
 
     /**
@@ -131,7 +105,7 @@ public class BaseSmsService {
      * 生成 6 位数字验证码
      */
     private String randomCode6() {
-        return String.format("%06d", new Random().nextInt(1_000_000));
+        return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
     }
 
     /**
@@ -142,13 +116,4 @@ public class BaseSmsService {
         return "【" + props.getSignName() + "】您验证码为" + code + "，尊敬的客户，以上验证码5分钟内有效，请注意保密，切勿告知他人。";
     }
 
-    /**
-     * 短信每日发送限制
-     */
-    public synchronized boolean allowToday(String phone) {
-        int dayStart = (int) (LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
-        int dayEnd = dayStart + 24 * 60 * 60;
-        Long sent = smsLogService.countByPhoneToday(phone, dayStart, dayEnd);
-        return sent == null || sent < props.getDailyLimitPerPhone();
-    }
 }

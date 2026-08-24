@@ -21,9 +21,6 @@ public interface SmsFeign {
     Response<List<SmsSendResultDTO>> sendBatch(@RequestHeader("X-User-Id") Long userId,
                                                @RequestParam("phones") String phones);
 
-    @GetMapping("/sms/send-async")
-    Response<String> sendAsync(@RequestHeader("X-User-Id") Long userId,
-                               @RequestParam("phone") String phone);
 }
 
 

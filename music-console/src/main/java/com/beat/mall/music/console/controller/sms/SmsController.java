@@ -34,12 +34,6 @@ public class SmsController {
                 : smsFeign.sendBatch(loginUser.getId(), phones);
     }
 
-    @GetMapping("/send-async")
-    public Response<String> sendAsync(@VerifiedUser User loginUser,
-                                      @RequestParam String phone) {
-        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002)
-                : smsFeign.sendAsync(loginUser.getId(), phone);
-    }
 }
 
 

@@ -46,16 +46,6 @@ public class SmsController {
         return new Response<>(1001, baseSmsService.sendBatch(phoneList));
     }
 
-    @RequestMapping(value = "/send-async", headers = "X-Client-Type=app")
-    public Response<String> sendAsync(
-            @RequestParam String phone,
-            @RequestHeader(value = "sign", required = false) String sign) throws Exception {
-        authService.requireSign(sign);
-        if (phone == null || phone.isBlank()) {
-            return new Response<>(5002);
-        }
-        return new Response<>(1001, "taskId:" + baseSmsService.submitAsyncTask(phone));
-    }
 }
 
 

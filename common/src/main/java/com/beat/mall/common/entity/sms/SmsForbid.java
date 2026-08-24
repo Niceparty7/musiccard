@@ -5,17 +5,12 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class SmsCrond {
+public class SmsForbid {
     private Long id;
-    private String messageId;
     private String phone;
-    private String content;
-    private Short status;
-    private Short retryCount;
-    private Short publishStatus;
-    private Integer nextRetryTime;
-    private String errorMessage;
-    private Integer sendTime;
+    private Integer beginTime;
+    private Integer endTime;
+    private String reason;
     private Integer createTime;
     private Integer updateTime;
     private Integer isDeleted;

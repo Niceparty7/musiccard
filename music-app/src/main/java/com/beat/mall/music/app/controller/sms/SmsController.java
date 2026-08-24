@@ -41,16 +41,6 @@ public class SmsController {
         return smsFeign.sendBatch(phones, getSign(request));
     }
 
-    @GetMapping("/send-async")
-    public Response<String> sendAsync(@VerifiedUser User loginUser,
-                                      @RequestParam String phone,
-                                      HttpServletRequest request) {
-        if (BaseUtil.isEmpty(loginUser)) {
-            return new Response<>(1002);
-        }
-        return smsFeign.sendAsync(phone, getSign(request));
-    }
-
     private String getSign(HttpServletRequest request) {
         String sign = request.getHeader("sign");
         return BaseUtil.isEmpty(sign) ? request.getParameter("sign") : sign;
