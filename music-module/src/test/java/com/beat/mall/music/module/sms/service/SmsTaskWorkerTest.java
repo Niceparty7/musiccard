@@ -21,10 +21,10 @@ class SmsTaskWorkerTest {
         SmsCrondService crondService = mock(SmsCrondService.class);
         when(smsService.sendTask(any(SmsCrond.class))).thenReturn(new SmsSendResultDTO().setOk(true));
 
-        newWorker(smsService, crondService).process(task());
+        newWorker(smsService, crondService).process(task(), "claim-a");
 
-        verify(crondService).markSuccess(eq(1L), anyInt());
-        verify(crondService, never()).markRetryWait(eq(1L), org.mockito.ArgumentMatchers.anyShort(), anyInt(), org.mockito.ArgumentMatchers.anyString(), anyInt());
+        verify(crondService).markSuccess(eq(1L), eq("claim-a"), anyInt());
+        verify(crondService, never()).markRetryWait(eq(1L), org.mockito.ArgumentMatchers.anyShort(), org.mockito.ArgumentMatchers.anyString(), anyInt(), org.mockito.ArgumentMatchers.anyString(), anyInt());
     }
 
     @Test
@@ -33,9 +33,9 @@ class SmsTaskWorkerTest {
         SmsCrondService crondService = mock(SmsCrondService.class);
         when(smsService.sendTask(any(SmsCrond.class))).thenReturn(SmsSendResultDTO.fail("SEND_FAIL", "network timeout"));
 
-        newWorker(smsService, crondService).process(task());
+        newWorker(smsService, crondService).process(task(), "claim-a");
 
-        verify(crondService).markRetryWait(eq(1L), eq((short) 1), anyInt(), org.mockito.ArgumentMatchers.contains("SEND_FAIL"), anyInt());
+        verify(crondService).markRetryWait(eq(1L), eq((short) 1), eq("claim-a"), anyInt(), org.mockito.ArgumentMatchers.contains("SEND_FAIL"), anyInt());
     }
 
     private SmsTaskWorker newWorker(BaseSmsService smsService, SmsCrondService crondService) {

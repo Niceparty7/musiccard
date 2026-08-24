@@ -19,6 +19,12 @@ public class SmsCrond {
     private Short status;
     private Short retryCount;
     private Integer nextRetryTime;
+    /** 当前集群中认领该任务的节点标识。 */
+    private String lockOwner;
+    /** 单次批量认领的唯一令牌，用于防止旧工作线程覆盖新认领结果。 */
+    private String claimToken;
+    private Integer claimTime;
+    private Integer leaseExpireTime;
     private String errorMessage;
     private Integer sendTime;
     private Integer createTime;

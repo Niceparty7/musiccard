@@ -15,30 +15,30 @@ public class SmsTaskWorker {
     private final SmsCrondService smsCrondService;
     private final SmsTaskProperties taskProperties;
 
-    public void process(SmsCrond task) {
+    public void process(SmsCrond task, String claimToken) {
         try {
             SmsSendResultDTO result = baseSmsService.sendTask(task);
             if (result.isOk()) {
-                smsCrondService.markSuccess(task.getId(), currentTime());
+                smsCrondService.markSuccess(task.getId(), claimToken, currentTime());
                 return;
             }
-            handleFailure(task, result.getErrorCode(), result.getErrorMessage());
+            handleFailure(task, claimToken, result.getErrorCode(), result.getErrorMessage());
         } catch (Exception e) {
             log.error("sms task execution error, taskId={}", task.getId(), e);
-            handleFailure(task, "SEND_FAIL", e.getMessage());
+            handleFailure(task, claimToken, "SEND_FAIL", e.getMessage());
         }
     }
 
-    private void handleFailure(SmsCrond task, String errorCode, String errorMessage) {
+    private void handleFailure(SmsCrond task, String claimToken, String errorCode, String errorMessage) {
         int now = currentTime();
         short retryCount = (short) (task.getRetryCount() + 1);
         String message = errorCode + ": " + (errorMessage == null ? "unknown error" : errorMessage);
         if (isRetryable(errorCode) && retryCount <= taskProperties.getMaxRetryCount()) {
             int nextRetryTime = now + taskProperties.getRetryDelaySeconds() * retryCount;
-            smsCrondService.markRetryWait(task.getId(), retryCount, nextRetryTime, message, now);
+            smsCrondService.markRetryWait(task.getId(), retryCount, claimToken, nextRetryTime, message, now);
             return;
         }
-        smsCrondService.markFinalFailed(task.getId(), retryCount, message, now);
+        smsCrondService.markFinalFailed(task.getId(), retryCount, claimToken, message, now);
     }
 
     private boolean isRetryable(String errorCode) {
