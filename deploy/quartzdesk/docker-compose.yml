@@ -1,0 +1,12 @@
+services:
+  quartzdesk:
+    build: .
+    container_name: musiccard-quartzdesk
+    restart: unless-stopped
+    ports:
+      - "5088:8080"
+    volumes:
+      - quartzdesk-data:/var/lib/quartzdesk
+
+volumes:
+  quartzdesk-data:

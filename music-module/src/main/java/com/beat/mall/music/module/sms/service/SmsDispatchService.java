@@ -1,34 +1,28 @@
-package com.beat.mall.music.module.sms.scheduler;
+package com.beat.mall.music.module.sms.service;
 
 import com.beat.mall.common.entity.sms.SmsCrond;
 import com.beat.mall.music.module.sms.config.SmsTaskProperties;
-import com.beat.mall.music.module.sms.service.SmsCrondService;
-import com.beat.mall.music.module.sms.service.SmsTaskWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
-@Component
-@ConditionalOnProperty(prefix = "app.sms.task", name = "enabled", havingValue = "true")
+@Service
 @RequiredArgsConstructor
 @Slf4j
-public class SmsCrondScheduler {
+public class SmsDispatchService {
     private final SmsCrondService smsCrondService;
     private final SmsTaskWorker smsTaskWorker;
     private final SmsTaskProperties taskProperties;
     @Qualifier("smsTaskExecutor")
     private final Executor smsTaskExecutor;
 
-    @Scheduled(fixedDelayString = "${app.sms.task.scan-interval-ms:5000}", initialDelayString = "${app.sms.task.initial-delay-ms:5000}")
-    public void scanAndDispatch() {
+    public void dispatchOnce() {
         int now = currentTime();
         smsCrondService.recoverExpiredLease(now);
         String claimToken = UUID.randomUUID().toString();

@@ -73,9 +73,7 @@ public class BaseSmsService {
         return futures.stream().map(CompletableFuture::join).toList();
     }
 
-    /**
-     * 第二阶段异步提交：仅完成频控和任务入库，实际发送由 SmsCrondScheduler 执行。
-     */
+    /** 仅完成频控和任务入库，实际发送由 Quartz 调度的任务分发服务执行。 */
     public SmsTaskSubmitResultDTO submitAsyncTask(String phone) {
         if (!smsSendGuardService.tryAcquire(phone)) {
             return SmsTaskSubmitResultDTO.rejected("SMS_FORBIDDEN", "短信请求过于频繁，请一小时后重试");
