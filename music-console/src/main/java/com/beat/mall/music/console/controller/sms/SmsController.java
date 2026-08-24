@@ -1,6 +1,7 @@
 package com.beat.mall.music.console.controller.sms;
 
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.api.sms.SmsTaskSubmitResultDTO;
 import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
@@ -32,6 +33,13 @@ public class SmsController {
                                                       @RequestParam String phones) {
         return BaseUtil.isEmpty(loginUser) ? new Response<>(1002)
                 : smsFeign.sendBatch(loginUser.getId(), phones);
+    }
+
+    @GetMapping("/send-async")
+    public Response<SmsTaskSubmitResultDTO> sendAsync(@VerifiedUser User loginUser,
+                                                       @RequestParam String phone) {
+        return BaseUtil.isEmpty(loginUser) ? new Response<>(1002)
+                : smsFeign.sendAsync(loginUser.getId(), phone);
     }
 
 }

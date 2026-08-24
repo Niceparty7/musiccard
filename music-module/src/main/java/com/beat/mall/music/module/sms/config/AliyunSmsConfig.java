@@ -49,5 +49,22 @@ public class AliyunSmsConfig {
         exec.initialize();
         return exec;
     }
+
+    /**
+     * 第二阶段异步任务专用线程池，不能与批量同步接口共用。
+     */
+    @Bean("smsTaskExecutor")
+    public Executor smsTaskExecutor(SmsTaskProperties taskProperties) {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(taskProperties.getCorePoolSize());
+        exec.setMaxPoolSize(taskProperties.getMaxPoolSize());
+        exec.setQueueCapacity(taskProperties.getQueueCapacity());
+        exec.setThreadNamePrefix("sms-task-");
+        exec.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        exec.setWaitForTasksToCompleteOnShutdown(true);
+        exec.setAwaitTerminationSeconds(30);
+        exec.initialize();
+        return exec;
+    }
 }
 

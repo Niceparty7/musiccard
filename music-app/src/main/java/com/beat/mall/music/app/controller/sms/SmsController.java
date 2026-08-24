@@ -3,6 +3,7 @@ package com.beat.mall.music.app.controller.sms;
 import com.beat.mall.music.app.annotations.VerifiedUser;
 import com.beat.mall.music.app.feign.SmsFeign;
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.api.sms.SmsTaskSubmitResultDTO;
 import com.beat.mall.common.entity.user.User;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.common.utils.BaseUtil;
@@ -39,6 +40,16 @@ public class SmsController {
             return new Response<>(1002);
         }
         return smsFeign.sendBatch(phones, getSign(request));
+    }
+
+    @GetMapping("/send-async")
+    public Response<SmsTaskSubmitResultDTO> sendAsync(@VerifiedUser User loginUser,
+                                                       @RequestParam String phone,
+                                                       HttpServletRequest request) {
+        if (BaseUtil.isEmpty(loginUser)) {
+            return new Response<>(1002);
+        }
+        return smsFeign.sendAsync(phone, getSign(request));
     }
 
     private String getSign(HttpServletRequest request) {

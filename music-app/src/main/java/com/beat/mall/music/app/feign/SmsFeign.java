@@ -3,6 +3,7 @@ package com.beat.mall.music.app.feign;
 import com.beat.mall.music.app.config.AppFeignConfiguration;
 
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.api.sms.SmsTaskSubmitResultDTO;
 import com.beat.mall.common.response.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,10 @@ public interface SmsFeign {
 
     @GetMapping("/sms/send-batch")
     Response<List<SmsSendResultDTO>> sendBatch(@RequestParam("phones") String phones,
+                                               @RequestHeader("sign") String sign);
+
+    @GetMapping("/sms/send-async")
+    Response<SmsTaskSubmitResultDTO> sendAsync(@RequestParam("phone") String phone,
                                                @RequestHeader("sign") String sign);
 
 }

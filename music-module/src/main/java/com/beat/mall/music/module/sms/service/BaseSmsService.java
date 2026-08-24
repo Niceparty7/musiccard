@@ -4,9 +4,12 @@ import com.aliyun.sdk.service.dypnsapi20170525.AsyncClient;
 import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeRequest;
 import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeResponse;
 import com.beat.mall.music.module.sms.config.AliyunSmsProperties;
+import com.beat.mall.common.api.sms.SmsTaskSubmitResultDTO;
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.entity.sms.SmsCrond;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -22,12 +25,15 @@ public class BaseSmsService {
 
     public static final int SEND_TYPE_SYNC = 1;
     public static final int SEND_TYPE_BATCH = 2;
+    public static final int SEND_TYPE_ASYNC = 3;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private final AsyncClient pnvsClient;
     private final AliyunSmsProperties props;
     private final SmsLogService smsLogService;
     private final SmsSendGuardService smsSendGuardService;
+    private final SmsCrondService smsCrondService;
+    @Qualifier("smsExecutor")
     private final Executor smsExecutor;
 
     /**
@@ -65,6 +71,36 @@ public class BaseSmsService {
             }, smsExecutor));
         }
         return futures.stream().map(CompletableFuture::join).toList();
+    }
+
+    /**
+     * 第二阶段异步提交：仅完成频控和任务入库，实际发送由 SmsCrondScheduler 执行。
+     */
+    public SmsTaskSubmitResultDTO submitAsyncTask(String phone) {
+        if (!smsSendGuardService.tryAcquire(phone)) {
+            return SmsTaskSubmitResultDTO.rejected("SMS_FORBIDDEN", "短信请求过于频繁，请一小时后重试");
+        }
+        int now = currentTime();
+        SmsCrond task = new SmsCrond()
+                .setPhone(phone)
+                .setContent(randomCode6())
+                .setStatus(SmsCrond.STATUS_PENDING)
+                .setRetryCount((short) 0)
+                .setCreateTime(now)
+                .setUpdateTime(now);
+        Long taskId = smsCrondService.create(task);
+        return new SmsTaskSubmitResultDTO()
+                .setAccepted(true)
+                .setTaskId(taskId)
+                .setStatus("PENDING");
+    }
+
+    /** 只供已被定时任务认领的短信任务调用。 */
+    public SmsSendResultDTO sendTask(SmsCrond task) {
+        SmsSendResultDTO result = doSend(task.getPhone(), task.getContent());
+        smsLogService.saveLog(task.getId(), task.getPhone(), buildSmsContent(task.getContent()), result,
+                SEND_TYPE_ASYNC, (short) (task.getRetryCount() + 1));
+        return result;
     }
 
     /**
@@ -106,6 +142,10 @@ public class BaseSmsService {
      */
     private String randomCode6() {
         return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
+    }
+
+    private int currentTime() {
+        return (int) (System.currentTimeMillis() / 1000);
     }
 
     /**
