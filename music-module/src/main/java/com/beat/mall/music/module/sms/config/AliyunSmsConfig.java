@@ -49,5 +49,20 @@ public class AliyunSmsConfig {
         exec.initialize();
         return exec;
     }
+
+    /** Kafka短信任务消费后的业务执行线程池，不与同步批量发送线程池共用。 */
+    @Bean("smsTaskExecutor")
+    public Executor smsTaskExecutor(SmsExecutorProperties executorProperties) {
+        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(executorProperties.getCorePoolSize());
+        exec.setMaxPoolSize(executorProperties.getMaxPoolSize());
+        exec.setQueueCapacity(executorProperties.getQueueCapacity());
+        exec.setThreadNamePrefix("sms-task-");
+        exec.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        exec.setWaitForTasksToCompleteOnShutdown(true);
+        exec.setAwaitTerminationSeconds(30);
+        exec.initialize();
+        return exec;
+    }
 }
 

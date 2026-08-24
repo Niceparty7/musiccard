@@ -34,3 +34,13 @@ build/
 
 # Workbuddy
 .workbuddy/
+
+# Deployment runtime artifacts and credentials
+/deploy/**/*.jar
+/deploy/**/*.war
+/deploy/**/*.zip
+/deploy/**/*.tar
+/deploy/**/*.tar.gz
+/deploy/**/*.tgz
+/deploy/**/*.key
+/deploy

@@ -1,6 +1,7 @@
 package com.beat.mall.music.module.api.console.controller;
 
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
+import com.beat.mall.common.api.sms.SmsTaskSubmitResultDTO;
 import com.beat.mall.common.response.Response;
 import com.beat.mall.music.module.auth.AuthService;
 import com.beat.mall.music.module.sms.service.BaseSmsService;
@@ -47,15 +48,16 @@ public class SmsController {
     }
 
     @RequestMapping(value = "/send-async", headers = "X-Client-Type=console")
-    public Response<String> sendAsync(
+    public Response<SmsTaskSubmitResultDTO> sendAsync(
             @RequestHeader("X-User-Id") Long userId,
-            @RequestParam String phone) throws Exception {
+            @RequestParam String phone) {
         providerAuthService.requireUser(userId);
         if (phone == null || phone.isBlank()) {
             return new Response<>(5002);
         }
-        return new Response<>(1001, "taskId:" + baseSmsService.submitAsyncTask(phone));
+        return new Response<>(1001, baseSmsService.submitAsyncTask(phone));
     }
+
 }
 
 
