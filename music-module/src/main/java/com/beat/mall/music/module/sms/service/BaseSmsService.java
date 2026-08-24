@@ -6,7 +6,10 @@ import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeResponse;
 import com.beat.mall.music.module.sms.config.AliyunSmsProperties;
 import com.beat.mall.common.api.sms.SmsTaskSubmitResultDTO;
 import com.beat.mall.common.api.sms.SmsSendResultDTO;
-import com.beat.mall.common.entity.sms.SmsCrond;
+import com.beat.mall.music.module.sms.kafka.config.SmsKafkaProperties;
+import com.beat.mall.music.module.sms.kafka.model.SmsTaskMessage;
+import com.beat.mall.music.module.sms.kafka.producer.SmsTaskProducer;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -32,7 +36,8 @@ public class BaseSmsService {
     private final AliyunSmsProperties props;
     private final SmsLogService smsLogService;
     private final SmsSendGuardService smsSendGuardService;
-    private final SmsCrondService smsCrondService;
+    private final SmsTaskProducer smsTaskProducer;
+    private final SmsKafkaProperties smsKafkaProperties;
     @Qualifier("smsExecutor")
     private final Executor smsExecutor;
 
@@ -73,32 +78,32 @@ public class BaseSmsService {
         return futures.stream().map(CompletableFuture::join).toList();
     }
 
-    /** 仅完成频控和任务入库，实际发送由 Quartz 调度的任务分发服务执行。 */
+    /** 仅完成频控和 Kafka 任务发布，实际发送由 Kafka 消费者异步执行。 */
     public SmsTaskSubmitResultDTO submitAsyncTask(String phone) {
         if (!smsSendGuardService.tryAcquire(phone)) {
             return SmsTaskSubmitResultDTO.rejected("SMS_FORBIDDEN", "短信请求过于频繁，请一小时后重试");
         }
-        int now = currentTime();
-        SmsCrond task = new SmsCrond()
-                .setPhone(phone)
-                .setContent(randomCode6())
-                .setStatus(SmsCrond.STATUS_PENDING)
-                .setRetryCount((short) 0)
-                .setCreateTime(now)
-                .setUpdateTime(now);
-        Long taskId = smsCrondService.create(task);
-        return new SmsTaskSubmitResultDTO()
-                .setAccepted(true)
+        if (!smsKafkaProperties.isEnabled()) {
+            return SmsTaskSubmitResultDTO.rejected("SMS_ASYNC_DISABLED", "短信异步任务通道未开启");
+        }
+        long taskId = IdWorker.getId();
+        SmsTaskMessage message = new SmsTaskMessage()
+                .setVersion("1.0")
                 .setTaskId(taskId)
-                .setStatus("PENDING");
-    }
-
-    /** 只供已被定时任务认领的短信任务调用。 */
-    public SmsSendResultDTO sendTask(SmsCrond task) {
-        SmsSendResultDTO result = doSend(task.getPhone(), task.getContent());
-        smsLogService.saveLog(task.getId(), task.getPhone(), buildSmsContent(task.getContent()), result,
-                SEND_TYPE_ASYNC, (short) (task.getRetryCount() + 1));
-        return result;
+                .setPhone(phone)
+                .setVerifyCode(randomCode6())
+                .setCreatedAt(System.currentTimeMillis())
+                .setTraceId(UUID.randomUUID().toString());
+        try {
+            smsTaskProducer.publish(message);
+            return new SmsTaskSubmitResultDTO()
+                    .setAccepted(true)
+                    .setTaskId(taskId)
+                    .setStatus("PENDING");
+        } catch (Exception e) {
+            log.error("sms kafka task publish failed, taskId={}", taskId, e);
+            return SmsTaskSubmitResultDTO.rejected("MQ_PUBLISH_FAILED", "短信任务提交失败");
+        }
     }
 
     /**
@@ -140,10 +145,6 @@ public class BaseSmsService {
      */
     private String randomCode6() {
         return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
-    }
-
-    private int currentTime() {
-        return (int) (System.currentTimeMillis() / 1000);
     }
 
     /**

@@ -1,5 +1,5 @@
 -- Quartz 2.5.2 MySQL InnoDB schema.
--- Execute once on the musiccard database before enabling app.sms.quartz.enabled.
+-- Execute once on the musiccard database before enabling app.sms.compensation.enabled.
 -- This safe initialization script intentionally contains no DROP TABLE statements.
 
 CREATE TABLE QRTZ_JOB_DETAILS(

@@ -50,15 +50,13 @@ public class AliyunSmsConfig {
         return exec;
     }
 
-    /**
-     * 第二阶段异步任务专用线程池，不能与批量同步接口共用。
-     */
+    /** Kafka短信任务消费后的业务执行线程池，不与同步批量发送线程池共用。 */
     @Bean("smsTaskExecutor")
-    public Executor smsTaskExecutor(SmsTaskProperties taskProperties) {
+    public Executor smsTaskExecutor(SmsExecutorProperties executorProperties) {
         ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
-        exec.setCorePoolSize(taskProperties.getCorePoolSize());
-        exec.setMaxPoolSize(taskProperties.getMaxPoolSize());
-        exec.setQueueCapacity(taskProperties.getQueueCapacity());
+        exec.setCorePoolSize(executorProperties.getCorePoolSize());
+        exec.setMaxPoolSize(executorProperties.getMaxPoolSize());
+        exec.setQueueCapacity(executorProperties.getQueueCapacity());
         exec.setThreadNamePrefix("sms-task-");
         exec.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         exec.setWaitForTasksToCompleteOnShutdown(true);

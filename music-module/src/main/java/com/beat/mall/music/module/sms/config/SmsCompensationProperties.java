@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "app.sms.quartz")
-public class SmsQuartzProperties {
+@ConfigurationProperties(prefix = "app.sms.compensation")
+public class SmsCompensationProperties {
     private boolean enabled = false;
-    private int intervalSeconds = 5;
-    private String jobName = "smsDispatchJob";
-    private String triggerName = "smsDispatchTrigger";
+    private int intervalSeconds = 30;
+    private String jobName = "smsKafkaCompensationJob";
+    private String triggerName = "smsKafkaCompensationTrigger";
     private String group = "SMS";
 }

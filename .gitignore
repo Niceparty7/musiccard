@@ -43,3 +43,4 @@ build/
 /deploy/**/*.tar.gz
 /deploy/**/*.tgz
 /deploy/**/*.key
+/deploy

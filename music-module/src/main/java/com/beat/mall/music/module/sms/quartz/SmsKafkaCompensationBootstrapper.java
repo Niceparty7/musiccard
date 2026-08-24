@@ -1,6 +1,6 @@
 package com.beat.mall.music.module.sms.quartz;
 
-import com.beat.mall.music.module.sms.config.SmsQuartzProperties;
+import com.beat.mall.music.module.sms.config.SmsCompensationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobBuilder;
@@ -20,21 +20,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "app.sms.quartz", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "app.sms.compensation", name = "enabled", havingValue = "true")
 @Slf4j
-public class SmsQuartzScheduleBootstrapper implements ApplicationRunner {
+public class SmsKafkaCompensationBootstrapper implements ApplicationRunner {
     private final Scheduler scheduler;
-    private final SmsQuartzProperties properties;
+    private final SmsCompensationProperties properties;
 
     @Override
     public void run(ApplicationArguments args) throws SchedulerException {
         JobKey jobKey = JobKey.jobKey(properties.getJobName(), properties.getGroup());
         TriggerKey triggerKey = TriggerKey.triggerKey(properties.getTriggerName(), properties.getGroup());
         if (scheduler.checkExists(triggerKey)) {
-            log.info("sms quartz trigger already exists, triggerKey={}", triggerKey);
+            log.info("sms compensation trigger already exists, triggerKey={}", triggerKey);
             return;
         }
-        JobDetail jobDetail = JobBuilder.newJob(SmsDispatchQuartzJob.class)
+        JobDetail jobDetail = JobBuilder.newJob(SmsKafkaCompensationJob.class)
                 .withIdentity(jobKey)
                 .storeDurably()
                 .build();
@@ -52,10 +52,10 @@ public class SmsQuartzScheduleBootstrapper implements ApplicationRunner {
                 scheduler.addJob(jobDetail, false);
             }
             scheduler.scheduleJob(trigger);
-            log.info("sms quartz trigger created, triggerKey={}, intervalSeconds={}",
+            log.info("sms compensation trigger created, triggerKey={}, intervalSeconds={}",
                     triggerKey, properties.getIntervalSeconds());
         } catch (ObjectAlreadyExistsException e) {
-            log.info("sms quartz schedule created by another node, triggerKey={}", triggerKey);
+            log.info("sms compensation schedule created by another node, triggerKey={}", triggerKey);
         }
     }
 }
