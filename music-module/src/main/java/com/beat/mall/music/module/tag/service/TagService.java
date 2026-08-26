@@ -63,6 +63,11 @@ public class TagService {
         return mapper.getAll();
     }
 
+    /** Console 管理操作需要写后立即可见，因此固定读取主库。 */
+    public List<Tag> getAllForConsole() {
+        return mapper.getAll();
+    }
+
     @ReadOnly
     public List<Long> getTagIdsByKeyword(String keyword) {
         return mapper.getTagIdsByKeyword(keyword);

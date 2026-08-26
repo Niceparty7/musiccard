@@ -93,7 +93,6 @@ public class BaseMusicService {
         return stringBuffer.toString();
     }
 
-    @ReadOnly
     public List<Music> getAllMusicList2(Integer page, Integer pageSize, String musicName, String typeName, String tagName) {
         String subquery = "";
         String subquery2 = "";
@@ -120,7 +119,6 @@ public class BaseMusicService {
         return musicService.getAllMusicList2((page - 1) * pageSize, pageSize, musicName, subquery, subquery2);
     }
 
-    @ReadOnly
     public Long countTotal(String musicName, String typeName, String tagName) {
         String subquery = "";
         String subquery2 = "";

@@ -46,8 +46,11 @@ public class TagController {
     public Response<TagListFeedVO> getAll(@RequestHeader("X-User-Id") Long userId) {
         providerAuthService.requireUser(userId);
         List<TagListVO> result = new ArrayList<>();
-        for (Tag tag : tagService.getAll()) {
-            result.add(new TagListVO().setTag(tag.getTagName()));
+        for (Tag tag : tagService.getAllForConsole()) {
+            result.add(new TagListVO()
+                    .setId(tag.getId())
+                    .setTag(tag.getTagName())
+                    .setTagDesc(tag.getTagDesc()));
         }
         return new Response<>(1001, new TagListFeedVO().setList(result));
     }

@@ -96,10 +96,12 @@ public class CategoryController {
 
     private List<CategoryListVO> buildList() {
         List<CategoryListVO> list = new ArrayList<>();
-        for (Category category : categoryService.getAllCategory()) {
+        for (Category category : categoryService.getAllCategoryForConsole()) {
             list.add(new CategoryListVO()
+                    .setId(category.getId())
                     .setTypeName(category.getTypeName())
                     .setTypeImage(category.getTypeImage())
+                    .setTypeDesc(category.getTypeDesc())
                     .setChildren(buildChildren(category.getId())));
         }
         return list;
@@ -107,7 +109,7 @@ public class CategoryController {
 
     private List<CategoryChildrenListVO> buildChildren(Long categoryId) {
         List<CategoryChildrenListVO> children = new ArrayList<>();
-        for (Long childId : categoryService.getChildrenById(categoryId)) {
+        for (Long childId : categoryService.getChildrenByIdForConsole(categoryId)) {
             try {
                 Category child = categoryService.getById(childId);
                 if (child != null) {

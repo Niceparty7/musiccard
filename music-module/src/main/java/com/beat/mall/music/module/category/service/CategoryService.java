@@ -45,6 +45,11 @@ public class CategoryService {
         return categoryMapper.getAllCategory();
     }
 
+    /** Console 管理操作需要写后立即可见，因此固定读取主库。 */
+    public List<Category> getAllCategoryForConsole() {
+        return categoryMapper.getAllCategory();
+    }
+
     public Long create(String typeName, String typeImage, String typeDesc, Long parentId) throws Exception {
         if (typeName == null) {
             throw new RuntimeException("typeName cannot be null!");
@@ -110,6 +115,10 @@ public class CategoryService {
 
     @ReadOnly
     public List<Long> getChildrenById(Long id) {
+        return categoryMapper.getChildrenById(id);
+    }
+
+    public List<Long> getChildrenByIdForConsole(Long id) {
         return categoryMapper.getChildrenById(id);
     }
     @ReadOnly

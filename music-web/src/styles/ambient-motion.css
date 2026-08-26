@@ -1,0 +1,2 @@
+/* Shared motion accessibility fallback. */
+@media(prefers-reduced-motion:reduce){.waves i,.ring,.core>i,.core>em{transition:none!important;animation:none!important}}

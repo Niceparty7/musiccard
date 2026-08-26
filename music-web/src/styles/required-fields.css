@@ -1,0 +1,10 @@
+/* 与后端必填参数保持一致。Element Plus required 表单项本身已有星号；
+   下面覆盖仍使用轻量前端校验的登录和短信表单。 */
+.login .form .el-form-item .el-form-item__label::before,
+.lab form .el-form-item .el-form-item__label::before,
+.account .panel form .el-form-item:nth-child(-n+3) .el-form-item__label::before,
+.el-dialog .el-form:has(> .form-grid) > .el-form-item:nth-child(2) .el-form-item__label::before {
+  content: '*';
+  color: var(--coral);
+  margin-right: 4px;
+}

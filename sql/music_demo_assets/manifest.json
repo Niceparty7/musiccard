@@ -1,0 +1,446 @@
+[
+  {
+    "kind": "category",
+    "id": 1,
+    "url": "https://picsum.photos/seed/mc-category-cpop/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_001.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 2,
+    "url": "https://picsum.photos/seed/mc-category-rap/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_002.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 3,
+    "url": "https://picsum.photos/seed/mc-category-rockcn/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_003.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 4,
+    "url": "https://picsum.photos/seed/mc-category-asia/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_004.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 5,
+    "url": "https://picsum.photos/seed/mc-category-westpop/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_005.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 6,
+    "url": "https://picsum.photos/seed/mc-category-rnb/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_006.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 7,
+    "url": "https://picsum.photos/seed/mc-category-edm/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_007.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 8,
+    "url": "https://picsum.photos/seed/mc-category-folk/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_008.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 9,
+    "url": "https://picsum.photos/seed/mc-category-jazz/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_009.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 10,
+    "url": "https://picsum.photos/seed/mc-category-classical/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_010.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 11,
+    "url": "https://picsum.photos/seed/mc-category-country/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_011.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 12,
+    "url": "https://picsum.photos/seed/mc-category-ost/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_012.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 13,
+    "url": "https://picsum.photos/seed/mc-category-cpop-ballad/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_013.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 14,
+    "url": "https://picsum.photos/seed/mc-category-cpop-rhythm/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_014.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 15,
+    "url": "https://picsum.photos/seed/mc-category-trap/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_015.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 16,
+    "url": "https://picsum.photos/seed/mc-category-storyrap/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_016.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 17,
+    "url": "https://picsum.photos/seed/mc-category-indierock/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_017.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 18,
+    "url": "https://picsum.photos/seed/mc-category-kpop/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_018.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 19,
+    "url": "https://picsum.photos/seed/mc-category-jpop/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_019.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 20,
+    "url": "https://picsum.photos/seed/mc-category-synthwave/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_020.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 21,
+    "url": "https://picsum.photos/seed/mc-category-dance/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_021.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 22,
+    "url": "https://picsum.photos/seed/mc-category-world/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_022.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 23,
+    "url": "https://picsum.photos/seed/mc-category-film-score/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_023.jpg"
+  },
+  {
+    "kind": "category",
+    "id": 24,
+    "url": "https://picsum.photos/seed/mc-category-game-score/800/480",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\category_024.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 1,
+    "url": "https://picsum.photos/seed/mc-01/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_001.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 2,
+    "url": "https://picsum.photos/seed/mc-02/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_002.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 3,
+    "url": "https://picsum.photos/seed/mc-03/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_003.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 4,
+    "url": "https://picsum.photos/seed/mc-04/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_004.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 5,
+    "url": "https://picsum.photos/seed/mc-05/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_005.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 6,
+    "url": "https://picsum.photos/seed/mc-06/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_006.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 7,
+    "url": "https://picsum.photos/seed/mc-07/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_007.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 8,
+    "url": "https://picsum.photos/seed/mc-08/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_008.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 9,
+    "url": "https://picsum.photos/seed/mc-09/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_009.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 10,
+    "url": "https://picsum.photos/seed/mc-10/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_010.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 11,
+    "url": "https://picsum.photos/seed/mc-11/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_011.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 12,
+    "url": "https://picsum.photos/seed/mc-12/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_012.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 13,
+    "url": "https://picsum.photos/seed/mc-13/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_013.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 14,
+    "url": "https://picsum.photos/seed/mc-14/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_014.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 15,
+    "url": "https://picsum.photos/seed/mc-15/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_015.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 16,
+    "url": "https://picsum.photos/seed/mc-16/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_016.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 17,
+    "url": "https://picsum.photos/seed/mc-17/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_017.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 18,
+    "url": "https://picsum.photos/seed/mc-18/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_018.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 19,
+    "url": "https://picsum.photos/seed/mc-19/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_019.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 20,
+    "url": "https://picsum.photos/seed/mc-20/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_020.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 21,
+    "url": "https://picsum.photos/seed/mc-21/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_021.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 22,
+    "url": "https://picsum.photos/seed/mc-22/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_022.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 23,
+    "url": "https://picsum.photos/seed/mc-23/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_023.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 24,
+    "url": "https://picsum.photos/seed/mc-24/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_024.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 25,
+    "url": "https://picsum.photos/seed/mc-25/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_025.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 26,
+    "url": "https://picsum.photos/seed/mc-26/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_026.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 27,
+    "url": "https://picsum.photos/seed/mc-27/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_027.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 28,
+    "url": "https://picsum.photos/seed/mc-28/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_028.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 29,
+    "url": "https://picsum.photos/seed/mc-29/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_029.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 30,
+    "url": "https://picsum.photos/seed/mc-30/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_030.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 31,
+    "url": "https://picsum.photos/seed/mc-31/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_031.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 32,
+    "url": "https://picsum.photos/seed/mc-32/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_032.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 33,
+    "url": "https://picsum.photos/seed/mc-33/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_033.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 34,
+    "url": "https://picsum.photos/seed/mc-34/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_034.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 35,
+    "url": "https://picsum.photos/seed/mc-35/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_035.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 36,
+    "url": "https://picsum.photos/seed/mc-36/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_036.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 37,
+    "url": "https://picsum.photos/seed/mc-37/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_037.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 38,
+    "url": "https://picsum.photos/seed/mc-38/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_038.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 39,
+    "url": "https://picsum.photos/seed/mc-39/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_039.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 40,
+    "url": "https://picsum.photos/seed/mc-40/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_040.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 41,
+    "url": "https://picsum.photos/seed/mc-41/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_041.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 42,
+    "url": "https://picsum.photos/seed/mc-42/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_042.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 43,
+    "url": "https://picsum.photos/seed/mc-43/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_043.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 44,
+    "url": "https://picsum.photos/seed/mc-44/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_044.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 45,
+    "url": "https://picsum.photos/seed/mc-45/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_045.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 46,
+    "url": "https://picsum.photos/seed/mc-46/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_046.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 47,
+    "url": "https://picsum.photos/seed/mc-47/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_047.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 48,
+    "url": "https://picsum.photos/seed/mc-48/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_048.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 49,
+    "url": "https://picsum.photos/seed/mc-49/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_049.jpg"
+  },
+  {
+    "kind": "music",
+    "id": 50,
+    "url": "https://picsum.photos/seed/mc-50/800/800",
+    "local": "E:\\idea\\ideaProject\\musiccard\\sql\\music_demo_assets\\music_050.jpg"
+  }
+]

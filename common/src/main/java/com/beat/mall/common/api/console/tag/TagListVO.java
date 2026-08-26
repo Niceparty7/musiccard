@@ -6,5 +6,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class TagListVO {
+    private Long id;
     private String tag;
+    private String tagDesc;
 }

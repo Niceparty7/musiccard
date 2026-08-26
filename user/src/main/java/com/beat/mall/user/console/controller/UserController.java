@@ -9,10 +9,13 @@ import com.beat.mall.common.utils.IpUtil;
 import com.beat.mall.common.utils.SpringUtil;
 import com.beat.mall.user.console.annotations.VerifiedUser;
 import com.beat.mall.user.console.feign.UserFeign;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +26,6 @@ public class UserController {
 
     @GetMapping("/user/login/web")
     public Response<UserInfoVo> loginWeb(@VerifiedUser User loginUser,
-                                         HttpSession httpSession,
                                          HttpServletRequest request,
                                          @RequestParam("phone") String phone,
                                          @RequestParam("password") String password,
@@ -44,9 +46,31 @@ public class UserController {
                 .setGender(info.getUserGender())
                 .setPhone(info.getUserPhone())
                 .setAvatar(info.getUserAvatar());
+        HttpSession httpSession = request.getSession(true);
         httpSession.setAttribute(SpringUtil.getProperty("application.session.key"),
                 JSON.toJSONString(sessionUser));
         return result;
+    }
+
+    @PostMapping("/user/logout/web")
+    public Response<String> logoutWeb(HttpServletRequest request,
+                                      HttpServletResponse response) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        String cookieName = SpringUtil.getProperty("server.servlet.session.cookie.name");
+        if (BaseUtil.isEmpty(cookieName)) {
+            cookieName = "SESSION";
+        }
+        Cookie cookie = new Cookie(cookieName, "");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setAttribute("SameSite", "Lax");
+        response.addCookie(cookie);
+        return new Response<>(1001, "退出成功");
     }
 }
 

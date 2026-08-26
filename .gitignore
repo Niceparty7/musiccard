@@ -43,4 +43,35 @@ build/
 /deploy/**/*.tar.gz
 /deploy/**/*.tgz
 /deploy/**/*.key
-/deploy
+deploy/
+
+### MusicCard Web / Vue / Vite ###
+/music-web/node_modules/
+/music-web/dist/
+/music-web/.vite/
+/music-web/.cache/
+/music-web/.eslintcache
+/music-web/*.tsbuildinfo
+
+# Local environment overrides may contain machine-specific URLs or secrets.
+/music-web/.env.local
+/music-web/.env.*.local
+/music-web/*.local
+
+# Frontend runtime and package-manager logs.
+/music-web/*.log
+/music-web/npm-debug.log*
+/music-web/yarn-debug.log*
+/music-web/yarn-error.log*
+/music-web/pnpm-debug.log*
+
+# Playwright generated reports, traces, screenshots, videos and saved auth state.
+/music-web/playwright-report/
+/music-web/test-results/
+/music-web/blob-report/
+/music-web/playwright/.auth/
+/music-web/coverage/
+
+# OS metadata.
+/music-web/.DS_Store
+/music-web/Thumbs.db

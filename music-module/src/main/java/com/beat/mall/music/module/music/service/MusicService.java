@@ -47,7 +47,6 @@ public class MusicService {
         return musicMapper.getAllMusic(offSet, pageSize, keyword, subquery, subquery2);
     }
 
-    @ReadOnly
     public List<Music> getAllMusicList2(Integer offSet, Integer pageSize, String musicName, String subquery, String subquery2) {
         return musicMapper.getAllMusicList2(offSet, pageSize, musicName, subquery, subquery2);
     }
@@ -57,7 +56,6 @@ public class MusicService {
         return musicMapper.getMusicByCursor(offset, limit, keyword, subquery, subquery2);
     }
 
-    @ReadOnly
     public Long countTotal(String musicName, String typeName, String tagName) {
         return musicMapper.countTotal(musicName, typeName, tagName);
     }

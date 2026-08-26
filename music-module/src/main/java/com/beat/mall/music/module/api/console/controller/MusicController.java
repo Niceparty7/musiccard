@@ -53,8 +53,9 @@ public class MusicController {
             @RequestParam Long id) throws Exception {
         providerAuthService.requireUser(userId);
         Music music = musicService.getById(id);
-        Category category = categoryService.getById((long) music.getTypeId());
-        if (category == null) {
+        Integer typeId = music.getTypeId();
+        Category category = typeId == null ? null : categoryService.getById(typeId.longValue());
+        if (typeId != null && category == null) {
             return new Response<>(3051);
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -67,8 +68,9 @@ public class MusicController {
                 .setMusicDesc(music.getMusicDesc())
                 .setCreateTime(format.format(music.getCreateTime() * 1000L))
                 .setUpdateTime(format.format(music.getUpdateTime() * 1000L))
-                .setTypeName(category.getTypeName())
-                .setTypeImage(category.getTypeImage())
+                .setTypeId(typeId)
+                .setTypeName(category == null ? null : category.getTypeName())
+                .setTypeImage(category == null ? null : category.getTypeImage())
                 .setTags(baseMusicService.getTagsByMusicId(id));
         return new Response<>(1001, result);
     }

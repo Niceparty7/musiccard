@@ -1,0 +1,20 @@
+:root {
+	--ink-950: #07111f;
+	--ink-900: #0b1728;
+	--ink-800: #12243a;
+	--paper: #f4f7fb;
+	--paper-strong: #fff;
+	--cyan: #30d9ff;
+	--cyan-soft: #b8f3ff;
+	--violet: #7c6cff;
+	--coral: #ff6f91;
+	--lime: #b8f35b;
+	--muted: #718096;
+	--line: rgba(21, 49, 75, .12);
+	--display: "Arial Narrow", "Microsoft YaHei UI", sans-serif;
+	--body: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+	--mono: "Cascadia Code", "SFMono-Regular", monospace;
+	--shadow: 0 22px 60px rgba(8, 29, 48, .12);
+	--radius-lg: 26px;
+	--radius-md: 18px
+}
